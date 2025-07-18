@@ -1,0 +1,268 @@
+import {
+  Camera,
+  CameraListResponse,
+  CreateCameraRequest,
+  UpdateCameraRequest,
+  CameraStats,
+  LiveFeedData,
+  BehaviorDetection,
+} from "@shared/cctv";
+
+class CCTVService {
+  private baseUrl = "/api/cctv";
+
+  async getCameras(page = 1, limit = 10): Promise<CameraListResponse> {
+    const response = await fetch(
+      `${this.baseUrl}/cameras?page=${page}&limit=${limit}`,
+    );
+    if (!response.ok) {
+      throw new Error("Failed to fetch cameras");
+    }
+    return response.json();
+  }
+
+  async getCamera(id: string): Promise<Camera> {
+    const response = await fetch(`${this.baseUrl}/cameras/${id}`);
+    if (!response.ok) {
+      throw new Error("Failed to fetch camera");
+    }
+    return response.json();
+  }
+
+  async createCamera(data: CreateCameraRequest): Promise<Camera> {
+    const response = await fetch(`${this.baseUrl}/cameras`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    });
+    if (!response.ok) {
+      throw new Error("Failed to create camera");
+    }
+    return response.json();
+  }
+
+  async updateCamera(id: string, data: UpdateCameraRequest): Promise<Camera> {
+    const response = await fetch(`${this.baseUrl}/cameras/${id}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    });
+    if (!response.ok) {
+      throw new Error("Failed to update camera");
+    }
+    return response.json();
+  }
+
+  async deleteCamera(id: string): Promise<void> {
+    const response = await fetch(`${this.baseUrl}/cameras/${id}`, {
+      method: "DELETE",
+    });
+    if (!response.ok) {
+      throw new Error("Failed to delete camera");
+    }
+  }
+
+  async getCameraStats(): Promise<CameraStats> {
+    const response = await fetch(`${this.baseUrl}/stats`);
+    if (!response.ok) {
+      throw new Error("Failed to fetch camera stats");
+    }
+    return response.json();
+  }
+
+  async getLiveFeed(cameraId: string): Promise<LiveFeedData> {
+    const response = await fetch(`${this.baseUrl}/live/${cameraId}`);
+    if (!response.ok) {
+      throw new Error("Failed to fetch live feed");
+    }
+    return response.json();
+  }
+
+  async toggleRecording(cameraId: string, isRecording: boolean): Promise<void> {
+    const response = await fetch(
+      `${this.baseUrl}/cameras/${cameraId}/recording`,
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ isRecording }),
+      },
+    );
+    if (!response.ok) {
+      throw new Error("Failed to toggle recording");
+    }
+  }
+
+  async getBehaviorDetections(
+    cameraId?: string,
+    behavior?: string,
+    limit = 50,
+  ): Promise<BehaviorDetection[]> {
+    const params = new URLSearchParams();
+    if (cameraId) params.append("cameraId", cameraId);
+    if (behavior) params.append("behavior", behavior);
+    params.append("limit", limit.toString());
+
+    const response = await fetch(`${this.baseUrl}/behaviors?${params}`);
+    if (!response.ok) {
+      throw new Error("Failed to fetch behavior detections");
+    }
+    return response.json();
+  }
+
+  async downloadRecording(cameraId: string): Promise<void> {
+    const response = await fetch(
+      `${this.baseUrl}/cameras/${cameraId}/recording/download`,
+    );
+    if (!response.ok) {
+      throw new Error("Failed to download recording");
+    }
+
+    const blob = await response.blob();
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `camera_${cameraId}_recording_${new Date().toISOString().split("T")[0]}.mp4`;
+    document.body.appendChild(a);
+    a.click();
+    window.URL.revokeObjectURL(url);
+    document.body.removeChild(a);
+  }
+
+  async exportCameraData(
+    format: "csv" | "json" | "pdf" = "csv",
+  ): Promise<void> {
+    const response = await fetch(`${this.baseUrl}/export?format=${format}`);
+    if (!response.ok) {
+      throw new Error("Failed to export camera data");
+    }
+
+    const blob = await response.blob();
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `cameras_export_${new Date().toISOString().split("T")[0]}.${format}`;
+    document.body.appendChild(a);
+    a.click();
+    window.URL.revokeObjectURL(url);
+    document.body.removeChild(a);
+  }
+
+  async refreshCameraList(): Promise<CameraListResponse> {
+    // Force a fresh fetch by adding a cache-busting parameter
+    const timestamp = new Date().getTime();
+    const response = await fetch(
+      `${this.baseUrl}/cameras?refresh=${timestamp}`,
+    );
+    if (!response.ok) {
+      throw new Error("Failed to refresh cameras");
+    }
+    return response.json();
+  }
+
+  async validateCameraConnection(
+    streamUrl: string,
+  ): Promise<{ isValid: boolean; error?: string }> {
+    try {
+      const response = await fetch(`${this.baseUrl}/validate-stream`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ streamUrl }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to validate stream");
+      }
+
+      return response.json();
+    } catch (error) {
+      return {
+        isValid: false,
+        error: "Unable to validate stream connection",
+      };
+    }
+  }
+
+  // Mock data for demonstration purposes
+  getMockCameras(): Camera[] {
+    return [
+      {
+        id: "cam-1",
+        name: "camera 1",
+        zone: "Main Entrance",
+        createdBy: "Achraf",
+        status: "active",
+        streamUrl:
+          "https://api.builder.io/api/v1/image/assets/TEMP/e3d5926eba868b25fa3539c0743b7826f1625545?width=1398",
+        isRecording: true,
+        lastActivity: new Date(),
+        createdAt: new Date("2024-01-15"),
+        updatedAt: new Date(),
+      },
+      {
+        id: "cam-2",
+        name: "camera 2",
+        zone: "Back Door",
+        createdBy: "Achraf",
+        status: "active",
+        streamUrl:
+          "https://api.builder.io/api/v1/image/assets/TEMP/0a30a7645d8b7271df6e3b207b010180a52317c9?width=658",
+        isRecording: true,
+        lastActivity: new Date(),
+        createdAt: new Date("2024-01-20"),
+        updatedAt: new Date(),
+      },
+      {
+        id: "cam-3",
+        name: "camera 3",
+        zone: "Eating Place",
+        createdBy: "Achraf",
+        status: "active",
+        streamUrl:
+          "https://api.builder.io/api/v1/image/assets/TEMP/76353da281306292cb39952a5d6ab02c4bedf82b?width=658",
+        isRecording: true,
+        lastActivity: new Date(),
+        createdAt: new Date("2024-01-25"),
+        updatedAt: new Date(),
+      },
+    ];
+  }
+
+  getMockBehaviorDetections(): BehaviorDetection[] {
+    return [
+      {
+        id: "behavior-1",
+        cameraId: "cam-1",
+        behavior: "standing",
+        confidence: 0.95,
+        detectedAt: new Date(),
+        boundingBox: { x: 399, y: 264, width: 71, height: 133 },
+      },
+      {
+        id: "behavior-2",
+        cameraId: "cam-1",
+        behavior: "eating",
+        confidence: 0.87,
+        detectedAt: new Date(),
+        boundingBox: { x: 525, y: 264, width: 67, height: 133 },
+      },
+      {
+        id: "behavior-3",
+        cameraId: "cam-1",
+        behavior: "sleeping",
+        confidence: 0.92,
+        detectedAt: new Date(),
+        boundingBox: { x: 751, y: 342, width: 193, height: 84 },
+      },
+    ];
+  }
+}
+
+export const cctvService = new CCTVService();
