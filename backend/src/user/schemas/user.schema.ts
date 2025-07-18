@@ -1,5 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
+import * as bcrypt from 'bcrypt';
 
 @Schema()
 export class User {
@@ -42,15 +43,15 @@ export class User {
   @Prop()
   role: string;
 
+  password: string;
   @Prop()
-  password: string;  // 🔴 IMPORTANT : Tu dois ajouter ce champ ici
-
+  passwordHash: string;
   @Prop({
     type: Object,
     default: {
       statut: 'en_attente',
-      raison_sociale: ''
-    }
+      raison_sociale: '',
+    },
   })
   metadata: {
     statut: string;
@@ -60,3 +61,11 @@ export class User {
 
 export type UserDocument = User & Document;
 export const UserSchema = SchemaFactory.createForClass(User);
+
+UserSchema.pre('save', async function (next) {
+  if (this.isModified('password')) {
+    const salt = await bcrypt.genSaltSync(12);
+    this.passwordHash = await bcrypt.hash(this.password, salt);
+  }
+  next();
+});
