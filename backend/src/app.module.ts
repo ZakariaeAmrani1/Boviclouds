@@ -10,11 +10,13 @@ import mongoose from 'mongoose';
 
 @Module({
   imports: [
-     MongooseModule.forRoot('mongodb+srv://amraouin28:nezha1234@clusterbovi0.rxfqiw2.mongodb.net/bovicloudsdb?retryWrites=true&w=majority&appName=ClusterBovi0'),
-     AuthModule,
-     UserModule,
-     AuthModule,
-     AdminModule,
+    MongooseModule.forRoot(
+      'mongodb+srv://amraouin28:nezha1234@clusterbovi0.rxfqiw2.mongodb.net/bovicloudsdb?retryWrites=true&w=majority&appName=ClusterBovi0',
+    ),
+    AuthModule,
+    UserModule,
+    AuthModule,
+    AdminModule,
   ],
   controllers: [AppController],
   providers: [AppService],
@@ -25,7 +27,7 @@ export class AppModule implements OnModuleInit {
       console.log(' Connected to MongoDB');
     });
 
-    mongoose.connection.on('error', (err) => { 
+    mongoose.connection.on('error', (err) => {
       console.error(' MongoDB connection error:', err);
     });
   }
