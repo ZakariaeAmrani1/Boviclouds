@@ -1,4 +1,8 @@
-import { Injectable, ConflictException, UnauthorizedException } from '@nestjs/common';
+import {
+  Injectable,
+  ConflictException,
+  UnauthorizedException,
+} from '@nestjs/common';
 
 import { LoginDto } from './dto/login.dto';
 import { InjectModel } from '@nestjs/mongoose';
@@ -21,7 +25,6 @@ export class AuthService {
     const userExists = await this.userModel.findOne({ email: dto.email });
     if (userExists) throw new ConflictException('Email already exists');
 
-    
     const createdUser = new this.userModel({
       ...dto,
 
@@ -35,7 +38,7 @@ export class AuthService {
 
   async login(dto: LoginDto) {
     const user = await this.userModel.findOne({ email: dto.email });
-    if (!user || !(await bcrypt.compare(dto.password, user.password))) {
+    if (!user || !(await bcrypt.compareSync(dto.password, user.passwordHash))) {
       throw new UnauthorizedException('Invalid credentials');
     }
 
@@ -43,13 +46,11 @@ export class AuthService {
     return { token, user };
   }
   async validateUser(email: string, pass: string): Promise<any> {
-  const user = await this.UserService.findByEmail(email);
-  if (!user || user.metadata.statut !== 'valide') return null;
+    const user = await this.UserService.findByEmail(email);
+    if (!user || user.metadata.statut !== 'valide') return null;
 
-  const isMatch = await bcrypt.compare(pass, user.password);
-  if (isMatch) return user;
-  return null;
- }
-
-
+    const isMatch = await bcrypt.compare(pass, user.password);
+    if (isMatch) return user;
+    return null;
+  }
 }
