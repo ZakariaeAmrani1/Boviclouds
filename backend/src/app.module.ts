@@ -2,7 +2,7 @@ import { Module, OnModuleInit } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { MongooseModule } from '@nestjs/mongoose';
-import { UserModule } from './user/user.module';
+import { UsersModule } from './user/users.module';
 import { AuthModule } from './auth/auth.module';
 
 import { AdminModule } from './admin/admin.module';
@@ -14,7 +14,7 @@ import mongoose from 'mongoose';
       'mongodb+srv://amraouin28:nezha1234@clusterbovi0.rxfqiw2.mongodb.net/bovicloudsdb?retryWrites=true&w=majority&appName=ClusterBovi0',
     ),
     AuthModule,
-    UserModule,
+    UsersModule,
     AuthModule,
     AdminModule,
   ],
