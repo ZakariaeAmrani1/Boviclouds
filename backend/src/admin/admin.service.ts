@@ -1,43 +1,36 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import * as bcrypt from 'bcrypt';
 import { Model } from 'mongoose';
-
-import { User, UserDocument } from 'src/user/schemas/user.schema';
+import { ValidateUserDto } from 'src/auth/dto/users/validate-user.dto';
+import { AccountStatus } from 'src/user/schemas/users/user.acc.status';
+import { UserRole } from 'src/user/schemas/users/user.role';
+import { User } from 'src/user/schemas/users/user.schema';
 
 @Injectable()
 export class AdminService {
   constructor(
-    @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
+    @InjectModel(User.name) private readonly userModel: Model<User>,
   ) {}
-  async validerUtilisateur(
-    userId: string,
-    password: string,
-    role: string,
-  ): Promise<User | null> {
-    const utilisateur = await this.userModel.findById(userId);
-
-    if (!utilisateur || utilisateur.metadata?.statut === 'valide') {
+  async validateUser(userId:string,validateUserDto:ValidateUserDto): Promise<User | null> {
+    const user = await this.userModel.findById(userId);
+    if (!user || user.metadata?.statut === AccountStatus.APPROVED) {
       return null;
     }
-
-    // const hashedPassword = await bcrypt.hash(password, 10);
-
-    // utilisateur.password = hashedPassword;
-    utilisateur.role = role;
-    utilisateur.metadata.statut = 'valide';
-    utilisateur.date_modification = new Date();
-
-    return utilisateur.save();
+    if (!Array.isArray(user.role)) {
+      user.role = [UserRole.ELEVEUR];
+    }
+    user.role.push(validateUserDto.role);
+    user.metadata.statut = AccountStatus.APPROVED;
+    user.markModified('metadata'); 
+    return await user.save();
   }
 
-  async rejeterDemande(userId: string): Promise<User | null> {
+  async rejectRequest(userId: string): Promise<User | null> {
     return this.userModel.findByIdAndUpdate(
       userId,
       {
         $set: {
-          metadata: { statut: 'rejeté' },
-          date_modification: new Date(),
+          metadata: { statut: AccountStatus.REJECTED },
         },
       },
       { new: true },
