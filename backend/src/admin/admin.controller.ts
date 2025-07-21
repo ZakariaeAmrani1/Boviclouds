@@ -4,34 +4,35 @@ import {
   Param,
   NotFoundException,
   Body,
+  UseGuards,
 } from '@nestjs/common';
 import { AdminService } from './admin.service';
+import { ValidateUserDto } from 'src/auth/dto/users/validate-user.dto';
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { Roles } from 'src/auth/roles.decorator';
+import { UserRole } from 'src/user/schemas/users/user.role';
+import { RolesGuard } from 'src/auth/roles.guard';
 
-@Controller('admin')
+
+@Controller('api/v1/admin')
 export class AdminController {
   constructor(private readonly adminService: AdminService) {}
+
+  @UseGuards(JwtAuthGuard,RolesGuard)
+  @Roles(UserRole.ADMIN)
   @Patch('validate/:id')
-  async validerDemande(
+  async requestAccountValidation(
     @Param('id') userId: string,
-
     @Body()
-    body: {
-      password: string;
-      role: string;
-    },
+    dto: ValidateUserDto,
   ) {
-    const result = await this.adminService.validerUtilisateur(
-      userId,
-      body.password,
-      body.role,
-    );
-
+    const result = await this.adminService.validateUser(userId, dto);
     if (!result) {
-      throw new NotFoundException('Utilisateur introuvable ou déjà validé.');
+      throw new NotFoundException('User is missing or already approved!');
     }
 
     return {
-      message: 'Compte validé avec succès',
+      message: 'Account approved successfully',
       user: result,
     };
   }
