@@ -5,7 +5,7 @@ export type InseminationDocument = HydratedDocument<Insemination>
 
 @Schema({ timestamps: true })
 export class Insemination {
-  @Prop({ isRequired: true, unique: true, length:16 })
+  @Prop({ isRequired: true, unique: true, length:16,maxlength:16 })
   nni: string;
   @Prop({ isRequired: true, type: Date })
   date_dissemination: Date;
