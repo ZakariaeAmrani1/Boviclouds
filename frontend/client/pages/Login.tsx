@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import RegistrationForm from "../components/RegistrationForm";
+import { useToast } from "../hooks/use-toast";
 
 const Login = () => {
   const [email, setEmail] = useState("jhondoe@gmail.com");
@@ -15,8 +16,10 @@ const Login = () => {
   const [forgotPasswordEmail, setForgotPasswordEmail] = useState("");
   const [forgotPasswordSent, setForgotPasswordSent] = useState(false);
   const [showRegistration, setShowRegistration] = useState(false);
+  const [accountRequestSent, setAccountRequestSent] = useState(false);
   const navigate = useNavigate();
-  const { login, isLoading, isAuthenticated } = useAuth();
+  const { login, isLoading, isAuthenticated, register } = useAuth();
+  const { toast } = useToast();
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -63,6 +66,9 @@ const Login = () => {
       setEmailError(validateEmail(value));
     }
   };
+  const handleCloseSuccessMessage = () => {
+    setAccountRequestSent(false);
+  };
 
   const handlePasswordChange = (value: string) => {
     setPassword(value);
@@ -100,12 +106,20 @@ const Login = () => {
     setShowRegistration(false);
   };
 
-  const handleRegistrationComplete = (data: any) => {
-    console.log("Registration data:", data);
+  const handleRegistrationComplete = (status: boolean) => {
     // Here you would typically send the data to your API
     // For now, just show a success message and go back to login
-    setShowRegistration(false);
-    setError("");
+    if (status) {
+      setAccountRequestSent(true);
+      setShowRegistration(false);
+      setError("");
+    } else {
+      toast({
+        title: "Erreur",
+        description: "Error while sending request",
+      });
+      setError("Error while sending request");
+    }
     // You could show a success message here
   };
 
@@ -459,6 +473,63 @@ const Login = () => {
                   </button>
                 </>
               )}
+            </div>
+          </div>
+        </div>
+      )}
+      {accountRequestSent && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 animate-fadeIn">
+          <div className="bg-white rounded-xl shadow-xl max-w-md w-full p-6 transform animate-slideUp">
+            <div className="text-center">
+              {/* Success Icon */}
+              <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg
+                  className="w-8 h-8 text-green-600"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M5 13l4 4L19 7"
+                  />
+                </svg>
+              </div>
+
+              {/* Title */}
+              <h3 className="text-xl font-poppins font-semibold text-gray-900 mb-3">
+                Demande de compte envoyée
+              </h3>
+
+              {/* Message */}
+              <div className="text-gray-600 font-inter text-sm mb-6 space-y-2">
+                <p className="leading-relaxed">
+                  Votre demande de compte a été envoyée avec succès à
+                  l'administration.
+                </p>
+                <p className="leading-relaxed">
+                  Vous devrez attendre l'approbation de votre compte.
+                  <strong className="text-gray-800">
+                    {" "}
+                    Veuillez vérifier votre email
+                  </strong>{" "}
+                  pour les mises à jour sur le statut de votre demande.
+                </p>
+                <p className="text-sm text-gray-500 mt-3">
+                  Vous recevrez une notification par email une fois votre compte
+                  approuvé.
+                </p>
+              </div>
+
+              {/* Close Button */}
+              <button
+                onClick={handleCloseSuccessMessage}
+                className="w-full px-4 py-3 bg-boviclouds-primary text-white rounded-lg font-inter text-sm font-medium hover:bg-boviclouds-primary/90 transition-colors"
+              >
+                Compris
+              </button>
             </div>
           </div>
         </div>
