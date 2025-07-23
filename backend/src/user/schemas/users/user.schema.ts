@@ -2,7 +2,6 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument } from 'mongoose';
 import * as bcrypt from 'bcrypt';
 import { UserRole } from './user.role';
-import { Metadata } from './user.metadata';
 import { AccountStatus } from './user.acc.status';
 
 export type UserDocument = HydratedDocument<User, UserMethods>;
@@ -47,7 +46,7 @@ export class User {
   @Prop({
     type: [String],
     enum: UserRole,
-    default: [UserRole.ELEVEUR],
+    default: [],
   })
   role: [UserRole];
   @Prop({ required: false })
@@ -56,13 +55,13 @@ export class User {
   @Prop({ select: false })
   passwordHash: string;
   @Prop({
-    type: Metadata,
-    default: () => ({
-      statut: AccountStatus.PENDING,
-      raison_sociale: '',
-    }),
+    type:String,
+    enum:AccountStatus,
+    default:AccountStatus.PENDING
   })
-  metadata: Metadata;
+  statut:AccountStatus
+  @Prop()
+  raison_sociale: string
 }
 export interface UserMethods {
   correctPassword(candidatePassword: string): Promise<boolean>;
