@@ -38,7 +38,7 @@ export class AuthService {
     if (!user || !(await user.correctPassword(dto.password))) {
         throw new UnauthorizedException('Invalid credentials');
       }
-    if(!user || user.metadata?.statut !== AccountStatus.APPROVED)
+    if(!user || user?.statut !== AccountStatus.APPROVED)
       throw new UnauthorizedException("Account not approved");
     const access_token = this.jwtService.sign({
       sub: user._id,
