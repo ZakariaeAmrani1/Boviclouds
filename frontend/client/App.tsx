@@ -14,6 +14,8 @@ import Dashboard from "./pages/Dashboard";
 import Rebouclage from "./pages/Rebouclage";
 import Utilisateurs from "./pages/Utilisateurs";
 import CCTV from "./pages/CCTV";
+import Traitement from "./pages/Traitement";
+import Identification from "./pages/Identification";
 import EditProfile from "./pages/EditProfile";
 import NotFound from "./pages/NotFound";
 import Index from "./pages/Index";
@@ -21,39 +23,40 @@ import Index from "./pages/Index";
 // Suppress Recharts defaultProps deprecation warnings
 const originalWarn = console.warn;
 console.warn = (...args: any[]) => {
-  // Check for the specific recharts defaultProps warning pattern
-  if (args.length >= 2 && typeof args[0] === "string") {
-    const message = args[0];
-    const componentName = args[1];
+  // Convert all arguments to string for easier checking
+  const fullMessage = args.join(" ");
 
-    if (
-      message.includes(
-        "Support for defaultProps will be removed from function components",
-      ) &&
-      (componentName === "XAxis" ||
-        componentName === "YAxis" ||
-        componentName === "Tooltip" ||
-        componentName === "Legend" ||
-        componentName === "CartesianGrid" ||
-        componentName === "Bar" ||
-        componentName === "ResponsiveContainer")
-    ) {
-      return; // Suppress recharts component warnings
-    }
+  // Check if this is a recharts defaultProps warning
+  if (
+    fullMessage.includes(
+      "Support for defaultProps will be removed from function components",
+    ) &&
+    (fullMessage.includes("XAxis") ||
+      fullMessage.includes("YAxis") ||
+      fullMessage.includes("Tooltip") ||
+      fullMessage.includes("Legend") ||
+      fullMessage.includes("CartesianGrid") ||
+      fullMessage.includes("Bar") ||
+      fullMessage.includes("ResponsiveContainer"))
+  ) {
+    return; // Suppress recharts component warnings
   }
 
-  // Also suppress if the warning contains recharts-related text
+  // Also check for the formatted warning pattern with %s
   if (
     typeof args[0] === "string" &&
     args[0].includes("Support for defaultProps will be removed") &&
-    (args[0].includes("recharts") ||
-      args.some(
-        (arg: any) =>
-          typeof arg === "string" &&
-          (arg.includes("XAxis") ||
-            arg.includes("YAxis") ||
-            arg.includes("Tooltip")),
-      ))
+    args.some(
+      (arg: any) =>
+        typeof arg === "string" &&
+        (arg.includes("XAxis") ||
+          arg.includes("YAxis") ||
+          arg.includes("Tooltip") ||
+          arg.includes("Legend") ||
+          arg.includes("CartesianGrid") ||
+          arg.includes("Bar") ||
+          arg.includes("ResponsiveContainer")),
+    )
   ) {
     return;
   }
@@ -83,8 +86,10 @@ const App = () => (
               {/* Nested routes that will render within the Layout */}
               <Route index element={<Dashboard />} />
               <Route path="rebouclage" element={<Rebouclage />} />
+              <Route path="identification" element={<Identification />} />
               <Route path="utilisateurs" element={<Utilisateurs />} />
               <Route path="cctv" element={<CCTV />} />
+              <Route path="traitement" element={<Traitement />} />
               <Route path="profile" element={<EditProfile />} />
             </Route>
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
