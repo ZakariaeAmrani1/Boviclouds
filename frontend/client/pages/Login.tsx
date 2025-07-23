@@ -144,7 +144,7 @@ const Login = () => {
       {/* Compact Split Card */}
       <div
         className={`bg-white rounded-2xl shadow-xl w-full max-w-4xl flex overflow-hidden ${
-          showRegistration ? "max-h-[90vh] min-h-[600px]" : "h-[600px]"
+          showRegistration ? "max-h-[90vh] min-h-[600px]" : "h-[700px]"
         }`}
       >
         {/* Left Panel - Login/Registration Form */}
