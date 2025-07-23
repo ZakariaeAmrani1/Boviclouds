@@ -33,10 +33,6 @@ export class CreateUserDto {
 
   @IsOptional()
   @IsString()
-  role?: string;
-
-  @IsOptional()
-  @IsString()
   raison_sociale?: string; 
 
   @IsString()

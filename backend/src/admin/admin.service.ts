@@ -3,7 +3,6 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { ValidateUserDto } from 'src/auth/dto/users/validate-user.dto';
 import { AccountStatus } from 'src/user/schemas/users/user.acc.status';
-import { UserRole } from 'src/user/schemas/users/user.role';
 import { User } from 'src/user/schemas/users/user.schema';
 
 @Injectable()
@@ -13,15 +12,11 @@ export class AdminService {
   ) {}
   async validateUser(userId:string,validateUserDto:ValidateUserDto): Promise<User | null> {
     const user = await this.userModel.findById(userId);
-    if (!user || user.metadata?.statut === AccountStatus.APPROVED) {
+    if (!user || user?.statut === AccountStatus.APPROVED) {
       return null;
     }
-    if (!Array.isArray(user.role)) {
-      user.role = [UserRole.ELEVEUR];
-    }
     user.role.push(validateUserDto.role);
-    user.metadata.statut = AccountStatus.APPROVED;
-    user.markModified('metadata'); 
+    user.statut = AccountStatus.APPROVED;
     return await user.save();
   }
 
@@ -30,7 +25,7 @@ export class AdminService {
       userId,
       {
         $set: {
-          metadata: { statut: AccountStatus.REJECTED },
+          statut: AccountStatus.REJECTED ,
         },
       },
       { new: true },
