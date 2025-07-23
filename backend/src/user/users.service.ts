@@ -10,7 +10,7 @@ export class UsersService {
 
   async create(data: any): Promise<User> {
     const createdUser = new this.userModel(data);
-    return createdUser.save();
+    return await createdUser.save();
   }
   async findByEmail(email: string): Promise<User | null> {
     return this.userModel.findOne({ email });
