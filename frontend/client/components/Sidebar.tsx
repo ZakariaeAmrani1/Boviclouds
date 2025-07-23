@@ -19,6 +19,8 @@ import {
   ChevronLeft,
   ChevronRight,
   Camera,
+  Stethoscope,
+  FileSearch,
 } from "lucide-react";
 
 interface SidebarProps {
@@ -46,6 +48,12 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, onToggle }) => {
       badge: "12",
     },
     {
+      icon: FileSearch,
+      label: "Identification",
+      path: "/identification",
+      badge: null,
+    },
+    {
       icon: Users,
       label: "Utilisateurs",
       path: "/utilisateurs",
@@ -55,6 +63,12 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, onToggle }) => {
       icon: Camera,
       label: "CCTV",
       path: "/cctv",
+      badge: null,
+    },
+    {
+      icon: Stethoscope,
+      label: "Traitement",
+      path: "/traitement",
       badge: null,
     },
     {

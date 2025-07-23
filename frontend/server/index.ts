@@ -29,6 +29,23 @@ import {
   downloadProfileData,
   deleteAccount,
 } from "./routes/profile";
+import {
+  getSujets,
+  getSujet,
+  createSujet,
+  updateSujet,
+  deleteSujet,
+  getTraitementStats,
+  exportSujetsData,
+} from "./routes/traitement";
+import {
+  getIdentifications,
+  getIdentification,
+  createIdentification,
+  updateIdentification,
+  deleteIdentification,
+  getIdentificationStats,
+} from "./routes/identification";
 
 export function createServer() {
   const app = express();
@@ -79,6 +96,23 @@ export function createServer() {
   app.get("/api/cctv/live/:cameraId", getLiveFeed);
   app.put("/api/cctv/cameras/:cameraId/recording", toggleRecording);
   app.get("/api/cctv/behaviors", getBehaviorDetections);
+
+  // Traitement API routes
+  app.get("/api/traitement/sujets", getSujets);
+  app.get("/api/traitement/sujets/:id", getSujet);
+  app.post("/api/traitement/sujets", createSujet);
+  app.put("/api/traitement/sujets/:id", updateSujet);
+  app.delete("/api/traitement/sujets/:id", deleteSujet);
+  app.get("/api/traitement/stats", getTraitementStats);
+  app.get("/api/traitement/export", exportSujetsData);
+
+  // Identification API routes
+  app.get("/api/identification/stats", getIdentificationStats);
+  app.get("/api/identification/:id", getIdentification);
+  app.get("/api/identification", getIdentifications);
+  app.post("/api/identification", createIdentification);
+  app.put("/api/identification/:id", updateIdentification);
+  app.delete("/api/identification/:id", deleteIdentification);
 
   return app;
 }
