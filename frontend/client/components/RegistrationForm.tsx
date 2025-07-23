@@ -1,4 +1,7 @@
 import React, { useState } from "react";
+import { useAuth } from "../contexts/AuthContext";
+import { useToast } from "../hooks/use-toast";
+
 import {
   Select,
   SelectContent,
@@ -29,7 +32,7 @@ interface RegistrationFormData {
 
 interface RegistrationFormProps {
   onBack: () => void;
-  onComplete: (data: RegistrationFormData) => void;
+  onComplete: (status: boolean) => void;
 }
 
 const RegistrationForm: React.FC<RegistrationFormProps> = ({
@@ -55,6 +58,9 @@ const RegistrationForm: React.FC<RegistrationFormProps> = ({
   });
 
   const [errors, setErrors] = useState<Partial<RegistrationFormData>>({});
+  const { register } = useAuth();
+
+  const { toast } = useToast();
 
   const validateStep = (step: number): boolean => {
     const newErrors: Partial<RegistrationFormData> = {};
@@ -98,7 +104,7 @@ const RegistrationForm: React.FC<RegistrationFormProps> = ({
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleNext = () => {
+  const handleNext = async () => {
     if (validateStep(currentStep)) {
       if (currentStep < 3) {
         setIsTransitioning(true);
@@ -107,12 +113,19 @@ const RegistrationForm: React.FC<RegistrationFormProps> = ({
           setIsTransitioning(false);
         }, 200);
       } else {
-        // Final step - create account
         setIsCreatingAccount(true);
-        setTimeout(() => {
-          onComplete(formData);
-          setIsCreatingAccount(false);
-        }, 2000); // Simulate API call
+        const res = await register(formData);
+        const result = Boolean(res);
+        if (result) {
+          onComplete(Boolean(res));
+        } else {
+          toast({
+            title: "Error",
+            description: "Error while sending request",
+          });
+        }
+
+        setIsCreatingAccount(false); // Simulate API call
       }
     }
   };
