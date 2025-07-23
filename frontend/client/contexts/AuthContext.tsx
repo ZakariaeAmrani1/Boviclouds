@@ -1,3 +1,4 @@
+import axios from "axios";
 import React, { createContext, useContext, useState, useEffect } from "react";
 
 interface User {
@@ -14,6 +15,7 @@ interface AuthContextType {
     password: string,
     keepLoggedIn?: boolean,
   ) => Promise<boolean>;
+  register: (data: any) => Promise<Boolean>;
   logout: () => void;
   isLoading: boolean;
   isAuthenticated: boolean;
@@ -36,6 +38,7 @@ interface AuthProviderProps {
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const apiUrl = import.meta.env.VITE_API_URL;
 
   useEffect(() => {
     // Check if user is already logged in (from localStorage)
@@ -94,6 +97,34 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     });
   };
 
+  const register = async (data: any): Promise<Boolean> => {
+    setIsLoading(true);
+
+    try {
+      const res = await axios.post(`${apiUrl}auth/register`, {
+        CIN: data.cin,
+        email: data.email,
+        nom_ar: data.nomArabe,
+        prenom_ar: data.prenomArabe,
+        nom_lat: data.nomFamille,
+        prenom_lat: data.prenom,
+        civilite: data.civilite,
+        adresse: data.adresse,
+        region: data.region,
+        province: data.province,
+        password: data.motDePasse,
+        raison_sociale: "",
+      });
+      console.log(res);
+      setIsLoading(false);
+      return true;
+    } catch (error) {
+      console.error("Error posting data:", error);
+      setIsLoading(false);
+      return false;
+    }
+  };
+
   const logout = () => {
     setUser(null);
     localStorage.removeItem("boviclouds_user");
@@ -103,6 +134,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const value: AuthContextType = {
     user,
     login,
+    register,
     logout,
     isLoading,
     isAuthenticated: !!user,
