@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { ROLES_KEY } from './roles.decorator';
-import { UserRole } from 'src/user/schemas/users/user.role';
+import { UserRole } from 'src/users/schemas/users/user.role';
 
 @Injectable()
 export class RolesGuard implements CanActivate {
@@ -23,11 +23,15 @@ export class RolesGuard implements CanActivate {
 
     // inexistence de user ou rôles → interdit
     if (!user || !Array.isArray(user.role)) {
-      throw new ForbiddenException('You are not allowed to perform this action');
+      throw new ForbiddenException(
+        'You are not allowed to perform this action',
+      );
     }
     const hasRole = user.role.some((r: UserRole) => requiredRoles.includes(r));
     if (!hasRole) {
-      throw new ForbiddenException('You are not allowed to perform this action');
+      throw new ForbiddenException(
+        'You are not allowed to perform this action',
+      );
     }
     return true;
   }
