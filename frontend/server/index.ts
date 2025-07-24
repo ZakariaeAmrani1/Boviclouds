@@ -46,6 +46,15 @@ import {
   deleteIdentification,
   getIdentificationStats,
 } from "./routes/identification";
+import {
+  handleGetInseminations,
+  handleGetInsemination,
+  handleCreateInsemination,
+  handleUpdateInsemination,
+  handleDeleteInsemination,
+  handleGetInseminationStats,
+  handleExportInseminations,
+} from "./routes/insemination";
 
 export function createServer() {
   const app = express();
