@@ -123,5 +123,14 @@ export function createServer() {
   app.put("/api/identification/:id", updateIdentification);
   app.delete("/api/identification/:id", deleteIdentification);
 
+  // Insemination API routes
+  app.get("/api/insemination/stats", handleGetInseminationStats);
+  app.get("/api/insemination/export", handleExportInseminations);
+  app.get("/api/insemination/:id", handleGetInsemination);
+  app.get("/api/insemination", handleGetInseminations);
+  app.post("/api/insemination", handleCreateInsemination);
+  app.put("/api/insemination/:id", handleUpdateInsemination);
+  app.delete("/api/insemination/:id", handleDeleteInsemination);
+
   return app;
 }
