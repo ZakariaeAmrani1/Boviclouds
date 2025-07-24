@@ -2,40 +2,40 @@ import { IsEmail, IsOptional, IsString, IsStrongPassword } from 'class-validator
 
 export class CreateUserDto {
   @IsString()
-  CIN: string;
+  readonly CIN: string;
 
   @IsEmail()
-  email: string;
+  readonly email: string;
 
   @IsString()
-  nom_ar: string;
+  readonly nom_ar: string;
 
   @IsString()
-  prenom_ar: string;
+  readonly prenom_ar: string;
 
   @IsString()
-  nom_lat: string;
+  readonly nom_lat: string;
 
   @IsString()
-  prenom_lat: string;
+  readonly prenom_lat: string;
 
   @IsString()
-  civilite: string;
+  readonly civilite: string;
 
   @IsString()
-  adresse: string;
+  readonly adresse: string;
 
   @IsString()
-  region: string;
+  readonly region: string;
 
   @IsString()
-  province: string;
+  readonly province: string;
 
   @IsOptional()
   @IsString()
-  raison_sociale?: string; 
+  readonly raison_sociale?: string; 
 
   @IsString()
   @IsStrongPassword()
-  password:string
+  readonly password:string
 }
