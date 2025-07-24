@@ -8,6 +8,7 @@ import { AdminModule } from './admin/admin.module';
 import mongoose from 'mongoose';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { InseminationsModule } from './inseminations/inseminations.module';
+import { ExploitationsModule } from './exploitations/exploitations.module';
 import { SemencesModule } from './semences/semences.module';
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { SemencesModule } from './semences/semences.module';
     AuthModule,
     AdminModule,
     InseminationsModule,
+    ExploitationsModule,
     SemencesModule,
   ],
   controllers: [AppController],
