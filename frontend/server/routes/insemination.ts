@@ -151,7 +151,8 @@ export const handleGetInseminations: RequestHandler = async (req, res) => {
           data.responsable_local_id.nom_lat +
           " " +
           data.responsable_local_id.nom_lat,
-        createdBy: "admin",
+        createdBy:
+          data.inseminateur_id.nom_lat + " " + data.inseminateur_id.prenom_lat,
         createdAt: data.createdAt,
         updatedAt: data.updatedAt,
       });
