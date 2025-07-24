@@ -2,15 +2,18 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { ValidateUserDto } from 'src/auth/dto/users/validate-user.dto';
-import { AccountStatus } from 'src/user/schemas/users/user.acc.status';
-import { User } from 'src/user/schemas/users/user.schema';
+import { AccountStatus } from 'src/users/schemas/users/user.acc.status';
+import { User } from 'src/users/schemas/users/user.schema';
 
 @Injectable()
 export class AdminService {
   constructor(
     @InjectModel(User.name) private readonly userModel: Model<User>,
   ) {}
-  async validateUser(userId:string,validateUserDto:ValidateUserDto): Promise<User | null> {
+  async validateUser(
+    userId: string,
+    validateUserDto: ValidateUserDto,
+  ): Promise<User | null> {
     const user = await this.userModel.findById(userId);
     if (!user || user?.statut === AccountStatus.APPROVED) {
       return null;
@@ -25,7 +28,7 @@ export class AdminService {
       userId,
       {
         $set: {
-          statut: AccountStatus.REJECTED ,
+          statut: AccountStatus.REJECTED,
         },
       },
       { new: true },
