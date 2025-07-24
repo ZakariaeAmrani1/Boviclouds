@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, HttpStatus, HttpCode } from '@nestjs/common';
 import { InseminationsService } from './inseminations.service';
 import { CreateInseminationDto } from './dto/create-insemination.dto';
 import { UpdateInseminationDto } from './dto/update-insemination.dto';
@@ -23,11 +23,15 @@ export class InseminationsController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateInseminationDto: UpdateInseminationDto) {
+  update(
+    @Param('id') id: string,
+    @Body() updateInseminationDto: UpdateInseminationDto,
+  ) {
     return this.inseminationsService.update(id, updateInseminationDto);
   }
 
   @Delete(':id')
+  @HttpCode(HttpStatus.NO_CONTENT)
   remove(@Param('id') id: string) {
     return this.inseminationsService.remove(id);
   }
