@@ -7,6 +7,8 @@ import {
   PaginatedResponse,
   InseminationStats,
 } from "@shared/insemination";
+import axios from "axios";
+import dayjs from "dayjs";
 
 // Mock data store (in production, this would be a database)
 let inseminationRecords: InseminationRecord[] = [
@@ -48,33 +50,59 @@ let inseminationRecords: InseminationRecord[] = [
 let nextId = 4;
 
 // Helper function to apply filters
-const applyFilters = (records: InseminationRecord[], filters: InseminationFilters): InseminationRecord[] => {
-  return records.filter(record => {
-    if (filters.nni && !record.nni.toLowerCase().includes(filters.nni.toLowerCase())) {
+const applyFilters = (
+  records: InseminationRecord[],
+  filters: InseminationFilters,
+): InseminationRecord[] => {
+  return records.filter((record) => {
+    if (
+      filters.nni &&
+      !record.nni.toLowerCase().includes(filters.nni.toLowerCase())
+    ) {
       return false;
     }
-    if (filters.semence_id && !record.semence_id.toLowerCase().includes(filters.semence_id.toLowerCase())) {
+    if (
+      filters.semence_id &&
+      !record.semence_id
+        .toLowerCase()
+        .includes(filters.semence_id.toLowerCase())
+    ) {
       return false;
     }
-    if (filters.inseminateur_id && record.inseminateur_id !== filters.inseminateur_id) {
+    if (
+      filters.inseminateur_id &&
+      record.inseminateur_id !== filters.inseminateur_id
+    ) {
       return false;
     }
-    if (filters.responsable_local_id && record.responsable_local_id !== filters.responsable_local_id) {
+    if (
+      filters.responsable_local_id &&
+      record.responsable_local_id !== filters.responsable_local_id
+    ) {
       return false;
     }
     if (filters.date_dissemination) {
-      const recordDate = new Date(record.date_dissemination).toISOString().split('T')[0];
-      const filterDate = new Date(filters.date_dissemination).toISOString().split('T')[0];
+      const recordDate = new Date(record.date_dissemination)
+        .toISOString()
+        .split("T")[0];
+      const filterDate = new Date(filters.date_dissemination)
+        .toISOString()
+        .split("T")[0];
       if (recordDate !== filterDate) {
         return false;
       }
     }
-    if (filters.createdBy && !record.createdBy.toLowerCase().includes(filters.createdBy.toLowerCase())) {
+    if (
+      filters.createdBy &&
+      !record.createdBy.toLowerCase().includes(filters.createdBy.toLowerCase())
+    ) {
       return false;
     }
     if (filters.dateCreation) {
-      const recordDate = new Date(record.createdAt).toISOString().split('T')[0];
-      const filterDate = new Date(filters.dateCreation).toISOString().split('T')[0];
+      const recordDate = new Date(record.createdAt).toISOString().split("T")[0];
+      const filterDate = new Date(filters.dateCreation)
+        .toISOString()
+        .split("T")[0];
       if (recordDate !== filterDate) {
         return false;
       }
@@ -84,7 +112,11 @@ const applyFilters = (records: InseminationRecord[], filters: InseminationFilter
 };
 
 // Helper function to paginate results
-const paginate = <T>(items: T[], page: number, limit: number): PaginatedResponse<T> => {
+const paginate = <T>(
+  items: T[],
+  page: number,
+  limit: number,
+): PaginatedResponse<T> => {
   const total = items.length;
   const totalPages = Math.ceil(total / limit);
   const startIndex = (page - 1) * limit;
@@ -101,8 +133,30 @@ const paginate = <T>(items: T[], page: number, limit: number): PaginatedResponse
 };
 
 // GET /api/insemination - Get all insemination records with filtering and pagination
-export const handleGetInseminations: RequestHandler = (req, res) => {
+export const handleGetInseminations: RequestHandler = async (req, res) => {
+  inseminationRecords = [];
+  const apiUrl = process.env.SERVER_API_URL;
   try {
+    const response = await axios.get(`${apiUrl}inseminations`);
+
+    response.data.map((data) => {
+      inseminationRecords.push({
+        id: data._id,
+        nni: data.nni,
+        date_dissemination: dayjs(data.date_dissemination).format("YYYY-MM-DD"),
+        semence_id: data.semence_id.identificateur,
+        inseminateur_id:
+          data.inseminateur_id.nom_lat + " " + data.inseminateur_id.prenom_lat,
+        responsable_local_id:
+          data.responsable_local_id.nom_lat +
+          " " +
+          data.responsable_local_id.nom_lat,
+        createdBy: "admin",
+        createdAt: data.createdAt,
+        updatedAt: data.updatedAt,
+      });
+    });
+
     const page = parseInt(req.query.page as string) || 1;
     const limit = parseInt(req.query.limit as string) || 10;
 
@@ -117,17 +171,20 @@ export const handleGetInseminations: RequestHandler = (req, res) => {
     };
 
     // Remove undefined filters
-    Object.keys(filters).forEach(key => {
+    Object.keys(filters).forEach((key) => {
       if (filters[key as keyof InseminationFilters] === undefined) {
         delete filters[key as keyof InseminationFilters];
       }
     });
 
     const filteredRecords = applyFilters(inseminationRecords, filters);
-    
+
     // Sort by creation date (newest first)
-    filteredRecords.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-    
+    filteredRecords.sort(
+      (a, b) =>
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+    );
+
     const paginatedResult = paginate(filteredRecords, page, limit);
 
     res.json({
@@ -147,7 +204,7 @@ export const handleGetInseminations: RequestHandler = (req, res) => {
 export const handleGetInsemination: RequestHandler = (req, res) => {
   try {
     const { id } = req.params;
-    const record = inseminationRecords.find(r => r.id === id);
+    const record = inseminationRecords.find((r) => r.id === id);
 
     if (!record) {
       return res.status(404).json({
@@ -175,8 +232,13 @@ export const handleCreateInsemination: RequestHandler = (req, res) => {
     const input: CreateInseminationInput = req.body;
 
     // Basic validation
-    if (!input.nni || !input.date_dissemination || !input.semence_id || 
-        !input.inseminateur_id || !input.responsable_local_id) {
+    if (
+      !input.nni ||
+      !input.date_dissemination ||
+      !input.semence_id ||
+      !input.inseminateur_id ||
+      !input.responsable_local_id
+    ) {
       return res.status(400).json({
         success: false,
         message: "Tous les champs obligatoires doivent être renseignés",
@@ -185,7 +247,9 @@ export const handleCreateInsemination: RequestHandler = (req, res) => {
 
     // Check for duplicate (same NNI on same date)
     const existingRecord = inseminationRecords.find(
-      r => r.nni === input.nni && r.date_dissemination === input.date_dissemination
+      (r) =>
+        r.nni === input.nni &&
+        r.date_dissemination === input.date_dissemination,
     );
 
     if (existingRecord) {
@@ -226,7 +290,7 @@ export const handleUpdateInsemination: RequestHandler = (req, res) => {
     const { id } = req.params;
     const input: UpdateInseminationInput = req.body;
 
-    const recordIndex = inseminationRecords.findIndex(r => r.id === id);
+    const recordIndex = inseminationRecords.findIndex((r) => r.id === id);
 
     if (recordIndex === -1) {
       return res.status(404).json({
@@ -238,10 +302,13 @@ export const handleUpdateInsemination: RequestHandler = (req, res) => {
     // Check for duplicate if NNI or date is being changed
     if (input.nni || input.date_dissemination) {
       const newNNI = input.nni || inseminationRecords[recordIndex].nni;
-      const newDate = input.date_dissemination || inseminationRecords[recordIndex].date_dissemination;
-      
+      const newDate =
+        input.date_dissemination ||
+        inseminationRecords[recordIndex].date_dissemination;
+
       const existingRecord = inseminationRecords.find(
-        r => r.id !== id && r.nni === newNNI && r.date_dissemination === newDate
+        (r) =>
+          r.id !== id && r.nni === newNNI && r.date_dissemination === newDate,
       );
 
       if (existingRecord) {
@@ -279,7 +346,7 @@ export const handleUpdateInsemination: RequestHandler = (req, res) => {
 export const handleDeleteInsemination: RequestHandler = (req, res) => {
   try {
     const { id } = req.params;
-    const recordIndex = inseminationRecords.findIndex(r => r.id === id);
+    const recordIndex = inseminationRecords.findIndex((r) => r.id === id);
 
     if (recordIndex === -1) {
       return res.status(404).json({
@@ -312,22 +379,28 @@ export const handleGetInseminationStats: RequestHandler = (req, res) => {
 
     // Calculate statistics
     const total = inseminationRecords.length;
-    
-    const thisMonth = inseminationRecords.filter(record => {
+
+    const thisMonth = inseminationRecords.filter((record) => {
       const recordDate = new Date(record.date_dissemination);
-      return recordDate.getMonth() === currentMonth && recordDate.getFullYear() === currentYear;
+      return (
+        recordDate.getMonth() === currentMonth &&
+        recordDate.getFullYear() === currentYear
+      );
     }).length;
 
-    const thisYear = inseminationRecords.filter(record => {
+    const thisYear = inseminationRecords.filter((record) => {
       const recordDate = new Date(record.date_dissemination);
       return recordDate.getFullYear() === currentYear;
     }).length;
 
     // Calculate top inseminateurs
-    const inseminateurCounts = inseminationRecords.reduce((acc, record) => {
-      acc[record.inseminateur_id] = (acc[record.inseminateur_id] || 0) + 1;
-      return acc;
-    }, {} as Record<string, number>);
+    const inseminateurCounts = inseminationRecords.reduce(
+      (acc, record) => {
+        acc[record.inseminateur_id] = (acc[record.inseminateur_id] || 0) + 1;
+        return acc;
+      },
+      {} as Record<string, number>,
+    );
 
     const topInseminateurs = Object.entries(inseminateurCounts)
       .map(([inseminateur_id, count]) => ({ inseminateur_id, count }))
@@ -361,8 +434,8 @@ export const handleGetInseminationStats: RequestHandler = (req, res) => {
 // GET /api/insemination/export - Export insemination data
 export const handleExportInseminations: RequestHandler = (req, res) => {
   try {
-    const format = req.query.format as string || "csv";
-    
+    const format = (req.query.format as string) || "csv";
+
     const filters: InseminationFilters = {
       nni: req.query.nni as string,
       semence_id: req.query.semence_id as string,
@@ -374,7 +447,7 @@ export const handleExportInseminations: RequestHandler = (req, res) => {
     };
 
     // Remove undefined filters
-    Object.keys(filters).forEach(key => {
+    Object.keys(filters).forEach((key) => {
       if (filters[key as keyof InseminationFilters] === undefined) {
         delete filters[key as keyof InseminationFilters];
       }
@@ -393,32 +466,40 @@ export const handleExportInseminations: RequestHandler = (req, res) => {
         "Responsable Local ID",
         "Créé par",
         "Date Création",
-        "Date Modification"
+        "Date Modification",
       ];
 
       const csvContent = [
         headers.join(","),
-        ...filteredRecords.map(record => [
-          record.id,
-          record.nni,
-          record.date_dissemination,
-          record.semence_id,
-          record.inseminateur_id,
-          record.responsable_local_id,
-          record.createdBy,
-          record.createdAt,
-          record.updatedAt
-        ].join(","))
+        ...filteredRecords.map((record) =>
+          [
+            record.id,
+            record.nni,
+            record.date_dissemination,
+            record.semence_id,
+            record.inseminateur_id,
+            record.responsable_local_id,
+            record.createdBy,
+            record.createdAt,
+            record.updatedAt,
+          ].join(","),
+        ),
       ].join("\n");
 
       res.setHeader("Content-Type", "text/csv");
-      res.setHeader("Content-Disposition", "attachment; filename=inseminations.csv");
+      res.setHeader(
+        "Content-Disposition",
+        "attachment; filename=inseminations.csv",
+      );
       res.send(csvContent);
     } else {
       // For Excel format, we'd typically use a library like xlsx
       // For now, return JSON
       res.setHeader("Content-Type", "application/json");
-      res.setHeader("Content-Disposition", "attachment; filename=inseminations.json");
+      res.setHeader(
+        "Content-Disposition",
+        "attachment; filename=inseminations.json",
+      );
       res.json(filteredRecords);
     }
   } catch (error) {
