@@ -1,20 +1,16 @@
-import { IsDate, IsMongoId, IsString, Length } from "class-validator";
-import { ObjectId } from "mongoose";
+import { IsDateString, IsMongoId, IsString, Length } from "class-validator";
+import { Date } from "mongoose";
 
 export class CreateInseminationDto {
   @IsString()
   @Length(16)
   readonly nni: string;
-  @IsDate()
+  @IsDateString()
   readonly date_dissemination: Date;
-  @IsString()
-  readonly nom_taureau: string;
-  @IsString()
-  readonly race_taureau: string;
-  @IsString()
-  readonly num_taureau: string;
   @IsMongoId()
-  inseminateur_id: ObjectId;
+  readonly semence_id: string;
   @IsMongoId()
-  responsable_local_id: ObjectId;
+  readonly inseminateur_id: string;
+  @IsMongoId()
+  readonly responsable_local_id: string;
 }
