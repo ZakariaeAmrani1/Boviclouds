@@ -1,6 +1,7 @@
 import express from "express";
 import cors from "cors";
 import { handleDemo } from "./routes/demo";
+import dotenv from "dotenv";
 import {
   getCameras,
   getCamera,
@@ -63,6 +64,7 @@ import {
 
 export function createServer() {
   const app = express();
+  dotenv.config();
 
   // Middleware
   app.use(cors());
