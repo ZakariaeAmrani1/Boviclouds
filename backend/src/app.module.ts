@@ -8,6 +8,7 @@ import { AdminModule } from './admin/admin.module';
 import mongoose from 'mongoose';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { InseminationsModule } from './inseminations/inseminations.module';
+import { SemencesModule } from './semences/semences.module';
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
@@ -25,6 +26,7 @@ import { InseminationsModule } from './inseminations/inseminations.module';
     AuthModule,
     AdminModule,
     InseminationsModule,
+    SemencesModule,
   ],
   controllers: [AppController],
   providers: [AppService],
