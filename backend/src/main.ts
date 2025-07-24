@@ -13,6 +13,10 @@ async function bootstrap() {
       forbidNonWhitelisted: true,
     }),
   );
+  app.enableCors({
+    origin: '*',
+    credentials: true,
+  });
   // app.useGlobalGuards(new RolesGuard(app.get(Reflector)));
   app.useGlobalFilters(new AllExceptionsFilter());
   await app.listen(process.env.PORT ?? 3000);
