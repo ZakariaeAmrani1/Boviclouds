@@ -23,7 +23,10 @@ export class InseminationsController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateInseminationDto: UpdateInseminationDto) {
+  update(
+    @Param('id') id: string,
+    @Body() updateInseminationDto: UpdateInseminationDto,
+  ) {
     return this.inseminationsService.update(id, updateInseminationDto);
   }
 
