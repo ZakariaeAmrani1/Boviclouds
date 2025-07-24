@@ -55,6 +55,11 @@ import {
   handleGetInseminationStats,
   handleExportInseminations,
 } from "./routes/insemination";
+import {
+  handleGetUsers,
+  handleGetUser,
+  handleGetUsersByRole,
+} from "./routes/utilisateur";
 
 export function createServer() {
   const app = express();
