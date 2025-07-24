@@ -54,6 +54,12 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, onToggle }) => {
       badge: null,
     },
     {
+      icon: Zap,
+      label: "Insémination",
+      path: "/insemination",
+      badge: null,
+    },
+    {
       icon: Users,
       label: "Utilisateurs",
       path: "/utilisateurs",
