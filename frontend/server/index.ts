@@ -137,5 +137,10 @@ export function createServer() {
   app.put("/api/insemination/:id", handleUpdateInsemination);
   app.delete("/api/insemination/:id", handleDeleteInsemination);
 
+  // Utilisateur API routes
+  app.get("/api/utilisateur/role/:role", handleGetUsersByRole);
+  app.get("/api/utilisateur/:id", handleGetUser);
+  app.get("/api/utilisateur", handleGetUsers);
+
   return app;
 }
