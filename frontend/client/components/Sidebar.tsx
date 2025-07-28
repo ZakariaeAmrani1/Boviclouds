@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { useAuth } from "../contexts/AuthContext";
 import {
   Home,
   BarChart3,
@@ -34,7 +33,6 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, onToggle }) => {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
-  const { logout } = useAuth();
 
   const menuItems = [
     {
@@ -53,12 +51,6 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, onToggle }) => {
       icon: FileSearch,
       label: "Identification",
       path: "/identification",
-      badge: null,
-    },
-    {
-      icon: Zap,
-      label: "Insémination",
-      path: "/insemination",
       badge: null,
     },
     {
@@ -109,10 +101,6 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, onToggle }) => {
     console.log(isOpen);
     navigate(path);
     // onClose(); // Close mobile sidebar after navigation
-  };
-
-  const handleLogout = () => {
-    logout();
   };
 
   return (
@@ -212,10 +200,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, onToggle }) => {
                 <Settings className="w-4 h-4" />
                 Profile
               </button>
-              <button
-                className="w-full flex items-center gap-2 px-3 py-1.5 text-sm text-red-600 hover:text-red-700 hover:bg-red-50 rounded transition-colors"
-                onClick={handleLogout}
-              >
+              <button className="w-full flex items-center gap-2 px-3 py-1.5 text-sm text-red-600 hover:text-red-700 hover:bg-red-50 rounded transition-colors">
                 <LogOut className="w-4 h-4" />
                 Logout
               </button>
@@ -369,10 +354,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, onToggle }) => {
                 <Settings className="w-4 h-4" />
                 Profile
               </button>
-              <button
-                className="w-full flex items-center gap-2 px-3 py-1.5 text-sm text-red-600 hover:text-red-700 hover:bg-red-50 rounded transition-colors"
-                onClick={handleLogout}
-              >
+              <button className="w-full flex items-center gap-2 px-3 py-1.5 text-sm text-red-600 hover:text-red-700 hover:bg-red-50 rounded transition-colors">
                 <LogOut className="w-4 h-4" />
                 Logout
               </button>

@@ -16,7 +16,6 @@ import Utilisateurs from "./pages/Utilisateurs";
 import CCTV from "./pages/CCTV";
 import Traitement from "./pages/Traitement";
 import Identification from "./pages/Identification";
-import Insemination from "./pages/Insemination";
 import EditProfile from "./pages/EditProfile";
 import NotFound from "./pages/NotFound";
 import Index from "./pages/Index";
@@ -88,7 +87,6 @@ const App = () => (
               <Route index element={<Dashboard />} />
               <Route path="rebouclage" element={<Rebouclage />} />
               <Route path="identification" element={<Identification />} />
-              <Route path="insemination" element={<Insemination />} />
               <Route path="utilisateurs" element={<Utilisateurs />} />
               <Route path="cctv" element={<CCTV />} />
               <Route path="traitement" element={<Traitement />} />

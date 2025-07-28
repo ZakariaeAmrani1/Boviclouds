@@ -11,10 +11,10 @@ export enum UtilisateurStatus {
 // Role enum for utilisateur records
 export enum UtilisateurRole {
   ADMINISTRATEUR = "Administrateur",
-  INSEMINATEUR = "Inseminateur",
-  IDENTIFICATEUR = "Identificateur",
+  GESTIONNAIRE = "Gestionnaire",
+  VETERINAIRE = "Vétérinaire",
   ELEVEUR = "Éleveur",
-  CONTROLEUR = "Contrôleur",
+  CONSULTANT = "Consultant",
   SUPPORT = "Support",
 }
 
@@ -24,15 +24,12 @@ export interface UtilisateurRecord {
   prenom: string;
   nom: string;
   email: string;
-  password: string;
   telephone?: string;
   role: UtilisateurRole;
   statut: UtilisateurStatus;
-  civilite?: string;
   exploitation?: string;
   codeExploitation?: string;
   adresse?: string;
-  region?: string;
   ville?: string;
   codePostal?: string;
   dateCreation: string;
@@ -47,7 +44,6 @@ export interface CreateUtilisateurInput {
   prenom: string;
   nom: string;
   email: string;
-  password: string;
   telephone?: string;
   role: UtilisateurRole;
   statut?: UtilisateurStatus;

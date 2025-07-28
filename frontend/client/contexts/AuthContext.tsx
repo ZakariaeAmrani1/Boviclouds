@@ -2,18 +2,10 @@ import axios from "axios";
 import React, { createContext, useContext, useState, useEffect } from "react";
 
 interface User {
-  CIN: string;
+  id: string;
   email: string;
-  nom_ar: string;
-  prenom_ar: string;
-  nom_lat: string;
-  prenom_lat: string;
-  civilite: string;
-  adresse: string;
-  region: string;
-  province: string;
-  password: string;
-  raison_sociale: "";
+  name: string;
+  role: string;
 }
 
 interface AuthContextType {
@@ -51,16 +43,16 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   useEffect(() => {
     // Check if user is already logged in (from localStorage)
     const checkAuthStatus = () => {
-      const savedUser = localStorage.getItem("user");
-      const keepLoggedIn = localStorage.getItem("keep_logged_in");
+      const savedUser = localStorage.getItem("boviclouds_user");
+      const keepLoggedIn = localStorage.getItem("boviclouds_keep_logged_in");
 
-      if (savedUser) {
+      if (savedUser && keepLoggedIn === "true") {
         try {
           setUser(JSON.parse(savedUser));
         } catch (error) {
           console.error("Error parsing saved user:", error);
-          localStorage.removeItem("user");
-          localStorage.removeItem("keep_logged_in");
+          localStorage.removeItem("boviclouds_user");
+          localStorage.removeItem("boviclouds_keep_logged_in");
         }
       }
       setIsLoading(false);
@@ -75,23 +67,34 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     keepLoggedIn = false,
   ): Promise<boolean> => {
     setIsLoading(true);
-    try {
-      const res = await axios.post(`${apiUrl}auth/login`, {
-        email: email,
-        password: password,
-      });
-      setUser(res.data.data.user);
-      localStorage.setItem("user", JSON.stringify(res.data.data.user));
-      localStorage.setItem("access_token", res.data.data.access_token);
-      localStorage.setItem("keep_logged_in", JSON.stringify(keepLoggedIn));
-      setIsLoading(false);
-      return true;
-    } catch (error) {
-      console.error("Error posting data:", error);
-      setIsLoading(false);
 
-      return false;
-    }
+    // Simulate API call
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        // Mock authentication - in real app, this would be an API call
+        if (email && password) {
+          const mockUser: User = {
+            id: "1",
+            email: email,
+            name: "John Doe",
+            role: "Administrator",
+          };
+
+          setUser(mockUser);
+
+          if (keepLoggedIn) {
+            localStorage.setItem("boviclouds_user", JSON.stringify(mockUser));
+            localStorage.setItem("boviclouds_keep_logged_in", "true");
+          }
+
+          setIsLoading(false);
+          resolve(true);
+        } else {
+          setIsLoading(false);
+          resolve(false);
+        }
+      }, 1000);
+    });
   };
 
   const register = async (data: any): Promise<Boolean> => {
@@ -112,6 +115,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         password: data.motDePasse,
         raison_sociale: "",
       });
+      console.log(res);
       setIsLoading(false);
       return true;
     } catch (error) {
@@ -123,8 +127,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const logout = () => {
     setUser(null);
-    localStorage.removeItem("user");
-    localStorage.removeItem("keep_logged_in");
+    localStorage.removeItem("boviclouds_user");
+    localStorage.removeItem("boviclouds_keep_logged_in");
   };
 
   const value: AuthContextType = {
