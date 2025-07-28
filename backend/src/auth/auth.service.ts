@@ -14,8 +14,6 @@ import { JwtService } from '@nestjs/jwt';
 import { CreateUserDto } from './dto/users/register.dto';
 import { AccountStatus } from 'src/users/schemas/users/user.acc.status';
 import { EmailService } from 'src/utils/services/emails/email.service';
-import { UserResponseDto } from 'src/users/dtos/user-response.dto';
-import { plainToInstance } from 'class-transformer';
 import { RateLimiterService } from 'src/utils/services/rate-limiter.service';
 import * as crypto from "crypto";
 
@@ -37,14 +35,9 @@ export class AuthService {
     const emailValToken = user.CreateEmailValiationToken();
     await user.save();
     const confirmEmailLink = `${req.protocol}://${req.get('host')}/api/v1/auth/confirm-email/${emailValToken}`;
-    const userRes = plainToInstance(
-      UserResponseDto,
-      user,
-      { excludeExtraneousValues: true },
-    );
     try {
           await this.emailService.sendEmailVerification(
-            userRes,
+            user,
             confirmEmailLink,
           );
     } catch (error) {
@@ -59,7 +52,7 @@ export class AuthService {
     return {
       status: 'success',
       message: 'User registered successfully. Please check your email for verification.',
-      data: { user:userRes },
+      data: { user },
     };
   }
 
@@ -80,15 +73,10 @@ export class AuthService {
       email: user.email,
       role: user.role,
     });
-    const userRes = plainToInstance(
-      UserResponseDto,
-      user,
-      {excludeExtraneousValues:true}
-    );
     return {
       status: 'success',
       message: 'user logged in successfully',
-      data: { access_token, user:userRes },
+      data: { access_token, user },
     };
   }
   //
@@ -135,9 +123,7 @@ export class AuthService {
     const confirmEmailLink = `${req.protocol}://${req.get('host')}/api/v1/auth/confirm-email/${newEmailValToken}`;
     try {
       await this.emailService.sendEmailVerification(
-        plainToInstance(UserResponseDto, user, {
-          excludeExtraneousValues: true,
-        }),
+        user,
         confirmEmailLink,
       );
     } catch (error) {
