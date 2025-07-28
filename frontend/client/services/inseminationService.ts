@@ -202,7 +202,9 @@ export class InseminationService {
   /**
    * Search inseminations by semence ID
    */
-  static async searchBySemenceId(semenceId: string): Promise<InseminationRecord[]> {
+  static async searchBySemenceId(
+    semenceId: string,
+  ): Promise<InseminationRecord[]> {
     if (!semenceId.trim()) {
       return [];
     }
@@ -215,7 +217,9 @@ export class InseminationService {
   /**
    * Get inseminations by inseminateur
    */
-  static async getByInseminateur(inseminateurId: string): Promise<InseminationRecord[]> {
+  static async getByInseminateur(
+    inseminateurId: string,
+  ): Promise<InseminationRecord[]> {
     const filters: InseminationFilters = { inseminateur_id: inseminateurId };
     const result = await this.getAll(filters, { page: 1, limit: 100 });
     return result.data;
@@ -224,8 +228,12 @@ export class InseminationService {
   /**
    * Get inseminations by responsable local
    */
-  static async getByResponsableLocal(responsableId: string): Promise<InseminationRecord[]> {
-    const filters: InseminationFilters = { responsable_local_id: responsableId };
+  static async getByResponsableLocal(
+    responsableId: string,
+  ): Promise<InseminationRecord[]> {
+    const filters: InseminationFilters = {
+      responsable_local_id: responsableId,
+    };
     const result = await this.getAll(filters, { page: 1, limit: 100 });
     return result.data;
   }
@@ -263,7 +271,7 @@ export class InseminationService {
   static async checkDuplicateInsemination(
     nni: string,
     date: string,
-    excludeId?: string
+    excludeId?: string,
   ): Promise<boolean> {
     try {
       const filters: InseminationFilters = {
@@ -299,7 +307,14 @@ export class InseminationService {
    * Get all users for dropdown menus
    */
   static async getUsers(): Promise<User[]> {
-    const response = await fetch("/api/utilisateur");
+    const token = localStorage.getItem("access_token");
+    const response = await fetch("/api/utilisateur", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ token }),
+    });
 
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
@@ -321,12 +336,12 @@ export class InseminationService {
    */
   static async getUsersByRole(role?: string): Promise<User[]> {
     const users = await this.getUsers();
-    
+
     if (!role) {
       return users;
     }
 
-    return users.filter(user => user.role === role);
+    return users.filter((user) => user.role === role);
   }
 
   /**
@@ -342,13 +357,13 @@ export class InseminationService {
    */
   static async getByDateRange(
     startDate: string,
-    endDate: string
+    endDate: string,
   ): Promise<InseminationRecord[]> {
     // Note: This would need backend support for date range filtering
     // For now, we'll get all and filter client-side (not ideal for production)
     const result = await this.getAll({}, { page: 1, limit: 1000 });
-    
-    return result.data.filter(record => {
+
+    return result.data.filter((record) => {
       const disseminationDate = new Date(record.date_dissemination);
       const start = new Date(startDate);
       const end = new Date(endDate);
@@ -365,10 +380,10 @@ export class InseminationService {
     const records = await this.getByDateRange(startDate, endDate);
 
     const monthlyStats: Record<string, number> = {};
-    
+
     for (let month = 1; month <= 12; month++) {
-      const monthKey = month.toString().padStart(2, '0');
-      monthlyStats[monthKey] = records.filter(record => {
+      const monthKey = month.toString().padStart(2, "0");
+      monthlyStats[monthKey] = records.filter((record) => {
         const disseminationDate = new Date(record.date_dissemination);
         return disseminationDate.getMonth() + 1 === month;
       }).length;
