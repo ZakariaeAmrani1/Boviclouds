@@ -10,6 +10,9 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { InseminationsModule } from './inseminations/inseminations.module';
 import { ExploitationsModule } from './exploitations/exploitations.module';
 import { SemencesModule } from './semences/semences.module';
+import { RebouclageModule } from './rebouclage/rebouclage.module';
+
+
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
@@ -29,6 +32,8 @@ import { SemencesModule } from './semences/semences.module';
     InseminationsModule,
     ExploitationsModule,
     SemencesModule,
+    RebouclageModule,
+
   ],
   controllers: [AppController],
   providers: [AppService],
