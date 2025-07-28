@@ -1,6 +1,7 @@
 import express from "express";
 import cors from "cors";
 import { handleDemo } from "./routes/demo";
+import dotenv from "dotenv";
 import {
   getCameras,
   getCamera,
@@ -46,9 +47,24 @@ import {
   deleteIdentification,
   getIdentificationStats,
 } from "./routes/identification";
+import {
+  handleGetInseminations,
+  handleGetInsemination,
+  handleCreateInsemination,
+  handleUpdateInsemination,
+  handleDeleteInsemination,
+  handleGetInseminationStats,
+  handleExportInseminations,
+} from "./routes/insemination";
+import {
+  handleGetUsers,
+  handleGetUser,
+  handleGetUsersByRole,
+} from "./routes/utilisateur";
 
 export function createServer() {
   const app = express();
+  dotenv.config();
 
   // Middleware
   app.use(cors());
@@ -113,6 +129,20 @@ export function createServer() {
   app.post("/api/identification", createIdentification);
   app.put("/api/identification/:id", updateIdentification);
   app.delete("/api/identification/:id", deleteIdentification);
+
+  // Insemination API routes
+  app.get("/api/insemination/stats", handleGetInseminationStats);
+  app.get("/api/insemination/export", handleExportInseminations);
+  app.get("/api/insemination/:id", handleGetInsemination);
+  app.get("/api/insemination", handleGetInseminations);
+  app.post("/api/insemination", handleCreateInsemination);
+  app.put("/api/insemination/:id", handleUpdateInsemination);
+  app.delete("/api/insemination/:id", handleDeleteInsemination);
+
+  // Utilisateur API routes
+  app.get("/api/utilisateur/role/:role", handleGetUsersByRole);
+  app.get("/api/utilisateur/:id", handleGetUser);
+  app.post("/api/utilisateur", handleGetUsers);
 
   return app;
 }
