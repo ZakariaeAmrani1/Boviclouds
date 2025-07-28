@@ -3,6 +3,7 @@ import { HydratedDocument } from 'mongoose';
 import * as bcrypt from 'bcrypt';
 import { UserRole } from './user.role';
 import { AccountStatus } from './user.acc.status';
+import * as crypto from "crypto";
 
 export type UserDocument = HydratedDocument<User, UserMethods>;
 @Schema()
@@ -49,11 +50,13 @@ export class User {
     default: [],
   })
   role: [UserRole];
-  @Prop({ required: false })
-  password?: string;
 
   @Prop()
+  password?: string;
+
+  @Prop({ select: false })
   passwordHash: string;
+
   @Prop({
     type: String,
     enum: AccountStatus,
@@ -62,18 +65,28 @@ export class User {
   statut: AccountStatus;
   @Prop()
   raison_sociale: string;
+
+  @Prop({ default: false })
+  isEmailVerified: boolean;
+
+  @Prop()
+  emailValToken?: string;
+
+  @Prop()
+  emailTokenExpires?: number;
 }
 export interface UserMethods {
   correctPassword(candidatePassword: string): Promise<boolean>;
+  CreateEmailValiationToken():string
 }
 export const UserSchema = SchemaFactory.createForClass(User);
 
 UserSchema.pre('save', async function (next) {
   if (this.isModified('password') || this.isNew) {
-    if (this.password) {
+    if(this.password){
       const salt = await bcrypt.genSalt(12);
       this.passwordHash = await bcrypt.hash(this.password, salt);
-      this.password = undefined;
+      this.password = undefined
     }
   }
   next();
@@ -83,6 +96,16 @@ UserSchema.methods.correctPassword = async function (
   candidatePassword: string,
 ): Promise<boolean> {
   return await bcrypt.compare(candidatePassword, this.passwordHash);
+};
+
+UserSchema.methods.CreateEmailValiationToken = function ():string {
+  const emailValToken = crypto.randomBytes(32).toString('hex');
+  this.emailValToken = crypto
+    .createHash('sha256')
+    .update(emailValToken)
+    .digest('hex');
+  this.emailTokenExpires = Date.now() + 10 * 60 * 1000;
+  return emailValToken;
 };
 
 UserSchema.pre('save', function (next) {
@@ -97,3 +120,4 @@ UserSchema.pre(
     next();
   },
 );
+

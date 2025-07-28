@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Please Validate Your boviclouds Account</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+
+        .button {
+            display: inline-block;
+            background-color: #28a745;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h2>Hi {{firstName}},</h2>
+        <p>Thank you for registering with Natours! Please validate your account by clicking the link below:</p>
+        <p><a href="{{validationUrl}}" class="button">Validate My Account</a></p>
+        <p>This link will expire in [insert specific duration if applicable, e.g., 24 hours].</p>
+        <p>If you did not register for this service, please ignore this email.</p>
+        <p>Best regards,<br>The Natours Team</p>
+    </div>
+</body>
+
+</html>
