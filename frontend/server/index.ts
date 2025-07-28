@@ -142,7 +142,7 @@ export function createServer() {
   // Utilisateur API routes
   app.get("/api/utilisateur/role/:role", handleGetUsersByRole);
   app.get("/api/utilisateur/:id", handleGetUser);
-  app.get("/api/utilisateur", handleGetUsers);
+  app.post("/api/utilisateur", handleGetUsers);
 
   return app;
 }
