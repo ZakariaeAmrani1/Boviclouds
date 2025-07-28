@@ -74,10 +74,17 @@ export class User {
 
   @Prop()
   emailTokenExpires?: number;
+
+  @Prop()
+  passwordResetToken?: string;
+
+  @Prop()
+  passwordResetTokenExpires?: number;
 }
 export interface UserMethods {
   correctPassword(candidatePassword: string): Promise<boolean>;
-  CreateEmailValiationToken():string
+  CreateEmailValiationToken(): string;
+  createPasswordResetToken(): string;
 }
 export const UserSchema = SchemaFactory.createForClass(User);
 
@@ -107,6 +114,17 @@ UserSchema.methods.CreateEmailValiationToken = function ():string {
   this.emailTokenExpires = Date.now() + 10 * 60 * 1000;
   return emailValToken;
 };
+
+UserSchema.methods.createPasswordResetToken = function (): string {
+  const passwordResetToken = crypto.randomBytes(32).toString('hex');
+  this.emailValToken = crypto
+    .createHash('sha256')
+    .update(passwordResetToken)
+    .digest('hex');
+  this.passwordResetTokenExpires = Date.now() + 10 * 60 * 1000;
+  return passwordResetToken;
+};
+
 
 UserSchema.pre('save', function (next) {
   this.date_modification = new Date();
