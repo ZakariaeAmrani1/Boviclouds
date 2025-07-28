@@ -52,16 +52,16 @@ export class User {
   @Prop({ required: false })
   password?: string;
 
-  @Prop({ select: false })
+  @Prop()
   passwordHash: string;
   @Prop({
-    type:String,
-    enum:AccountStatus,
-    default:AccountStatus.PENDING
+    type: String,
+    enum: AccountStatus,
+    default: AccountStatus.PENDING,
   })
-  statut:AccountStatus
+  statut: AccountStatus;
   @Prop()
-  raison_sociale: string
+  raison_sociale: string;
 }
 export interface UserMethods {
   correctPassword(candidatePassword: string): Promise<boolean>;
@@ -70,10 +70,10 @@ export const UserSchema = SchemaFactory.createForClass(User);
 
 UserSchema.pre('save', async function (next) {
   if (this.isModified('password') || this.isNew) {
-    if(this.password){
+    if (this.password) {
       const salt = await bcrypt.genSalt(12);
       this.passwordHash = await bcrypt.hash(this.password, salt);
-      this.password = undefined
+      this.password = undefined;
     }
   }
   next();
