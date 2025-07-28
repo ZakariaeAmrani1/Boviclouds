@@ -82,10 +82,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       });
       setUser(res.data.data.user);
       localStorage.setItem("user", JSON.stringify(res.data.data.user));
-      localStorage.setItem(
-        "access_token",
-        JSON.stringify(res.data.data.access_token),
-      );
+      localStorage.setItem("access_token", res.data.data.access_token);
       localStorage.setItem("keep_logged_in", JSON.stringify(keepLoggedIn));
       setIsLoading(false);
       return true;
