@@ -9,153 +9,9 @@ import {
   UtilisateurRole,
   getFullName,
 } from "@shared/utilisateur";
-
+import axios from "axios";
+let UtilisateursData: UtilisateurRecord[] = [];
 // Mock data store - this will simulate a database
-let mockUtilisateurData: UtilisateurRecord[] = [
-  {
-    id: "1",
-    prenom: "Sophie",
-    nom: "Leroy",
-    email: "sophie.leroy@boviclouds.com",
-    telephone: "0602030405",
-    role: UtilisateurRole.ADMINISTRATEUR,
-    statut: UtilisateurStatus.ACTIF,
-    exploitation: "Administration Boviclouds",
-    codeExploitation: "ADM001",
-    adresse: "15 Avenue des Champs",
-    ville: "Paris",
-    codePostal: "75008",
-    dateCreation: "2024-01-15T09:00:00",
-    dateModification: "2024-03-10T14:30:00",
-    dernierConnexion: "2024-03-15T08:45:00",
-    notes: "Administrateur principal du système",
-  },
-  {
-    id: "2",
-    prenom: "Michel",
-    nom: "Robert",
-    email: "michel.robert@boviclouds.com",
-    telephone: "0607080910",
-    role: UtilisateurRole.GESTIONNAIRE,
-    statut: UtilisateurStatus.ACTIF,
-    exploitation: "Gestion Centrale",
-    codeExploitation: "GES001",
-    adresse: "42 Rue de la Paix",
-    ville: "Lyon",
-    codePostal: "69002",
-    dateCreation: "2024-01-20T10:15:00",
-    dateModification: "2024-03-08T16:20:00",
-    dernierConnexion: "2024-03-14T19:30:00",
-    notes: "Gestionnaire des opérations quotidiennes",
-  },
-  {
-    id: "3",
-    prenom: "Claire",
-    nom: "Dubois",
-    email: "dr.claire.dubois@vetclinic.fr",
-    telephone: "0612345678",
-    role: UtilisateurRole.VETERINAIRE,
-    statut: UtilisateurStatus.ACTIF,
-    exploitation: "Clinique Vétérinaire du Centre",
-    codeExploitation: "VET001",
-    adresse: "8 Place de la République",
-    ville: "Toulouse",
-    codePostal: "31000",
-    dateCreation: "2024-02-01T11:00:00",
-    dateModification: "2024-03-05T13:45:00",
-    dernierConnexion: "2024-03-13T10:15:00",
-    notes: "Vétérinaire spécialisée en bovins",
-  },
-  {
-    id: "4",
-    prenom: "Jean",
-    nom: "Dupont",
-    email: "jean.dupont@fermedespres.fr",
-    telephone: "0623456789",
-    role: UtilisateurRole.ELEVEUR,
-    statut: UtilisateurStatus.ACTIF,
-    exploitation: "Ferme des Prés",
-    codeExploitation: "EXP001",
-    adresse: "Route de la Ferme",
-    ville: "Normandie",
-    codePostal: "14000",
-    dateCreation: "2024-02-10T14:30:00",
-    dateModification: "2024-03-01T09:20:00",
-    dernierConnexion: "2024-03-12T07:00:00",
-    notes: "Éleveur de bovins laitiers - 150 têtes",
-  },
-  {
-    id: "5",
-    prenom: "Marie",
-    nom: "Martin",
-    email: "marie.martin@ranchmartin.fr",
-    telephone: "0634567890",
-    role: UtilisateurRole.ELEVEUR,
-    statut: UtilisateurStatus.ACTIF,
-    exploitation: "Ranch Martin",
-    codeExploitation: "EXP002",
-    adresse: "Chemin du Ranch",
-    ville: "Bordeaux",
-    codePostal: "33000",
-    dateCreation: "2024-02-15T08:45:00",
-    dateModification: "2024-02-28T15:10:00",
-    dernierConnexion: "2024-03-11T18:30:00",
-    notes: "Élevage mixte bovins/ovins",
-  },
-  {
-    id: "6",
-    prenom: "Pierre",
-    nom: "Legrand",
-    email: "pierre.legrand@domainelegrand.fr",
-    telephone: "0645678901",
-    role: UtilisateurRole.ELEVEUR,
-    statut: UtilisateurStatus.INACTIF,
-    exploitation: "Domaine Legrand",
-    codeExploitation: "EXP003",
-    adresse: "Domaine de la Vallée",
-    ville: "Strasbourg",
-    codePostal: "67000",
-    dateCreation: "2024-01-25T12:00:00",
-    dateModification: "2024-03-01T10:00:00",
-    dernierConnexion: "2024-02-20T16:45:00",
-    notes: "Compte temporairement désactivé - migration système",
-  },
-  {
-    id: "7",
-    prenom: "Anne",
-    nom: "Petit",
-    email: "anne.petit@boviclouds.com",
-    telephone: "0656789012",
-    role: UtilisateurRole.CONSULTANT,
-    statut: UtilisateurStatus.ACTIF,
-    exploitation: "Consulting Agricole",
-    codeExploitation: "CON001",
-    adresse: "25 Boulevard des Experts",
-    ville: "Nantes",
-    codePostal: "44000",
-    dateCreation: "2024-02-20T16:15:00",
-    dateModification: "2024-03-07T11:30:00",
-    dernierConnexion: "2024-03-10T14:20:00",
-    notes: "Consultante en optimisation d'élevage",
-  },
-  {
-    id: "8",
-    prenom: "Thomas",
-    nom: "Moreau",
-    email: "thomas.moreau@support.boviclouds.com",
-    telephone: "0667890123",
-    role: UtilisateurRole.SUPPORT,
-    statut: UtilisateurStatus.EN_ATTENTE,
-    exploitation: "Support Technique",
-    codeExploitation: "SUP001",
-    adresse: "10 Rue du Support",
-    ville: "Lille",
-    codePostal: "59000",
-    dateCreation: "2024-03-01T09:30:00",
-    dateModification: "2024-03-01T09:30:00",
-    notes: "Nouveau membre de l'équipe support - en formation",
-  },
-];
 
 // Generate unique ID for new records
 const generateId = (): string => {
@@ -253,10 +109,54 @@ export class UtilisateurService {
     filters: UtilisateurFilters = {},
     pagination: PaginationParams = { page: 1, limit: 10 },
   ): Promise<PaginatedResponse<UtilisateurRecord>> {
-    // Simulate API delay
+    const apiUrl = import.meta.env.VITE_API_URL;
+    UtilisateursData = [];
+
+    try {
+      const token = localStorage.getItem("access_token");
+      const response = await axios.get(`${apiUrl}users`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      console.log(response);
+      response.data.data.map((user) => {
+        UtilisateursData.push({
+          id: user._id,
+          prenom: user.prenom_lat,
+          nom: user.nom_lat,
+          email: user.email,
+          password: user.passwordHash,
+          telephone: "0666666666",
+          role:
+            user.role[0] === "INSEMINATEUR"
+              ? UtilisateurRole.INSEMINATEUR
+              : user.role[0] === "ELEVEUR"
+                ? UtilisateurRole.ELEVEUR
+                : user.role[0] === "CONTROLEUR_LAITIER"
+                  ? UtilisateurRole.CONTROLEUR
+                  : UtilisateurRole.IDENTIFICATEUR,
+          statut:
+            user.statut === "APPROVED"
+              ? UtilisateurStatus.ACTIF
+              : user.statut === "PENDING"
+                ? UtilisateurStatus.EN_ATTENTE
+                : UtilisateurStatus.SUSPENDU,
+          civilite: user.civilite,
+          adresse: user.adresse,
+          region: user.region,
+          codePostal: "69002",
+          dateCreation: user.date_creation,
+          dateModification: user.date_modification,
+        });
+      });
+    } catch (error) {
+      console.error("Error getting inseminations:", error);
+    }
+
     await new Promise((resolve) => setTimeout(resolve, 100));
 
-    const filteredData = applyFilters(mockUtilisateurData, filters);
+    const filteredData = applyFilters(UtilisateursData, filters);
     const paginatedResult = applyPagination(filteredData, pagination);
 
     return paginatedResult;
@@ -269,7 +169,7 @@ export class UtilisateurService {
     // Simulate API delay
     await new Promise((resolve) => setTimeout(resolve, 50));
 
-    const record = mockUtilisateurData.find((u) => u.id === id);
+    const record = UtilisateursData.find((u) => u.id === id);
     return record || null;
   }
 
@@ -283,7 +183,7 @@ export class UtilisateurService {
     await new Promise((resolve) => setTimeout(resolve, 200));
 
     // Check if email already exists
-    const existingUser = mockUtilisateurData.find(
+    const existingUser = UtilisateursData.find(
       (u) => u.email.toLowerCase() === input.email.toLowerCase(),
     );
     if (existingUser) {
@@ -295,6 +195,7 @@ export class UtilisateurService {
       id: generateId(),
       prenom: input.prenom,
       nom: input.nom,
+      password: input.password,
       email: input.email,
       telephone: input.telephone,
       role: input.role,
@@ -309,7 +210,7 @@ export class UtilisateurService {
       notes: input.notes,
     };
 
-    mockUtilisateurData.unshift(newRecord);
+    UtilisateursData.unshift(newRecord);
     return newRecord;
   }
 
@@ -323,14 +224,14 @@ export class UtilisateurService {
     // Simulate API delay
     await new Promise((resolve) => setTimeout(resolve, 150));
 
-    const recordIndex = mockUtilisateurData.findIndex((u) => u.id === id);
+    const recordIndex = UtilisateursData.findIndex((u) => u.id === id);
     if (recordIndex === -1) {
       return null;
     }
 
     // Check if email already exists (if changing email)
     if (input.email) {
-      const existingUser = mockUtilisateurData.find(
+      const existingUser = UtilisateursData.find(
         (u) =>
           u.email.toLowerCase() === input.email.toLowerCase() && u.id !== id,
       );
@@ -339,14 +240,14 @@ export class UtilisateurService {
       }
     }
 
-    const existingRecord = mockUtilisateurData[recordIndex];
+    const existingRecord = UtilisateursData[recordIndex];
     const updatedRecord: UtilisateurRecord = {
       ...existingRecord,
       ...input,
       dateModification: new Date().toISOString(),
     };
 
-    mockUtilisateurData[recordIndex] = updatedRecord;
+    UtilisateursData[recordIndex] = updatedRecord;
     return updatedRecord;
   }
 
@@ -357,9 +258,9 @@ export class UtilisateurService {
     // Simulate API delay
     await new Promise((resolve) => setTimeout(resolve, 100));
 
-    const initialLength = mockUtilisateurData.length;
-    mockUtilisateurData = mockUtilisateurData.filter((u) => u.id !== id);
-    return mockUtilisateurData.length < initialLength;
+    const initialLength = UtilisateursData.length;
+    UtilisateursData = UtilisateursData.filter((u) => u.id !== id);
+    return UtilisateursData.length < initialLength;
   }
 
   /**
@@ -376,30 +277,30 @@ export class UtilisateurService {
     // Simulate API delay
     await new Promise((resolve) => setTimeout(resolve, 50));
 
-    const total = mockUtilisateurData.length;
-    const actif = mockUtilisateurData.filter(
+    const total = UtilisateursData.length;
+    const actif = UtilisateursData.filter(
       (u) => u.statut === UtilisateurStatus.ACTIF,
     ).length;
-    const inactif = mockUtilisateurData.filter(
+    const inactif = UtilisateursData.filter(
       (u) => u.statut === UtilisateurStatus.INACTIF,
     ).length;
-    const enAttente = mockUtilisateurData.filter(
+    const enAttente = UtilisateursData.filter(
       (u) => u.statut === UtilisateurStatus.EN_ATTENTE,
     ).length;
-    const suspendu = mockUtilisateurData.filter(
+    const suspendu = UtilisateursData.filter(
       (u) => u.statut === UtilisateurStatus.SUSPENDU,
     ).length;
 
     const byRole: Record<UtilisateurRole, number> = {
       [UtilisateurRole.ADMINISTRATEUR]: 0,
-      [UtilisateurRole.GESTIONNAIRE]: 0,
-      [UtilisateurRole.VETERINAIRE]: 0,
+      [UtilisateurRole.INSEMINATEUR]: 0,
+      [UtilisateurRole.IDENTIFICATEUR]: 0,
       [UtilisateurRole.ELEVEUR]: 0,
-      [UtilisateurRole.CONSULTANT]: 0,
+      [UtilisateurRole.CONTROLEUR]: 0,
       [UtilisateurRole.SUPPORT]: 0,
     };
 
-    mockUtilisateurData.forEach((user) => {
+    UtilisateursData.forEach((user) => {
       byRole[user.role]++;
     });
 
@@ -416,7 +317,7 @@ export class UtilisateurService {
     // Simulate API delay
     await new Promise((resolve) => setTimeout(resolve, 300));
 
-    const filteredData = applyFilters(mockUtilisateurData, filters);
+    const filteredData = applyFilters(UtilisateursData, filters);
 
     if (format === "csv") {
       const headers = [
@@ -506,151 +407,4 @@ export class UtilisateurService {
   /**
    * Reset mock data to initial state (useful for testing)
    */
-  static resetMockData(): void {
-    mockUtilisateurData = [
-      {
-        id: "1",
-        prenom: "Sophie",
-        nom: "Leroy",
-        email: "sophie.leroy@boviclouds.com",
-        telephone: "0602030405",
-        role: UtilisateurRole.ADMINISTRATEUR,
-        statut: UtilisateurStatus.ACTIF,
-        exploitation: "Administration Boviclouds",
-        codeExploitation: "ADM001",
-        adresse: "15 Avenue des Champs",
-        ville: "Paris",
-        codePostal: "75008",
-        dateCreation: "2024-01-15T09:00:00",
-        dateModification: "2024-03-10T14:30:00",
-        dernierConnexion: "2024-03-15T08:45:00",
-        notes: "Administrateur principal du système",
-      },
-      {
-        id: "2",
-        prenom: "Michel",
-        nom: "Robert",
-        email: "michel.robert@boviclouds.com",
-        telephone: "0607080910",
-        role: UtilisateurRole.GESTIONNAIRE,
-        statut: UtilisateurStatus.ACTIF,
-        exploitation: "Gestion Centrale",
-        codeExploitation: "GES001",
-        adresse: "42 Rue de la Paix",
-        ville: "Lyon",
-        codePostal: "69002",
-        dateCreation: "2024-01-20T10:15:00",
-        dateModification: "2024-03-08T16:20:00",
-        dernierConnexion: "2024-03-14T19:30:00",
-        notes: "Gestionnaire des opérations quotidiennes",
-      },
-      {
-        id: "3",
-        prenom: "Claire",
-        nom: "Dubois",
-        email: "dr.claire.dubois@vetclinic.fr",
-        telephone: "0612345678",
-        role: UtilisateurRole.VETERINAIRE,
-        statut: UtilisateurStatus.ACTIF,
-        exploitation: "Clinique Vétérinaire du Centre",
-        codeExploitation: "VET001",
-        adresse: "8 Place de la République",
-        ville: "Toulouse",
-        codePostal: "31000",
-        dateCreation: "2024-02-01T11:00:00",
-        dateModification: "2024-03-05T13:45:00",
-        dernierConnexion: "2024-03-13T10:15:00",
-        notes: "Vétérinaire spécialisée en bovins",
-      },
-      {
-        id: "4",
-        prenom: "Jean",
-        nom: "Dupont",
-        email: "jean.dupont@fermedespres.fr",
-        telephone: "0623456789",
-        role: UtilisateurRole.ELEVEUR,
-        statut: UtilisateurStatus.ACTIF,
-        exploitation: "Ferme des Prés",
-        codeExploitation: "EXP001",
-        adresse: "Route de la Ferme",
-        ville: "Normandie",
-        codePostal: "14000",
-        dateCreation: "2024-02-10T14:30:00",
-        dateModification: "2024-03-01T09:20:00",
-        dernierConnexion: "2024-03-12T07:00:00",
-        notes: "Éleveur de bovins laitiers - 150 têtes",
-      },
-      {
-        id: "5",
-        prenom: "Marie",
-        nom: "Martin",
-        email: "marie.martin@ranchmartin.fr",
-        telephone: "0634567890",
-        role: UtilisateurRole.ELEVEUR,
-        statut: UtilisateurStatus.ACTIF,
-        exploitation: "Ranch Martin",
-        codeExploitation: "EXP002",
-        adresse: "Chemin du Ranch",
-        ville: "Bordeaux",
-        codePostal: "33000",
-        dateCreation: "2024-02-15T08:45:00",
-        dateModification: "2024-02-28T15:10:00",
-        dernierConnexion: "2024-03-11T18:30:00",
-        notes: "Élevage mixte bovins/ovins",
-      },
-      {
-        id: "6",
-        prenom: "Pierre",
-        nom: "Legrand",
-        email: "pierre.legrand@domainelegrand.fr",
-        telephone: "0645678901",
-        role: UtilisateurRole.ELEVEUR,
-        statut: UtilisateurStatus.INACTIF,
-        exploitation: "Domaine Legrand",
-        codeExploitation: "EXP003",
-        adresse: "Domaine de la Vallée",
-        ville: "Strasbourg",
-        codePostal: "67000",
-        dateCreation: "2024-01-25T12:00:00",
-        dateModification: "2024-03-01T10:00:00",
-        dernierConnexion: "2024-02-20T16:45:00",
-        notes: "Compte temporairement désactivé - migration système",
-      },
-      {
-        id: "7",
-        prenom: "Anne",
-        nom: "Petit",
-        email: "anne.petit@boviclouds.com",
-        telephone: "0656789012",
-        role: UtilisateurRole.CONSULTANT,
-        statut: UtilisateurStatus.ACTIF,
-        exploitation: "Consulting Agricole",
-        codeExploitation: "CON001",
-        adresse: "25 Boulevard des Experts",
-        ville: "Nantes",
-        codePostal: "44000",
-        dateCreation: "2024-02-20T16:15:00",
-        dateModification: "2024-03-07T11:30:00",
-        dernierConnexion: "2024-03-10T14:20:00",
-        notes: "Consultante en optimisation d'élevage",
-      },
-      {
-        id: "8",
-        prenom: "Thomas",
-        nom: "Moreau",
-        email: "thomas.moreau@support.boviclouds.com",
-        telephone: "0667890123",
-        role: UtilisateurRole.SUPPORT,
-        statut: UtilisateurStatus.EN_ATTENTE,
-        exploitation: "Support Technique",
-        codeExploitation: "SUP001",
-        adresse: "10 Rue du Support",
-        ville: "Lille",
-        codePostal: "59000",
-        dateCreation: "2024-03-01T09:30:00",
-        dateModification: "2024-03-01T09:30:00",
-        notes: "Nouveau membre de l'équipe support - en formation",
-      },
-    ];
-  }
 }

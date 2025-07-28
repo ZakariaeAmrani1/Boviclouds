@@ -3,6 +3,7 @@ import { HydratedDocument } from 'mongoose';
 import * as bcrypt from 'bcrypt';
 import { UserRole } from './user.role';
 import { AccountStatus } from './user.acc.status';
+import * as crypto from "crypto";
 
 export type UserDocument = HydratedDocument<User, UserMethods>;
 @Schema()
@@ -49,22 +50,34 @@ export class User {
     default: [],
   })
   role: [UserRole];
-  @Prop({ required: false })
+
+  @Prop()
   password?: string;
 
   @Prop({ select: false })
   passwordHash: string;
+
   @Prop({
-    type:String,
-    enum:AccountStatus,
-    default:AccountStatus.PENDING
+    type: String,
+    enum: AccountStatus,
+    default: AccountStatus.PENDING,
   })
-  statut:AccountStatus
+  statut: AccountStatus;
   @Prop()
-  raison_sociale: string
+  raison_sociale: string;
+
+  @Prop({ default: false })
+  isEmailVerified: boolean;
+
+  @Prop()
+  emailValToken?: string;
+
+  @Prop()
+  emailTokenExpires?: number;
 }
 export interface UserMethods {
   correctPassword(candidatePassword: string): Promise<boolean>;
+  CreateEmailValiationToken():string
 }
 export const UserSchema = SchemaFactory.createForClass(User);
 
@@ -85,6 +98,16 @@ UserSchema.methods.correctPassword = async function (
   return await bcrypt.compare(candidatePassword, this.passwordHash);
 };
 
+UserSchema.methods.CreateEmailValiationToken = function ():string {
+  const emailValToken = crypto.randomBytes(32).toString('hex');
+  this.emailValToken = crypto
+    .createHash('sha256')
+    .update(emailValToken)
+    .digest('hex');
+  this.emailTokenExpires = Date.now() + 10 * 60 * 1000;
+  return emailValToken;
+};
+
 UserSchema.pre('save', function (next) {
   this.date_modification = new Date();
   next();
@@ -97,3 +120,4 @@ UserSchema.pre(
     next();
   },
 );
+
