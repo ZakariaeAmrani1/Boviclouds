@@ -6,8 +6,12 @@ import { CreateUserDto } from 'src/auth/dto/users/register.dto';
 
 @Injectable()
 export class UsersService {
-  constructor(@InjectModel(User.name) private readonly userModel: Model<User>) {}
-
+  constructor(
+    @InjectModel(User.name) private readonly userModel: Model<User>,
+  ) {}
+  async findAll() {
+    return this.userModel.find().select('+passwordHash').exec();
+  }
   async create(data: any): Promise<User> {
     const createdUser = new this.userModel(data);
     return await createdUser.save();

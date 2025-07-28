@@ -80,8 +80,8 @@ interface FormData {
   telephone: string;
   role: UtilisateurRole;
   statut: UtilisateurStatus;
-  exploitation: string;
-  codeExploitation: string;
+  password: string;
+  passwordConfirmation: string;
   adresse: string;
   ville: string;
   codePostal: string;
@@ -99,6 +99,7 @@ const Utilisateurs: React.FC = () => {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [recordToDelete, setRecordToDelete] =
     useState<UtilisateurRecord | null>(null);
+  const [showPassword, setShowPassword] = useState(false);
 
   // Form states
   const [searchForm, setSearchForm] = useState<UtilisateurFilters>({
@@ -115,8 +116,8 @@ const Utilisateurs: React.FC = () => {
     telephone: "",
     role: UtilisateurRole.ELEVEUR,
     statut: UtilisateurStatus.EN_ATTENTE,
-    exploitation: "",
-    codeExploitation: "",
+    password: "",
+    passwordConfirmation: "",
     adresse: "",
     ville: "",
     codePostal: "",
@@ -201,8 +202,8 @@ const Utilisateurs: React.FC = () => {
       telephone: "",
       role: UtilisateurRole.ELEVEUR,
       statut: UtilisateurStatus.EN_ATTENTE,
-      exploitation: "",
-      codeExploitation: "",
+      password: "",
+      passwordConfirmation: "",
       adresse: "",
       ville: "",
       codePostal: "",
@@ -227,8 +228,8 @@ const Utilisateurs: React.FC = () => {
         telephone: fullRecord.telephone || "",
         role: fullRecord.role,
         statut: fullRecord.statut,
-        exploitation: fullRecord.exploitation || "",
-        codeExploitation: fullRecord.codeExploitation || "",
+        password: fullRecord.email || "",
+        passwordConfirmation: fullRecord.email || "",
         adresse: fullRecord.adresse || "",
         ville: fullRecord.ville || "",
         codePostal: fullRecord.codePostal || "",
@@ -250,8 +251,8 @@ const Utilisateurs: React.FC = () => {
         telephone: fullRecord.telephone || "",
         role: fullRecord.role,
         statut: fullRecord.statut,
-        exploitation: fullRecord.exploitation || "",
-        codeExploitation: fullRecord.codeExploitation || "",
+        password: fullRecord.email || "",
+        passwordConfirmation: fullRecord.email || "",
         adresse: fullRecord.adresse || "",
         ville: fullRecord.ville || "",
         codePostal: fullRecord.codePostal || "",
@@ -277,11 +278,12 @@ const Utilisateurs: React.FC = () => {
           prenom: formData.prenom.trim(),
           nom: formData.nom.trim(),
           email: formData.email.trim(),
+          password: formData.password.trim(),
           telephone: formData.telephone.trim() || undefined,
           role: formData.role,
           statut: formData.statut,
-          exploitation: formData.exploitation.trim() || undefined,
-          codeExploitation: formData.codeExploitation.trim() || undefined,
+          exploitation: formData.password.trim() || undefined,
+          codeExploitation: formData.passwordConfirmation.trim() || undefined,
           adresse: formData.adresse.trim() || undefined,
           ville: formData.ville.trim() || undefined,
           codePostal: formData.codePostal.trim() || undefined,
@@ -316,8 +318,8 @@ const Utilisateurs: React.FC = () => {
           telephone: formData.telephone.trim() || undefined,
           role: formData.role,
           statut: formData.statut,
-          exploitation: formData.exploitation.trim() || undefined,
-          codeExploitation: formData.codeExploitation.trim() || undefined,
+          exploitation: formData.password.trim() || undefined,
+          codeExploitation: formData.passwordConfirmation.trim() || undefined,
           adresse: formData.adresse.trim() || undefined,
           ville: formData.ville.trim() || undefined,
           codePostal: formData.codePostal.trim() || undefined,
@@ -401,13 +403,13 @@ const Utilisateurs: React.FC = () => {
     switch (role) {
       case UtilisateurRole.ADMINISTRATEUR:
         return "bg-purple-100 text-purple-800 border-purple-200";
-      case UtilisateurRole.GESTIONNAIRE:
+      case UtilisateurRole.INSEMINATEUR:
         return "bg-blue-100 text-blue-800 border-blue-200";
-      case UtilisateurRole.VETERINAIRE:
+      case UtilisateurRole.IDENTIFICATEUR:
         return "bg-teal-100 text-teal-800 border-teal-200";
       case UtilisateurRole.ELEVEUR:
         return "bg-green-100 text-green-800 border-green-200";
-      case UtilisateurRole.CONSULTANT:
+      case UtilisateurRole.CONTROLEUR:
         return "bg-orange-100 text-orange-800 border-orange-200";
       case UtilisateurRole.SUPPORT:
         return "bg-indigo-100 text-indigo-800 border-indigo-200";
@@ -519,17 +521,17 @@ const Utilisateurs: React.FC = () => {
                   <SelectItem value={UtilisateurRole.ADMINISTRATEUR}>
                     Administrateur
                   </SelectItem>
-                  <SelectItem value={UtilisateurRole.GESTIONNAIRE}>
-                    Gestionnaire
+                  <SelectItem value={UtilisateurRole.INSEMINATEUR}>
+                    Inseminateur
                   </SelectItem>
-                  <SelectItem value={UtilisateurRole.VETERINAIRE}>
-                    Vétérinaire
+                  <SelectItem value={UtilisateurRole.IDENTIFICATEUR}>
+                    Identificateur
                   </SelectItem>
                   <SelectItem value={UtilisateurRole.ELEVEUR}>
                     Éleveur
                   </SelectItem>
-                  <SelectItem value={UtilisateurRole.CONSULTANT}>
-                    Consultant
+                  <SelectItem value={UtilisateurRole.CONTROLEUR}>
+                    Contrôleur
                   </SelectItem>
                   <SelectItem value={UtilisateurRole.SUPPORT}>
                     Support
@@ -647,7 +649,7 @@ const Utilisateurs: React.FC = () => {
                     Rôle
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Exploitation
+                    Adresse
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Statut
@@ -691,15 +693,11 @@ const Utilisateurs: React.FC = () => {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                       <div>
-                        {record.exploitation && (
-                          <div className="font-medium">
-                            {record.exploitation}
-                          </div>
+                        {record.adresse && (
+                          <div className="font-medium">{record.adresse}</div>
                         )}
-                        {record.codeExploitation && (
-                          <div className="text-gray-500">
-                            {record.codeExploitation}
-                          </div>
+                        {record.region && (
+                          <div className="text-gray-500">{record.region}</div>
                         )}
                       </div>
                     </td>
@@ -855,14 +853,6 @@ const Utilisateurs: React.FC = () => {
                 {modalMode === "edit" && "Modifier l'utilisateur"}
                 {modalMode === "view" && "Détails de l'utilisateur"}
               </DialogTitle>
-              {modalMode === "view" && (
-                <button
-                  onClick={handleModalClose}
-                  className="absolute right-4 top-4 p-1 rounded-full hover:bg-gray-100"
-                >
-                  <X className="w-4 h-4" />
-                </button>
-              )}
             </DialogHeader>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 py-4 sm:py-6">
@@ -1032,17 +1022,17 @@ const Utilisateurs: React.FC = () => {
                         <SelectItem value={UtilisateurRole.ADMINISTRATEUR}>
                           Administrateur
                         </SelectItem>
-                        <SelectItem value={UtilisateurRole.GESTIONNAIRE}>
-                          Gestionnaire
+                        <SelectItem value={UtilisateurRole.INSEMINATEUR}>
+                          Inseminateur
                         </SelectItem>
-                        <SelectItem value={UtilisateurRole.VETERINAIRE}>
-                          Vétérinaire
+                        <SelectItem value={UtilisateurRole.IDENTIFICATEUR}>
+                          Identificateur
                         </SelectItem>
                         <SelectItem value={UtilisateurRole.ELEVEUR}>
                           Éleveur
                         </SelectItem>
-                        <SelectItem value={UtilisateurRole.CONSULTANT}>
-                          Consultant
+                        <SelectItem value={UtilisateurRole.CONTROLEUR}>
+                          Contrôleur
                         </SelectItem>
                         <SelectItem value={UtilisateurRole.SUPPORT}>
                           Support
@@ -1100,53 +1090,49 @@ const Utilisateurs: React.FC = () => {
                     htmlFor="exploitation"
                     className="text-sm font-normal text-black"
                   >
-                    Exploitation
+                    Mot de passe
                   </Label>
-                  <Input
-                    id="exploitation"
-                    value={formData.exploitation}
-                    onChange={(e) =>
-                      handleFormChange("exploitation", e.target.value)
-                    }
-                    className="h-10 sm:h-12 px-3 sm:px-4 text-sm border-boviclouds-gray-100 rounded-xl"
-                    placeholder="Ex: Ferme des Prés"
-                    disabled={modalMode === "view"}
-                  />
-                </div>
-
-                {/* Code Exploitation */}
-                <div className="space-y-2">
-                  <Label
-                    htmlFor="codeExploitation"
-                    className="text-sm font-normal text-black"
-                  >
-                    Code Exploitation
-                  </Label>
-                  <Input
-                    id="codeExploitation"
-                    value={formData.codeExploitation}
-                    onChange={(e) => {
-                      handleFormChange(
-                        "codeExploitation",
-                        e.target.value.toUpperCase(),
-                      );
-                      setValidationErrors((prev) =>
-                        prev.filter((err) => err.field !== "codeExploitation"),
-                      );
-                    }}
-                    className={`h-10 sm:h-12 px-3 sm:px-4 text-sm rounded-xl ${
-                      getFieldError(validationErrors, "codeExploitation")
-                        ? "border-red-500 focus:border-red-500"
-                        : "border-boviclouds-gray-100"
-                    }`}
-                    placeholder="Ex: EXP001"
-                    disabled={modalMode === "view"}
-                  />
-                  {getFieldError(validationErrors, "codeExploitation") && (
-                    <p className="text-sm text-red-600">
-                      {getFieldError(validationErrors, "codeExploitation")}
-                    </p>
-                  )}
+                  <div className="relative">
+                    <Input
+                      id="password"
+                      value={formData.password}
+                      type={showPassword ? "text" : "password"}
+                      onChange={(e) =>
+                        handleFormChange("password", e.target.value)
+                      }
+                      className="h-10 sm:h-12 px-3 sm:px-4 text-sm border-boviclouds-gray-100 rounded-xl"
+                      placeholder="Ex: Ferme des Prés"
+                      disabled={true}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(false)}
+                      className="absolute right-4 top-1/2 transform -translate-y-1/2 text-[#9A9A9A] hover:text-boviclouds-primary transition-colors"
+                    >
+                      <svg
+                        className="w-5 h-5"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        {showPassword ? (
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M15 12a3 3 0 11-6 0 3 3 0 016 0z M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                          />
+                        ) : (
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L3 3m6.878 6.878L21 21"
+                          />
+                        )}
+                      </svg>
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
