@@ -101,12 +101,12 @@ const AddInseminationModal: React.FC<AddInseminationModalProps> = ({
       }));
     }
 
-    if (field === "semence_id" && value && !validateSemenceIdFormat(value)) {
-      setValidationErrors((prev) => ({
-        ...prev,
-        [field]: "Format d'ID de semence invalide (ex: SEM123456)",
-      }));
-    }
+    // if (field === "semence_id" && value && !validateSemenceIdFormat(value)) {
+    //   setValidationErrors((prev) => ({
+    //     ...prev,
+    //     [field]: "Format d'ID de semence invalide (ex: SEM123456)",
+    //   }));
+    // }
   };
 
   const resetForm = () => {
@@ -144,7 +144,7 @@ const AddInseminationModal: React.FC<AddInseminationModalProps> = ({
       const input: CreateInseminationInput = {
         nni: formData.nni.toUpperCase(),
         date_dissemination: formData.date_dissemination,
-        semence_id: formData.semence_id.toUpperCase(),
+        semence_id: formData.semence_id,
         inseminateur_id: formData.inseminateur_id,
         responsable_local_id: formData.responsable_local_id,
         createdBy: "current_user", // In a real app, this would come from auth context
