@@ -21,13 +21,9 @@ export class UsersService {
   async findAll(): Promise<{
     status: string;
     results: number;
-    data: UserResponseDto[];
+    data: any;
   }> {
-    const users = plainToInstance(
-      UserResponseDto,
-      await this.userModel.find().lean(),
-      { excludeExtraneousValues: true },
-    );
+    const users = await this.userModel.find().lean();
     return {
       status: 'success',
       results: users.length,

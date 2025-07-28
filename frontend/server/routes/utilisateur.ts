@@ -18,7 +18,7 @@ export const handleGetUsers: RequestHandler = async (req, res) => {
       },
     });
     usersData = [];
-    data.data.map((user) => {
+    data.data.data.map((user) => {
       usersData.push({
         id: user._id,
         nom: user.nom_lat,
