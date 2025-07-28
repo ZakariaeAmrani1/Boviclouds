@@ -1,13 +1,18 @@
-import { HttpException, HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  HttpException,
+  HttpStatus,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateInseminationDto } from './dto/create-insemination.dto';
 import { UpdateInseminationDto } from './dto/update-insemination.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { Insemination } from './schemas/insemination.schema';
 import { Model } from 'mongoose';
 
-export class InseminationNotFoundException extends HttpException{
-  constructor(id:string){
-    super(`Insemination with ID (${id}) not found`,HttpStatus.NOT_FOUND);
+export class InseminationNotFoundException extends HttpException {
+  constructor(id: string) {
+    super(`Insemination with ID (${id}) not found`, HttpStatus.NOT_FOUND);
   }
 }
 @Injectable()
@@ -27,7 +32,12 @@ export class InseminationsService {
   }
 
   async findAll(): Promise<Insemination[]> {
-    return await this.inseminationModel.find().lean();
+    return await this.inseminationModel
+      .find()
+      .populate('semence_id')
+      .populate('inseminateur_id')
+      .populate('responsable_local_id')
+      .exec();
   }
 
   async findOne(id: string): Promise<Insemination | null> {
