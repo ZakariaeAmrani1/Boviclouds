@@ -1,4 +1,4 @@
-import {HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { User } from './schemas/users/user.schema';
 import { Model } from 'mongoose';
@@ -7,9 +7,9 @@ import { UpdateUserDto } from './dtos/update-user.dto';
 import { plainToInstance } from 'class-transformer';
 import { UserResponseDto } from './dtos/user-response.dto';
 
-export class UserNotFoundException extends HttpException{
-  constructor(message:string){
-    super(message,HttpStatus.NOT_FOUND);
+export class UserNotFoundException extends HttpException {
+  constructor(message: string) {
+    super(message, HttpStatus.NOT_FOUND);
   }
 }
 @Injectable()
@@ -34,13 +34,8 @@ export class UsersService {
       data: users,
     };
   }
-  async findByEmail(email: string): Promise<UserResponseDto> {
-    const user = await this.userModel.findOne({ email });
-    if (!user)
-      throw new UserNotFoundException(`User with email:${email} not found!`);
-    return plainToInstance(UserResponseDto, user, {
-      excludeExtraneousValues: true,
-    });
+  async findByEmail(email: string): Promise<User | null> {
+    return this.userModel.findOne({ email });
   }
   async findById(id: string): Promise<UserResponseDto> {
     const user = await this.userModel.findById(id);
