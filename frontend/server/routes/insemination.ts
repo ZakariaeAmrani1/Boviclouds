@@ -145,19 +145,14 @@ export const handleGetInseminations: RequestHandler = async (req, res) => {
         nni: data.nni,
         date_dissemination: dayjs(data.date_dissemination).format("YYYY-MM-DD"),
         semence_id: data.semence_id.identificateur,
-        inseminateur_id:
-          data.inseminateur_id.nom_lat + " " + data.inseminateur_id.prenom_lat,
-        responsable_local_id:
-          data.responsable_local_id.nom_lat +
-          " " +
-          data.responsable_local_id.nom_lat,
+        inseminateur_id: data.inseminateur_id._id,
+        responsable_local_id: data.responsable_local_id._id,
         createdBy:
           data.inseminateur_id.nom_lat + " " + data.inseminateur_id.prenom_lat,
         createdAt: data.createdAt,
         updatedAt: data.updatedAt,
       });
     });
-
     const page = parseInt(req.query.page as string) || 1;
     const limit = parseInt(req.query.limit as string) || 10;
 
@@ -228,7 +223,7 @@ export const handleGetInsemination: RequestHandler = (req, res) => {
 };
 
 // POST /api/insemination - Create a new insemination record
-export const handleCreateInsemination: RequestHandler = (req, res) => {
+export const handleCreateInsemination: RequestHandler = async (req, res) => {
   try {
     const input: CreateInseminationInput = req.body;
 
@@ -260,6 +255,15 @@ export const handleCreateInsemination: RequestHandler = (req, res) => {
       });
     }
 
+    const apiUrl = process.env.SERVER_API_URL;
+    const response = await axios.post(`${apiUrl}inseminations`, {
+      nni: input.nni,
+      date_dissemination: `${input.date_dissemination}T10:00:00Z`,
+      semence_id: input.semence_id,
+      inseminateur_id: input.inseminateur_id,
+      responsable_local_id: input.responsable_local_id,
+    });
+    console.log(response);
     // Create new record
     const newRecord: InseminationRecord = {
       id: nextId.toString(),
@@ -277,7 +281,7 @@ export const handleCreateInsemination: RequestHandler = (req, res) => {
       message: "Insémination créée avec succès",
     });
   } catch (error) {
-    console.error("Error creating insemination:", error);
+    console.log("Error creating insemination:", error.response);
     res.status(500).json({
       success: false,
       message: "Erreur lors de la création de l'insémination",
