@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Confirm Your Boviclouds Email</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+            background-color: #f8f8f8;
+            /* Light grey background */
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 30px;
+            background-color: #ffffff;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08);
+            /* Slightly stronger shadow */
+        }
+
+        h2 {
+            color: #2c3e50;
+            /* Darker blue-grey */
+            margin-bottom: 20px;
+        }
+
+        p {
+            margin-bottom: 15px;
+        }
+
+        .button {
+            display: inline-block;
+            background-color: #0bad19;
+            /* Primary blue for action */
+            color: white;
+            padding: 12px 25px;
+            /* Slightly larger padding */
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+            text-align: center;
+            transition: background-color 0.3s ease;
+            /* Smooth transition on hover */
+        }
+
+        .button:hover {
+            background-color: #087a11;
+            /* Darker blue on hover */
+        }
+
+        .info-text {
+            font-size: 0.95em;
+            color: #555;
+            margin-top: 25px;
+            border-top: 1px solid #eee;
+            padding-top: 20px;
+        }
+
+        .footer {
+            margin-top: 30px;
+            font-size: 0.85em;
+            color: #777;
+            text-align: center;
+        }
+
+        /* Responsive adjustments */
+        @media screen and (max-width: 600px) {
+            .container {
+                margin: 10px;
+                padding: 20px;
+            }
+
+            .button {
+                display: block;
+                /* Full width button on small screens */
+                width: 100%;
+                box-sizing: border-box;
+                /* Include padding in width */
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h2>Hello {{firstName}},</h2>
+        <p>Thank you for registering with **Boviclouds!**</p>
+        <p>To complete your registration and confirm your email address, please click the button below:</p>
+        <p style="text-align: center; margin: 30px 0;">
+            <a href="{{url}}" class="button">Confirm My Email Address</a>
+        </p>
+        <p class="info-text">
+            This link is valid for **10 min**. If the link expires, you may request
+            a new one from our platform.
+        </p>
+        <p class="info-text">
+            If you did not register for Boviclouds, please ignore this email. Your account will not be activated.
+        </p>
+        <p class="footer">
+            Best regards,<br>The Boviclouds Team
+        </p>
+    </div>
+</body>
+
+</html>
