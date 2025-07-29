@@ -129,14 +129,7 @@ const AddInseminationModal: React.FC<AddInseminationModalProps> = ({
     onClose();
   };
 
-  const generateSemenceId = () => {
-    const newId = generateSampleSemenceId();
-    handleFormChange("semence_id", newId);
-    toast({
-      title: "ID généré",
-      description: `ID de semence généré: ${newId}`,
-    });
-  };
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
