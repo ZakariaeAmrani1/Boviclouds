@@ -91,8 +91,7 @@ const EditInseminationModal: React.FC<EditInseminationModalProps> = ({
       setHasChanges(false);
       setValidationErrors({});
     }
-  }, [isOpen, insemination, formData]);
-
+  }, [isOpen, insemination]);
   const handleFormChange = (field: keyof FormData, value: string) => {
     setFormData((prev) => {
       const newData = { ...prev, [field]: value };
