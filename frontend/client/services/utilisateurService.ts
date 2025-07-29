@@ -148,11 +148,14 @@ export class UtilisateurService {
           civilite: user.civilite,
           adresse: user.adresse,
           region: user.region,
+          province: user.province,
           codePostal: "69002",
           dateCreation: user.date_creation,
           dateModification: user.date_modification,
         });
       });
+
+      console.log(response.data.data);
     } catch (error) {
       console.error("Error getting inseminations:", error);
     }
@@ -225,7 +228,6 @@ export class UtilisateurService {
     input: UpdateUtilisateurInput,
   ): Promise<UtilisateurRecord | null> {
     const apiUrl = import.meta.env.VITE_API_URL;
-
     const recordIndex = UtilisateursData.findIndex((u) => u.id === id);
 
     if (recordIndex === -1) {
@@ -241,6 +243,42 @@ export class UtilisateurService {
       if (existingUser) {
         throw new Error("Un utilisateur avec cet email existe déjà");
       }
+    }
+
+    try {
+      const token = localStorage.getItem("access_token");
+      const response = await axios.patch(`${apiUrl}users/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        data: {
+          prenom_lat: input.prenom,
+          nom_lat: input.nom,
+          email: input.email,
+          telephone: input.telephone,
+          role:
+            input.role === UtilisateurRole.INSEMINATEUR
+              ? "INSEMINATEUR"
+              : input.role === UtilisateurRole.ELEVEUR
+                ? "ELVEUR"
+                : input.role === UtilisateurRole.IDENTIFICATEUR
+                  ? "INDENTIFICATUR"
+                  : input.role === UtilisateurRole.CONTROLEUR
+                    ? "CONTROLEUR_LAITIER"
+                    : "ADMIN",
+          statut:
+            input.statut === UtilisateurStatus.ACTIF
+              ? "APPROVED"
+              : input.statut === UtilisateurStatus.INACTIF
+                ? "REJECTED"
+                : "PENDING",
+          adresse: input.adresse,
+          region: input.region,
+          province: input.province,
+        },
+      });
+    } catch (e) {
+      console.log(e);
     }
 
     const existingRecord = UtilisateursData[recordIndex];
@@ -259,6 +297,7 @@ export class UtilisateurService {
    */
   static async delete(id: string): Promise<boolean> {
     const apiUrl = import.meta.env.VITE_API_URL;
+    const initialLength = UtilisateursData.length;
     // Simulate API delay
     try {
       const token = localStorage.getItem("access_token");
@@ -267,14 +306,11 @@ export class UtilisateurService {
           Authorization: `Bearer ${token}`,
         },
       });
+      UtilisateursData = UtilisateursData.filter((u) => u.id !== id);
     } catch (e) {
       console.log(e);
     }
 
-    console.log(id);
-
-    const initialLength = UtilisateursData.length;
-    UtilisateursData = UtilisateursData.filter((u) => u.id !== id);
     return UtilisateursData.length < initialLength;
   }
 
