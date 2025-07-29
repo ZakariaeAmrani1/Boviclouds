@@ -174,7 +174,7 @@ const AddIdentificationModal: React.FC<AddIdentificationModalProps> = ({
   >({});
   const [completedSteps, setCompletedSteps] = useState<Set<number>>(new Set());
 
-  const handleFormChange = (field: keyof FormData, value: string) => {
+  const handleFormChange = (field: keyof FormData, value: string | File | null) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
     // Clear validation error for this field
     if (validationErrors[field]) {
@@ -183,6 +183,84 @@ const AddIdentificationModal: React.FC<AddIdentificationModalProps> = ({
         delete newErrors[field];
         return newErrors;
       });
+    }
+  };
+
+  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file && file.type.startsWith('image/')) {
+      handleFormChange('muzzle_image', file);
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setImagePreview(e.target?.result as string);
+      };
+      reader.readAsDataURL(file);
+    } else {
+      toast({
+        title: "Format invalide",
+        description: "Veuillez sélectionner un fichier image valide.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const startCapture = async () => {
+    try {
+      setIsCapturing(true);
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: 'environment' } // Use back camera on mobile
+      });
+      if (videoRef.current) {
+        videoRef.current.srcObject = stream;
+        await videoRef.current.play();
+      }
+    } catch (error) {
+      toast({
+        title: "Erreur caméra",
+        description: "Impossible d'accéder à la caméra.",
+        variant: "destructive",
+      });
+      setIsCapturing(false);
+    }
+  };
+
+  const capturePhoto = () => {
+    if (videoRef.current && canvasRef.current) {
+      const video = videoRef.current;
+      const canvas = canvasRef.current;
+      const context = canvas.getContext('2d');
+
+      if (context) {
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        context.drawImage(video, 0, 0);
+
+        canvas.toBlob((blob) => {
+          if (blob) {
+            const file = new File([blob], 'muzzle-capture.jpg', { type: 'image/jpeg' });
+            handleFormChange('muzzle_image', file);
+            setImagePreview(canvas.toDataURL());
+            stopCapture();
+          }
+        }, 'image/jpeg', 0.8);
+      }
+    }
+  };
+
+  const stopCapture = () => {
+    if (videoRef.current?.srcObject) {
+      const stream = videoRef.current.srcObject as MediaStream;
+      stream.getTracks().forEach(track => track.stop());
+      videoRef.current.srcObject = null;
+    }
+    setIsCapturing(false);
+  };
+
+  const removeImage = () => {
+    handleFormChange('muzzle_image', null);
+    setImagePreview(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
     }
   };
 
