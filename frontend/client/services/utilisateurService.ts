@@ -125,6 +125,7 @@ export class UtilisateurService {
           prenom: user.prenom_lat,
           nom: user.nom_lat,
           email: user.email,
+          CIN: user.CIN,
           password: user.passwordHash,
           telephone: "0666666666",
           role:
@@ -201,6 +202,7 @@ export class UtilisateurService {
           prenom_lat: input.prenom,
           nom_lat: input.nom,
           email: input.email,
+          CIN: input.CIN,
           telephone: input.telephone,
           role: [
             input.role === UtilisateurRole.INSEMINATEUR
@@ -240,6 +242,7 @@ export class UtilisateurService {
       nom: input.nom,
       password: input.password,
       email: input.email,
+      CIN: input.CIN,
       telephone: input.telephone,
       role: input.role,
       statut: input.statut || UtilisateurStatus.EN_ATTENTE,
