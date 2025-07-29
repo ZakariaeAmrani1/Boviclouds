@@ -19,6 +19,7 @@ import {
 } from "../ui/select";
 import { useToast } from "../../hooks/use-toast";
 import { useInsemination, useUsers } from "../../hooks/useInsemination";
+import { useSemenceList } from "../../hooks/useSemence";
 import {
   InseminationRecord,
   UpdateInseminationInput,
