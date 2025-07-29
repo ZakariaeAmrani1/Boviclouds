@@ -45,7 +45,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, onToggle }) => {
     },
     {
       icon: Activity,
-      label: "Production",
+      label: "Rebouclage",
       path: "/rebouclage",
       badge: "12",
     },
