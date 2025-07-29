@@ -111,6 +111,7 @@ export const useInsemination = () => {
   );
 
   const deleteRecord = useCallback(async (id: string): Promise<boolean> => {
+    console.log(id);
     setLoading(true);
     setError(null);
     try {
@@ -278,9 +279,7 @@ export const useUsers = () => {
 
   const getUserName = useCallback(
     (userId: string): string => {
-      console.log(userId);
       const user = users.find((u) => u.id === userId);
-      console.log(users);
       return user ? `${user.prenom} ${user.nom}` : userId;
     },
     [users],

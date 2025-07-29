@@ -313,7 +313,7 @@ const AddInseminationModal: React.FC<AddInseminationModalProps> = ({
               <SelectContent>
                 {inseminateurs.map((user) => (
                   <SelectItem key={user.id} value={user.id}>
-                    {user.prenom} {user.nom} ({user.role})
+                    {user.prenom} {user.nom}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -351,7 +351,7 @@ const AddInseminationModal: React.FC<AddInseminationModalProps> = ({
               <SelectContent>
                 {responsables.map((user) => (
                   <SelectItem key={user.id} value={user.id}>
-                    {user.prenom} {user.nom} ({user.role})
+                    {user.prenom} {user.nom}
                   </SelectItem>
                 ))}
               </SelectContent>

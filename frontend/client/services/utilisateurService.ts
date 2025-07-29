@@ -119,7 +119,6 @@ export class UtilisateurService {
           Authorization: `Bearer ${token}`,
         },
       });
-      console.log(response);
       response.data.data.map((user) => {
         UtilisateursData.push({
           id: user._id,
@@ -135,7 +134,11 @@ export class UtilisateurService {
                 ? UtilisateurRole.ELEVEUR
                 : user.role[0] === "CONTROLEUR_LAITIER"
                   ? UtilisateurRole.CONTROLEUR
-                  : UtilisateurRole.IDENTIFICATEUR,
+                  : user.role[0] === "IDENTIFICATEUR"
+                    ? UtilisateurRole.IDENTIFICATEUR
+                    : user.role[0] === "ADMIN"
+                      ? UtilisateurRole.ADMINISTRATEUR
+                      : UtilisateurRole.SUPPORT,
           statut:
             user.statut === "APPROVED"
               ? UtilisateurStatus.ACTIF
@@ -221,10 +224,10 @@ export class UtilisateurService {
     id: string,
     input: UpdateUtilisateurInput,
   ): Promise<UtilisateurRecord | null> {
-    // Simulate API delay
-    await new Promise((resolve) => setTimeout(resolve, 150));
+    const apiUrl = import.meta.env.VITE_API_URL;
 
     const recordIndex = UtilisateursData.findIndex((u) => u.id === id);
+
     if (recordIndex === -1) {
       return null;
     }
@@ -255,8 +258,20 @@ export class UtilisateurService {
    * Delete a utilisateur record
    */
   static async delete(id: string): Promise<boolean> {
+    const apiUrl = import.meta.env.VITE_API_URL;
     // Simulate API delay
-    await new Promise((resolve) => setTimeout(resolve, 100));
+    try {
+      const token = localStorage.getItem("access_token");
+      const response = await axios.delete(`${apiUrl}users/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+    } catch (e) {
+      console.log(e);
+    }
+
+    console.log(id);
 
     const initialLength = UtilisateursData.length;
     UtilisateursData = UtilisateursData.filter((u) => u.id !== id);
