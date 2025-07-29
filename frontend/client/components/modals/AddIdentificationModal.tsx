@@ -238,6 +238,10 @@ const AddIdentificationModal: React.FC<AddIdentificationModalProps> = ({
           return true;
         }
         case 2: {
+          // Image step - no validation required, images are optional
+          return true;
+        }
+        case 3: {
           const mereData = {
             nni: formData.mere_nni.trim().toUpperCase(),
             date_naissance: formData.mere_date_naissance,
@@ -252,7 +256,7 @@ const AddIdentificationModal: React.FC<AddIdentificationModalProps> = ({
           QuickValidationSchemas.grandPereMaternel.parse(grandPereMData);
           return true;
         }
-        case 3: {
+        case 4: {
           const pereData = {
             nni: formData.pere_nni.trim().toUpperCase(),
             date_naissance: formData.pere_date_naissance,
@@ -273,7 +277,7 @@ const AddIdentificationModal: React.FC<AddIdentificationModalProps> = ({
           QuickValidationSchemas.grandMerePaternelle.parse(grandMerePData);
           return true;
         }
-        case 4: {
+        case 5: {
           const complemData = {
             eleveur_id: formData.eleveur_id.trim(),
             exploitation_id: formData.exploitation_id.trim(),
@@ -330,7 +334,7 @@ const AddIdentificationModal: React.FC<AddIdentificationModalProps> = ({
     const originalStep = currentStep;
     let allValid = true;
 
-    for (let step = 1; step <= 4; step++) {
+    for (let step = 1; step <= 5; step++) {
       setCurrentStep(step);
       if (!validateCurrentStep()) {
         allValid = false;
