@@ -32,8 +32,9 @@ import { UpdatePwdDto } from './dtos/update-pwd.dto';
     @Patch(':id')
     async updateUser(
       @Param('id') id: string,
-      @Body() updateUserDto: UpdateUserDto,
+      @Body() updateUserDto: any,
     ) {
+      console.log('Update User DTO:', updateUserDto);
       return await this.usersService.updateUser(id, updateUserDto);
     }
 
