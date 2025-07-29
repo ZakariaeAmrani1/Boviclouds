@@ -192,22 +192,19 @@ const EditIdentificationModal: React.FC<EditIdentificationModalProps> = ({
         sujet_race: identification.infos_sujet.race,
         sujet_sexe: identification.infos_sujet.sexe,
         sujet_type: identification.infos_sujet.type,
-        muzzle_image: null,
+        images: [],
         mere_nni: identification.infos_mere.nni,
         mere_date_naissance:
           identification.infos_mere.date_naissance.split("T")[0],
         mere_race: identification.infos_mere.race,
         grand_pere_maternel_nni: identification.grand_pere_maternel.nni,
-        grand_pere_maternel_nom: identification.grand_pere_maternel.nom,
         grand_pere_maternel_date_naissance:
           identification.grand_pere_maternel.date_naissance.split("T")[0],
         grand_pere_maternel_race: identification.grand_pere_maternel.race,
         pere_nni: identification.pere.nni,
-        pere_nom: identification.pere.nom,
         pere_date_naissance: identification.pere.date_naissance.split("T")[0],
         pere_race: identification.pere.race,
         grand_pere_paternel_nni: identification.grand_pere_paternel.nni,
-        grand_pere_paternel_nom: identification.grand_pere_paternel.nom,
         grand_pere_paternel_date_naissance:
           identification.grand_pere_paternel.date_naissance.split("T")[0],
         grand_pere_paternel_race: identification.grand_pere_paternel.race,
@@ -224,101 +221,11 @@ const EditIdentificationModal: React.FC<EditIdentificationModalProps> = ({
     }
   }, [identification]);
 
-  // Image upload handlers
-  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      if (file.size > 5 * 1024 * 1024) {
-        toast({
-          title: "Erreur",
-          description: "L'image ne doit pas dépasser 5MB.",
-          variant: "destructive",
-        });
-        return;
-      }
-
-      if (!file.type.startsWith('image/')) {
-        toast({
-          title: "Erreur",
-          description: "Veuillez sélectionner un fichier image valide.",
-          variant: "destructive",
-        });
-        return;
-      }
-
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const result = e.target?.result as string;
-        setImagePreview(result);
-        setFormData(prev => ({ ...prev, muzzle_image: file }));
-      };
-      reader.readAsDataURL(file);
-    }
+  const handleImagesChange = (images: ImageData[]) => {
+    setFormData(prev => ({ ...prev, images }));
   };
 
-  const startCapture = async () => {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream;
-        setIsCapturing(true);
-      }
-    } catch (error) {
-      toast({
-        title: "Erreur",
-        description: "Impossible d'accéder à la caméra. Veuillez vérifier les permissions.",
-        variant: "destructive",
-      });
-    }
-  };
-
-  const capturePhoto = () => {
-    if (videoRef.current && canvasRef.current) {
-      const video = videoRef.current;
-      const canvas = canvasRef.current;
-      const context = canvas.getContext('2d');
-
-      if (context) {
-        canvas.width = video.videoWidth;
-        canvas.height = video.videoHeight;
-        context.drawImage(video, 0, 0, canvas.width, canvas.height);
-
-        canvas.toBlob((blob) => {
-          if (blob) {
-            const file = new File([blob], 'muzzle-capture.jpg', { type: 'image/jpeg' });
-            const reader = new FileReader();
-            reader.onload = (e) => {
-              const result = e.target?.result as string;
-              setImagePreview(result);
-              setFormData(prev => ({ ...prev, muzzle_image: file }));
-            };
-            reader.readAsDataURL(file);
-          }
-        }, 'image/jpeg', 0.8);
-      }
-
-      stopCapture();
-    }
-  };
-
-  const stopCapture = () => {
-    if (videoRef.current?.srcObject) {
-      const stream = videoRef.current.srcObject as MediaStream;
-      stream.getTracks().forEach(track => track.stop());
-      videoRef.current.srcObject = null;
-    }
-    setIsCapturing(false);
-  };
-
-  const removeImage = () => {
-    setImagePreview(null);
-    setFormData(prev => ({ ...prev, muzzle_image: null }));
-    if (fileInputRef.current) {
-      fileInputRef.current.value = '';
-    }
-  };
-
-  const handleFormChange = (field: keyof FormData, value: string) => {
+  const handleFormChange = (field: keyof FormData, value: string | ImageData[]) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
     // Clear validation error for this field
     if (validationErrors[field]) {
@@ -336,13 +243,6 @@ const EditIdentificationModal: React.FC<EditIdentificationModalProps> = ({
     }
     setValidationErrors({});
     setCurrentStep(1);
-    // Reset image states
-    setImagePreview(null);
-    setIsCapturing(false);
-    stopCapture();
-    if (fileInputRef.current) {
-      fileInputRef.current.value = '';
-    }
   };
 
   const validateCurrentStep = (): boolean => {
@@ -362,6 +262,10 @@ const EditIdentificationModal: React.FC<EditIdentificationModalProps> = ({
           return true;
         }
         case 2: {
+          // Image step - no validation required
+          return true;
+        }
+        case 3: {
           const mereData = {
             nni: formData.mere_nni.trim().toUpperCase(),
             date_naissance: formData.mere_date_naissance,
@@ -369,7 +273,6 @@ const EditIdentificationModal: React.FC<EditIdentificationModalProps> = ({
           };
           const grandPereMData = {
             nni: formData.grand_pere_maternel_nni.trim().toUpperCase(),
-            nom: formData.grand_pere_maternel_nom.trim(),
             date_naissance: formData.grand_pere_maternel_date_naissance,
             race: formData.grand_pere_maternel_race as Race,
           };
@@ -377,16 +280,14 @@ const EditIdentificationModal: React.FC<EditIdentificationModalProps> = ({
           QuickValidationSchemas.grandPereMaternel.parse(grandPereMData);
           return true;
         }
-        case 3: {
+        case 4: {
           const pereData = {
             nni: formData.pere_nni.trim().toUpperCase(),
-            nom: formData.pere_nom.trim(),
             date_naissance: formData.pere_date_naissance,
             race: formData.pere_race as Race,
           };
           const grandPerePData = {
             nni: formData.grand_pere_paternel_nni.trim().toUpperCase(),
-            nom: formData.grand_pere_paternel_nom.trim(),
             date_naissance: formData.grand_pere_paternel_date_naissance,
             race: formData.grand_pere_paternel_race as Race,
           };
@@ -400,7 +301,7 @@ const EditIdentificationModal: React.FC<EditIdentificationModalProps> = ({
           QuickValidationSchemas.grandMerePaternelle.parse(grandMerePData);
           return true;
         }
-        case 4: {
+        case 5: {
           const complemData = {
             eleveur_id: formData.eleveur_id.trim(),
             exploitation_id: formData.exploitation_id.trim(),
@@ -576,7 +477,7 @@ const EditIdentificationModal: React.FC<EditIdentificationModalProps> = ({
     // Validate all steps first
     const originalStep = currentStep;
 
-    for (let step = 1; step <= 4; step++) {
+    for (let step = 1; step <= 5; step++) {
       setCurrentStep(step);
       if (!validateCurrentStep()) {
         toast({
