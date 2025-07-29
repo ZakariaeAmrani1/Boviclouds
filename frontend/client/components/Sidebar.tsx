@@ -133,7 +133,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, onToggle }) => {
         {/* Mobile Logo Section with Close Button */}
         <div className="p-4 border-b border-gray-100 flex-shrink-0">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
+            <div className="flex items-center justify-center gap-3">
               <img
                 src="https://cdn.builder.io/api/v1/image/assets%2F9c3f5518114a4d9c95471253796f59d3%2F53555526c6924d53896a8aecabe47366?format=webp&width=800"
                 alt="Boviclouds"
