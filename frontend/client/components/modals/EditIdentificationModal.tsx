@@ -10,10 +10,7 @@ import {
   Eye,
   Calendar,
   Edit3,
-  Camera,
-  Upload,
-  X,
-  ImageIcon,
+  Images,
 } from "lucide-react";
 import {
   Dialog,
@@ -38,6 +35,7 @@ import { Separator } from "../ui/separator";
 import { Badge } from "../ui/badge";
 import { useToast } from "../../hooks/use-toast";
 import { useIdentification } from "../../hooks/useIdentification";
+import MultiImageUpload, { ImageData } from "../ui/multi-image-upload";
 import {
   IdentificationRecord,
   UpdateIdentificationInput,
@@ -65,7 +63,7 @@ interface FormData {
   sujet_race: Race | "";
   sujet_sexe: Sexe | "";
   sujet_type: TypeAnimal | "";
-  muzzle_image: File | null;
+  images: ImageData[];
 
   // Mother info
   mere_nni: string;
@@ -107,24 +105,30 @@ const steps = [
   },
   {
     id: 2,
+    title: "Photos de l'animal",
+    description: "Images d'identification",
+    icon: Images,
+  },
+  {
+    id: 3,
     title: "Lignée maternelle",
     description: "Mère et grand-père maternel",
     icon: Users,
   },
   {
-    id: 3,
+    id: 4,
     title: "Lignée paternelle",
     description: "Père et grands-parents paternels",
     icon: Users,
   },
   {
-    id: 4,
+    id: 5,
     title: "Informations complémentaires",
     description: "Éleveur, exploitation et responsable",
     icon: Building,
   },
   {
-    id: 5,
+    id: 6,
     title: "Vérification",
     description: "Validation des modifications",
     icon: Eye,
@@ -140,12 +144,7 @@ const EditIdentificationModal: React.FC<EditIdentificationModalProps> = ({
   const { toast } = useToast();
   const { loading, error, updateRecord } = useIdentification();
 
-  // Image upload state
-  const [imagePreview, setImagePreview] = useState<string | null>(null);
-  const [isCapturing, setIsCapturing] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const canvasRef = useRef<HTMLCanvasElement>(null);
+
 
   const [currentStep, setCurrentStep] = useState(1);
   const [originalData, setOriginalData] = useState<FormData | null>(null);
@@ -155,20 +154,17 @@ const EditIdentificationModal: React.FC<EditIdentificationModalProps> = ({
     sujet_race: "",
     sujet_sexe: "",
     sujet_type: "",
-    muzzle_image: null,
+    images: [],
     mere_nni: "",
     mere_date_naissance: "",
     mere_race: "",
     grand_pere_maternel_nni: "",
-    grand_pere_maternel_nom: "",
     grand_pere_maternel_date_naissance: "",
     grand_pere_maternel_race: "",
     pere_nni: "",
-    pere_nom: "",
     pere_date_naissance: "",
     pere_race: "",
     grand_pere_paternel_nni: "",
-    grand_pere_paternel_nom: "",
     grand_pere_paternel_date_naissance: "",
     grand_pere_paternel_race: "",
     grand_mere_paternelle_nni: "",
@@ -183,7 +179,7 @@ const EditIdentificationModal: React.FC<EditIdentificationModalProps> = ({
     Record<string, string>
   >({});
   const [completedSteps, setCompletedSteps] = useState<Set<number>>(
-    new Set([1, 2, 3, 4, 5]),
+    new Set([1, 2, 3, 4, 5, 6]),
   ); // All steps are completed initially for edit
 
   // Initialize form with identification data
