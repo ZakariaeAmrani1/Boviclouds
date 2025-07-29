@@ -77,6 +77,7 @@ interface FormData {
   prenom: string;
   nom: string;
   email: string;
+  CIN: string;
   telephone: string;
   role: UtilisateurRole;
   statut: UtilisateurStatus;
@@ -113,6 +114,7 @@ const Utilisateurs: React.FC = () => {
     prenom: "",
     nom: "",
     email: "",
+    CIN: "",
     telephone: "",
     role: UtilisateurRole.ELEVEUR,
     statut: UtilisateurStatus.EN_ATTENTE,
@@ -199,6 +201,7 @@ const Utilisateurs: React.FC = () => {
       prenom: "",
       nom: "",
       email: "",
+      CIN: "",
       telephone: "",
       role: UtilisateurRole.ELEVEUR,
       statut: UtilisateurStatus.EN_ATTENTE,
@@ -225,6 +228,7 @@ const Utilisateurs: React.FC = () => {
         prenom: fullRecord.prenom,
         nom: fullRecord.nom,
         email: fullRecord.email,
+        CIN: fullRecord.CIN,
         telephone: fullRecord.telephone || "",
         role: fullRecord.role,
         statut: fullRecord.statut,
@@ -248,6 +252,7 @@ const Utilisateurs: React.FC = () => {
         prenom: fullRecord.prenom,
         nom: fullRecord.nom,
         email: fullRecord.email,
+        CIN: fullRecord.CIN,
         telephone: fullRecord.telephone || "",
         role: fullRecord.role,
         statut: fullRecord.statut,
@@ -278,6 +283,7 @@ const Utilisateurs: React.FC = () => {
           prenom: formData.prenom.trim(),
           nom: formData.nom.trim(),
           email: formData.email.trim(),
+          CIN: formData.CIN.trim(),
           password: formData.password.trim(),
           telephone: formData.telephone.trim() || undefined,
           role: formData.role,
@@ -1080,6 +1086,36 @@ const Utilisateurs: React.FC = () => {
                         </SelectItem>
                       </SelectContent>
                     </Select>
+                  )}
+                </div>
+                <div className="space-y-2">
+                  <Label
+                    htmlFor="prenom"
+                    className="text-sm font-normal text-black flex items-center gap-2"
+                  >
+                    CIN *
+                  </Label>
+                  <Input
+                    id="prenom"
+                    value={formData.CIN}
+                    onChange={(e) => {
+                      handleFormChange("prenom", e.target.value);
+                      setValidationErrors((prev) =>
+                        prev.filter((err) => err.field !== "prenom"),
+                      );
+                    }}
+                    className={`h-10 sm:h-12 px-3 sm:px-4 text-sm rounded-xl ${
+                      getFieldError(validationErrors, "prenom")
+                        ? "border-red-500 focus:border-red-500"
+                        : "border-boviclouds-gray-100"
+                    }`}
+                    placeholder="Ex: Jean"
+                    disabled={modalMode === "view"}
+                  />
+                  {getFieldError(validationErrors, "prenom") && (
+                    <p className="text-sm text-red-600">
+                      {getFieldError(validationErrors, "prenom")}
+                    </p>
                   )}
                 </div>
 
