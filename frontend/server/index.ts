@@ -148,6 +148,15 @@ export function createServer() {
   app.put("/api/insemination/:id", handleUpdateInsemination);
   app.delete("/api/insemination/:id", handleDeleteInsemination);
 
+  // Semence API routes
+  app.get("/api/semence/stats", handleGetSemenceStats);
+  app.get("/api/semence/export", handleExportSemences);
+  app.get("/api/semence/:id", handleGetSemence);
+  app.get("/api/semence", handleGetSemences);
+  app.post("/api/semence", handleCreateSemence);
+  app.put("/api/semence/:id", handleUpdateSemence);
+  app.delete("/api/semence/:id", handleDeleteSemence);
+
   // Utilisateur API routes
   app.get("/api/utilisateur/role/:role", handleGetUsersByRole);
   app.get("/api/utilisateur/:id", handleGetUser);
