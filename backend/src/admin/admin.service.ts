@@ -36,11 +36,12 @@ export class AdminService {
     );
   }
 
-  async createUserAccount(dto:CreateAccForUserDto): Promise<User> {
+  async createUserAccount(dto: CreateAccForUserDto): Promise<User> {
     const newUser = new this.userModel({
       ...dto,
       role: [dto.role],
     });
+
     return await newUser.save();
   }
 }
