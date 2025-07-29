@@ -9,10 +9,7 @@ import {
   Building,
   Eye,
   Calendar,
-  Camera,
-  Upload,
-  X,
-  ImageIcon,
+  Images,
 } from "lucide-react";
 import {
   Dialog,
@@ -37,6 +34,7 @@ import { Separator } from "../ui/separator";
 import { Badge } from "../ui/badge";
 import { useToast } from "../../hooks/use-toast";
 import { useIdentification } from "../../hooks/useIdentification";
+import MultiImageUpload, { ImageData } from "../ui/multi-image-upload";
 import {
   CreateIdentificationInput,
   Race,
@@ -62,7 +60,7 @@ interface FormData {
   sujet_race: Race | "";
   sujet_sexe: Sexe | "";
   sujet_type: TypeAnimal | "";
-  muzzle_image: File | null;
+  images: ImageData[];
 
   // Mother info
   mere_nni: string;
@@ -104,24 +102,30 @@ const steps = [
   },
   {
     id: 2,
+    title: "Photos de l'animal",
+    description: "Images d'identification",
+    icon: Images,
+  },
+  {
+    id: 3,
     title: "Lignée maternelle",
     description: "Mère et grand-père maternel",
     icon: Users,
   },
   {
-    id: 3,
+    id: 4,
     title: "Lignée paternelle",
     description: "Père et grands-parents paternels",
     icon: Users,
   },
   {
-    id: 4,
+    id: 5,
     title: "Informations complémentaires",
     description: "Éleveur, exploitation et responsable",
     icon: Building,
   },
   {
-    id: 5,
+    id: 6,
     title: "Vérification",
     description: "Validation des données",
     icon: Eye,
@@ -137,18 +141,13 @@ const AddIdentificationModal: React.FC<AddIdentificationModalProps> = ({
   const { loading, error, createRecord } = useIdentification();
 
   const [currentStep, setCurrentStep] = useState(1);
-  const [imagePreview, setImagePreview] = useState<string | null>(null);
-  const [isCapturing, setIsCapturing] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const canvasRef = useRef<HTMLCanvasElement>(null);
   const [formData, setFormData] = useState<FormData>({
     sujet_nni: "",
     sujet_date_naissance: "",
     sujet_race: "",
     sujet_sexe: "",
     sujet_type: "",
-    muzzle_image: null,
+    images: [],
     mere_nni: "",
     mere_date_naissance: "",
     mere_race: "",
@@ -174,7 +173,7 @@ const AddIdentificationModal: React.FC<AddIdentificationModalProps> = ({
   >({});
   const [completedSteps, setCompletedSteps] = useState<Set<number>>(new Set());
 
-  const handleFormChange = (field: keyof FormData, value: string | File | null) => {
+  const handleFormChange = (field: keyof FormData, value: string | ImageData[]) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
     // Clear validation error for this field
     if (validationErrors[field]) {
@@ -186,82 +185,8 @@ const AddIdentificationModal: React.FC<AddIdentificationModalProps> = ({
     }
   };
 
-  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file && file.type.startsWith('image/')) {
-      handleFormChange('muzzle_image', file);
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        setImagePreview(e.target?.result as string);
-      };
-      reader.readAsDataURL(file);
-    } else {
-      toast({
-        title: "Format invalide",
-        description: "Veuillez sélectionner un fichier image valide.",
-        variant: "destructive",
-      });
-    }
-  };
-
-  const startCapture = async () => {
-    try {
-      setIsCapturing(true);
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: 'environment' } // Use back camera on mobile
-      });
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream;
-        await videoRef.current.play();
-      }
-    } catch (error) {
-      toast({
-        title: "Erreur caméra",
-        description: "Impossible d'accéder à la caméra.",
-        variant: "destructive",
-      });
-      setIsCapturing(false);
-    }
-  };
-
-  const capturePhoto = () => {
-    if (videoRef.current && canvasRef.current) {
-      const video = videoRef.current;
-      const canvas = canvasRef.current;
-      const context = canvas.getContext('2d');
-
-      if (context) {
-        canvas.width = video.videoWidth;
-        canvas.height = video.videoHeight;
-        context.drawImage(video, 0, 0);
-
-        canvas.toBlob((blob) => {
-          if (blob) {
-            const file = new File([blob], 'muzzle-capture.jpg', { type: 'image/jpeg' });
-            handleFormChange('muzzle_image', file);
-            setImagePreview(canvas.toDataURL());
-            stopCapture();
-          }
-        }, 'image/jpeg', 0.8);
-      }
-    }
-  };
-
-  const stopCapture = () => {
-    if (videoRef.current?.srcObject) {
-      const stream = videoRef.current.srcObject as MediaStream;
-      stream.getTracks().forEach(track => track.stop());
-      videoRef.current.srcObject = null;
-    }
-    setIsCapturing(false);
-  };
-
-  const removeImage = () => {
-    handleFormChange('muzzle_image', null);
-    setImagePreview(null);
-    if (fileInputRef.current) {
-      fileInputRef.current.value = '';
-    }
+  const handleImagesChange = (images: ImageData[]) => {
+    handleFormChange('images', images);
   };
 
   const resetForm = () => {
@@ -271,7 +196,7 @@ const AddIdentificationModal: React.FC<AddIdentificationModalProps> = ({
       sujet_race: "",
       sujet_sexe: "",
       sujet_type: "",
-      muzzle_image: null,
+      images: [],
       mere_nni: "",
       mere_date_naissance: "",
       mere_race: "",
@@ -294,12 +219,6 @@ const AddIdentificationModal: React.FC<AddIdentificationModalProps> = ({
     setValidationErrors({});
     setCurrentStep(1);
     setCompletedSteps(new Set());
-    setImagePreview(null);
-    setIsCapturing(false);
-    stopCapture();
-    if (fileInputRef.current) {
-      fileInputRef.current.value = '';
-    }
   };
 
   const validateCurrentStep = (): boolean => {
