@@ -123,6 +123,7 @@ export const useUtilisateur = () => {
     setError(null);
     try {
       const result = await UtilisateurService.delete(id);
+      console.log(result);
       if (!result) {
         setError("Impossible de supprimer l'utilisateur");
       }
