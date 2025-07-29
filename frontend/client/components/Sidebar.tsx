@@ -245,18 +245,25 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, onToggle }) => {
           className={`p-4 border-b border-gray-100 flex-shrink-0 ${isOpen ? "" : "px-2"}`}
         >
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-emerald-500 to-emerald-600 flex items-center justify-center flex-shrink-0">
-              <span className="text-white font-bold text-sm">B</span>
-            </div>
-            {isOpen && (
-              <div className="min-w-0">
-                <h1 className="text-lg font-bold text-gray-900 truncate">
-                  Boviclouds
-                </h1>
-                <p className="text-xs text-gray-500 truncate">
-                  Farm Management
-                </p>
+            {isOpen ? (
+              <div className="flex items-center gap-3">
+                <img
+                  src="https://cdn.builder.io/api/v1/image/assets%2F9c3f5518114a4d9c95471253796f59d3%2Ffe4202f79e8c4d15ac712d298e235f41?format=webp&width=800"
+                  alt="Boviclouds Logo"
+                  className="w-8 h-8 object-contain flex-shrink-0"
+                />
+                <img
+                  src="https://cdn.builder.io/api/v1/image/assets%2F9c3f5518114a4d9c95471253796f59d3%2F53555526c6924d53896a8aecabe47366?format=webp&width=800"
+                  alt="Boviclouds"
+                  className="h-6 object-contain"
+                />
               </div>
+            ) : (
+              <img
+                src="https://cdn.builder.io/api/v1/image/assets%2F9c3f5518114a4d9c95471253796f59d3%2Ffe4202f79e8c4d15ac712d298e235f41?format=webp&width=800"
+                alt="Boviclouds Logo"
+                className="w-8 h-8 object-contain flex-shrink-0 mx-auto"
+              />
             )}
           </div>
         </div>
