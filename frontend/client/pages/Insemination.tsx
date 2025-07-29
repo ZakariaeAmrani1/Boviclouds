@@ -33,10 +33,7 @@ import {
   useInseminationExport,
   useUsers,
 } from "../hooks/useInsemination";
-import {
-  InseminationRecord,
-  InseminationFilters,
-} from "@shared/insemination";
+import { InseminationRecord, InseminationFilters } from "@shared/insemination";
 
 // Import the modals
 import AddInseminationModal from "../components/modals/AddInseminationModal";
@@ -57,6 +54,8 @@ const Insemination: React.FC = () => {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [recordToDelete, setRecordToDelete] =
     useState<InseminationRecord | null>(null);
+  const [inseminateurss, setInseminateur] = useState(null);
+  const [responsabless, setResponsables] = useState(null);
 
   // Search form state
   const [searchForm, setSearchForm] = useState({
@@ -92,7 +91,10 @@ const Insemination: React.FC = () => {
   const { loading: exportLoading, exportData } = useInseminationExport();
 
   const { users, getUserName } = useUsers();
-
+  const inseminateurs = users.filter((user) => user.role === "INSEMINATEUR");
+  const responsables = users.filter(
+    (user) => user.role === "RESPONSABLE_LOCAL",
+  );
   // Event handlers
   const handleSearchInputChange = (
     field: string,
@@ -252,7 +254,7 @@ const Insemination: React.FC = () => {
                 placeholder="Rechercher par NNI..."
               />
             </div>
-            
+
             <div>
               <Label className="block text-sm font-medium text-gray-700 mb-2">
                 ID Semence
@@ -260,7 +262,9 @@ const Insemination: React.FC = () => {
               <Input
                 type="text"
                 value={searchForm.semence_id || ""}
-                onChange={(e) => handleSearchInputChange("semence_id", e.target.value)}
+                onChange={(e) =>
+                  handleSearchInputChange("semence_id", e.target.value)
+                }
                 className="w-full"
                 placeholder="SEM123456..."
               />
@@ -273,7 +277,9 @@ const Insemination: React.FC = () => {
               <Input
                 type="date"
                 value={searchForm.date_dissemination || ""}
-                onChange={(e) => handleSearchInputChange("date_dissemination", e.target.value)}
+                onChange={(e) =>
+                  handleSearchInputChange("date_dissemination", e.target.value)
+                }
                 className="w-full"
               />
             </div>
@@ -285,7 +291,10 @@ const Insemination: React.FC = () => {
               <Select
                 value={searchForm.inseminateur_id || ""}
                 onValueChange={(value) =>
-                  handleSearchInputChange("inseminateur_id", value === "all" ? "" : value)
+                  handleSearchInputChange(
+                    "inseminateur_id",
+                    value === "all" ? "" : value,
+                  )
                 }
               >
                 <SelectTrigger>
@@ -293,7 +302,7 @@ const Insemination: React.FC = () => {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">Tous</SelectItem>
-                  {users.map((user) => (
+                  {inseminateurs.map((user) => (
                     <SelectItem key={user.id} value={user.id}>
                       {user.prenom} {user.nom}
                     </SelectItem>
@@ -309,7 +318,10 @@ const Insemination: React.FC = () => {
               <Select
                 value={searchForm.responsable_local_id || ""}
                 onValueChange={(value) =>
-                  handleSearchInputChange("responsable_local_id", value === "all" ? "" : value)
+                  handleSearchInputChange(
+                    "responsable_local_id",
+                    value === "all" ? "" : value,
+                  )
                 }
               >
                 <SelectTrigger>
@@ -317,7 +329,7 @@ const Insemination: React.FC = () => {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">Tous</SelectItem>
-                  {users.map((user) => (
+                  {responsables.map((user) => (
                     <SelectItem key={user.id} value={user.id}>
                       {user.prenom} {user.nom}
                     </SelectItem>
@@ -333,7 +345,9 @@ const Insemination: React.FC = () => {
               <Input
                 type="text"
                 value={searchForm.createdBy || ""}
-                onChange={(e) => handleSearchInputChange("createdBy", e.target.value)}
+                onChange={(e) =>
+                  handleSearchInputChange("createdBy", e.target.value)
+                }
                 className="w-full"
                 placeholder="Nom de l'utilisateur..."
               />
@@ -496,7 +510,10 @@ const Insemination: React.FC = () => {
               <p className="text-gray-500 mb-4">
                 Commencez par ajouter une nouvelle insémination.
               </p>
-              <Button onClick={openCreateModal} className="bg-boviclouds-primary hover:bg-boviclouds-green-dark">
+              <Button
+                onClick={openCreateModal}
+                className="bg-boviclouds-primary hover:bg-boviclouds-green-dark"
+              >
                 <Plus className="w-4 h-4 mr-2" />
                 Ajouter une insémination
               </Button>

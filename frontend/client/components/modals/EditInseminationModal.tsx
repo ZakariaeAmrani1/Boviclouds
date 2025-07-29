@@ -19,7 +19,10 @@ import {
 } from "../ui/select";
 import { useToast } from "../../hooks/use-toast";
 import { useInsemination, useUsers } from "../../hooks/useInsemination";
-import { InseminationRecord, UpdateInseminationInput } from "@shared/insemination";
+import {
+  InseminationRecord,
+  UpdateInseminationInput,
+} from "@shared/insemination";
 import {
   UpdateInseminationValidationSchema,
   formatValidationErrors,
@@ -52,6 +55,10 @@ const EditInseminationModal: React.FC<EditInseminationModalProps> = ({
   const { toast } = useToast();
   const { loading, error, updateRecord } = useInsemination();
   const { users, loading: usersLoading, getUserName } = useUsers();
+  const inseminateurs = users.filter((user) => user.role === "INSEMINATEUR");
+  const responsables = users.filter(
+    (user) => user.role === "RESPONSABLE_LOCAL",
+  );
 
   const [formData, setFormData] = useState<FormData>({
     nni: "",
@@ -68,7 +75,7 @@ const EditInseminationModal: React.FC<EditInseminationModalProps> = ({
   const [hasChanges, setHasChanges] = useState(false);
 
   // Get today's date for max validation
-  const today = new Date().toISOString().split('T')[0];
+  const today = new Date().toISOString().split("T")[0];
 
   // Initialize form data when modal opens or insemination changes
   useEffect(() => {
@@ -80,6 +87,7 @@ const EditInseminationModal: React.FC<EditInseminationModalProps> = ({
         inseminateur_id: insemination.inseminateur_id,
         responsable_local_id: insemination.responsable_local_id,
       };
+      console.log(initialData);
       setFormData(initialData);
       setHasChanges(false);
       setValidationErrors({});
@@ -89,7 +97,7 @@ const EditInseminationModal: React.FC<EditInseminationModalProps> = ({
   const handleFormChange = (field: keyof FormData, value: string) => {
     setFormData((prev) => {
       const newData = { ...prev, [field]: value };
-      
+
       // Check if there are changes from original
       const originalData = {
         nni: insemination.nni,
@@ -98,15 +106,17 @@ const EditInseminationModal: React.FC<EditInseminationModalProps> = ({
         inseminateur_id: insemination.inseminateur_id,
         responsable_local_id: insemination.responsable_local_id,
       };
-      
+
       const hasChanged = Object.keys(newData).some(
-        key => newData[key as keyof FormData] !== originalData[key as keyof FormData]
+        (key) =>
+          newData[key as keyof FormData] !==
+          originalData[key as keyof FormData],
       );
       setHasChanges(hasChanged);
-      
+
       return newData;
     });
-    
+
     // Clear validation error for this field
     if (validationErrors[field]) {
       setValidationErrors((prev) => {
@@ -175,7 +185,7 @@ const EditInseminationModal: React.FC<EditInseminationModalProps> = ({
     try {
       // Prepare update data (only changed fields)
       const updateData: UpdateInseminationInput = {};
-      
+
       if (formData.nni !== insemination.nni) {
         updateData.nni = formData.nni.toUpperCase();
       }
@@ -218,7 +228,8 @@ const EditInseminationModal: React.FC<EditInseminationModalProps> = ({
       } else {
         toast({
           title: "Erreur",
-          description: error || "Une erreur est survenue lors de la mise à jour.",
+          description:
+            error || "Une erreur est survenue lors de la mise à jour.",
           variant: "destructive",
         });
       }
@@ -238,14 +249,15 @@ const EditInseminationModal: React.FC<EditInseminationModalProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Edit className="w-5 h-5 text-boviclouds-primary" />
             Modifier l'insémination
           </DialogTitle>
           <p className="text-sm text-gray-600">
-            ID: {insemination.id} | Créé le {new Date(insemination.createdAt).toLocaleDateString("fr-FR")}
+            ID: {insemination.id} | Créé le{" "}
+            {new Date(insemination.createdAt).toLocaleDateString("fr-FR")}
           </p>
         </DialogHeader>
 
@@ -279,13 +291,19 @@ const EditInseminationModal: React.FC<EditInseminationModalProps> = ({
               id="date_dissemination"
               type="date"
               value={formData.date_dissemination}
-              onChange={(e) => handleFormChange("date_dissemination", e.target.value)}
+              onChange={(e) =>
+                handleFormChange("date_dissemination", e.target.value)
+              }
               max={today}
-              className={validationErrors.date_dissemination ? "border-red-500" : ""}
+              className={
+                validationErrors.date_dissemination ? "border-red-500" : ""
+              }
               disabled={loading}
             />
             {validationErrors.date_dissemination && (
-              <p className="text-sm text-red-600">{validationErrors.date_dissemination}</p>
+              <p className="text-sm text-red-600">
+                {validationErrors.date_dissemination}
+              </p>
             )}
           </div>
 
@@ -301,7 +319,11 @@ const EditInseminationModal: React.FC<EditInseminationModalProps> = ({
                 value={formData.semence_id}
                 onChange={(e) => handleFormChange("semence_id", e.target.value)}
                 placeholder="SEM123456"
-                className={validationErrors.semence_id ? "border-red-500 flex-1" : "flex-1"}
+                className={
+                  validationErrors.semence_id
+                    ? "border-red-500 flex-1"
+                    : "flex-1"
+                }
                 disabled={loading}
               />
               <Button
@@ -316,7 +338,9 @@ const EditInseminationModal: React.FC<EditInseminationModalProps> = ({
               </Button>
             </div>
             {validationErrors.semence_id && (
-              <p className="text-sm text-red-600">{validationErrors.semence_id}</p>
+              <p className="text-sm text-red-600">
+                {validationErrors.semence_id}
+              </p>
             )}
             <p className="text-xs text-gray-500">
               Format: SEM suivi de 6 chiffres (ex: SEM123456)
@@ -331,14 +355,20 @@ const EditInseminationModal: React.FC<EditInseminationModalProps> = ({
             </Label>
             <Select
               value={formData.inseminateur_id}
-              onValueChange={(value) => handleFormChange("inseminateur_id", value)}
+              onValueChange={(value) =>
+                handleFormChange("inseminateur_id", value)
+              }
               disabled={loading || usersLoading}
             >
-              <SelectTrigger className={validationErrors.inseminateur_id ? "border-red-500" : ""}>
+              <SelectTrigger
+                className={
+                  validationErrors.inseminateur_id ? "border-red-500" : ""
+                }
+              >
                 <SelectValue placeholder="Sélectionner un inséminateur" />
               </SelectTrigger>
               <SelectContent>
-                {users.map((user) => (
+                {inseminateurs.map((user) => (
                   <SelectItem key={user.id} value={user.id}>
                     {user.prenom} {user.nom} ({user.role})
                   </SelectItem>
@@ -346,26 +376,37 @@ const EditInseminationModal: React.FC<EditInseminationModalProps> = ({
               </SelectContent>
             </Select>
             {validationErrors.inseminateur_id && (
-              <p className="text-sm text-red-600">{validationErrors.inseminateur_id}</p>
+              <p className="text-sm text-red-600">
+                {validationErrors.inseminateur_id}
+              </p>
             )}
           </div>
 
           {/* Responsable Local Field */}
           <div className="space-y-2">
-            <Label htmlFor="responsable_local_id" className="text-sm font-medium">
+            <Label
+              htmlFor="responsable_local_id"
+              className="text-sm font-medium"
+            >
               <User className="w-4 h-4 inline mr-1" />
               Responsable local <span className="text-red-500">*</span>
             </Label>
             <Select
               value={formData.responsable_local_id}
-              onValueChange={(value) => handleFormChange("responsable_local_id", value)}
+              onValueChange={(value) =>
+                handleFormChange("responsable_local_id", value)
+              }
               disabled={loading || usersLoading}
             >
-              <SelectTrigger className={validationErrors.responsable_local_id ? "border-red-500" : ""}>
+              <SelectTrigger
+                className={
+                  validationErrors.responsable_local_id ? "border-red-500" : ""
+                }
+              >
                 <SelectValue placeholder="Sélectionner un responsable local" />
               </SelectTrigger>
               <SelectContent>
-                {users.map((user) => (
+                {responsables.map((user) => (
                   <SelectItem key={user.id} value={user.id}>
                     {user.prenom} {user.nom} ({user.role})
                   </SelectItem>
@@ -373,7 +414,9 @@ const EditInseminationModal: React.FC<EditInseminationModalProps> = ({
               </SelectContent>
             </Select>
             {validationErrors.responsable_local_id && (
-              <p className="text-sm text-red-600">{validationErrors.responsable_local_id}</p>
+              <p className="text-sm text-red-600">
+                {validationErrors.responsable_local_id}
+              </p>
             )}
           </div>
 
@@ -381,7 +424,8 @@ const EditInseminationModal: React.FC<EditInseminationModalProps> = ({
           {validationErrors.responsable_local_id?.includes("différents") && (
             <div className="p-3 bg-yellow-50 border border-yellow-200 rounded-md">
               <p className="text-sm text-yellow-800">
-                L'inséminateur et le responsable local doivent être des personnes différentes.
+                L'inséminateur et le responsable local doivent être des
+                personnes différentes.
               </p>
             </div>
           )}

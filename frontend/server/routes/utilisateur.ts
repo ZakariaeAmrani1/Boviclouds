@@ -5,19 +5,20 @@ import axios from "axios";
 // Mock users data for insemination dropdowns
 // This would typically come from your user database
 let usersData: User[] = [];
-
 // GET /api/utilisateur - Get all users for dropdowns
 export const handleGetUsers: RequestHandler = async (req, res) => {
-  const apiUrl = process.env.SERVER_API_URL;
   usersData = [];
+  const apiUrl = process.env.SERVER_API_URL;
   try {
+    usersData = [];
     const token = req.body.token;
     const data = await axios.get(`${apiUrl}users`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
     });
-    data.data.map((user) => {
+    usersData = [];
+    data.data.data.map((user) => {
       usersData.push({
         id: user._id,
         nom: user.nom_lat,
@@ -26,6 +27,7 @@ export const handleGetUsers: RequestHandler = async (req, res) => {
         role: user.role[0],
       });
     });
+    console.log(usersData.length);
     const response: UsersListResponse = {
       success: true,
       data: usersData,
