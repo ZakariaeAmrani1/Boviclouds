@@ -24,6 +24,7 @@ export interface UtilisateurRecord {
   prenom: string;
   nom: string;
   email: string;
+  CIN: string;
   password: string;
   telephone?: string;
   role: UtilisateurRole;
@@ -48,6 +49,7 @@ export interface CreateUtilisateurInput {
   prenom: string;
   nom: string;
   email: string;
+  CIN: string;
   password: string;
   telephone?: string;
   role: UtilisateurRole;
