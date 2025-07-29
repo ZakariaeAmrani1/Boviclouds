@@ -308,44 +308,56 @@ const EditInseminationModal: React.FC<EditInseminationModalProps> = ({
             )}
           </div>
 
-          {/* Semence ID Field */}
+          {/* Semence Selection Field */}
           <div className="space-y-2">
             <Label htmlFor="semence_id" className="text-sm font-medium">
-              ID Semence <span className="text-red-500">*</span>
+              <FlaskConical className="w-4 h-4 inline mr-1" />
+              Semence <span className="text-red-500">*</span>
             </Label>
-            <div className="flex gap-2">
-              <Input
-                id="semence_id"
-                type="text"
-                value={formData.semence_id}
-                onChange={(e) => handleFormChange("semence_id", e.target.value)}
-                placeholder="SEM123456"
-                className={
-                  validationErrors.semence_id
-                    ? "border-red-500 flex-1"
-                    : "flex-1"
-                }
-                disabled={loading}
-              />
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={generateSemenceId}
-                disabled={loading}
-                title="Générer un nouvel ID"
+            <Select
+              value={formData.semence_id}
+              onValueChange={(value) => handleFormChange("semence_id", value)}
+              disabled={loading || semenceLoading}
+            >
+              <SelectTrigger
+                className={validationErrors.semence_id ? "border-red-500" : ""}
               >
-                <RefreshCw className="w-4 h-4" />
-              </Button>
-            </div>
+                <SelectValue placeholder="Sélectionner une semence" />
+              </SelectTrigger>
+              <SelectContent>
+                {semences.map((semence) => (
+                  <SelectItem key={semence.id} value={semence.identificateur}>
+                    <div className="flex items-center gap-2">
+                      <span className="font-mono text-blue-800 bg-blue-100 px-2 py-1 rounded text-xs">
+                        {semence.identificateur}
+                      </span>
+                      <span className="text-gray-700">
+                        {semence.nom_taureau} ({semence.race_taureau})
+                      </span>
+                    </div>
+                  </SelectItem>
+                ))}
+                {semences.length === 0 && !semenceLoading && (
+                  <SelectItem value="" disabled>
+                    Aucune semence disponible
+                  </SelectItem>
+                )}
+              </SelectContent>
+            </Select>
             {validationErrors.semence_id && (
               <p className="text-sm text-red-600">
                 {validationErrors.semence_id}
               </p>
             )}
             <p className="text-xs text-gray-500">
-              Format: SEM suivi de 6 chiffres (ex: SEM123456)
+              Sélectionnez une semence parmi celles disponibles
             </p>
+            {semenceLoading && (
+              <p className="text-xs text-gray-500 flex items-center gap-1">
+                <RefreshCw className="w-3 h-3 animate-spin" />
+                Chargement des semences...
+              </p>
+            )}
           </div>
 
           {/* Inseminateur Field */}
