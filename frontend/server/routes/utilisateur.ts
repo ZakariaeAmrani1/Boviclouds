@@ -27,7 +27,6 @@ export const handleGetUsers: RequestHandler = async (req, res) => {
         role: user.role[0],
       });
     });
-    console.log(usersData.length);
     const response: UsersListResponse = {
       success: true,
       data: usersData,
