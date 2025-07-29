@@ -15,7 +15,7 @@ export enum UtilisateurRole {
   IDENTIFICATEUR = "Identificateur",
   ELEVEUR = "Éleveur",
   CONTROLEUR = "Contrôleur",
-  SUPPORT = "Support",
+  SUPPORT = "Non Définit",
 }
 
 // Base utilisateur record interface
@@ -35,6 +35,7 @@ export interface UtilisateurRecord {
   region?: string;
   ville?: string;
   codePostal?: string;
+  province?: string;
   dateCreation: string;
   dateModification: string;
   dernierConnexion?: string;
@@ -71,6 +72,8 @@ export interface UpdateUtilisateurInput {
   codeExploitation?: string;
   adresse?: string;
   ville?: string;
+  province?: string;
+  region?: string;
   codePostal?: string;
   notes?: string;
 }

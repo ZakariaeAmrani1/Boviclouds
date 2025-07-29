@@ -87,12 +87,11 @@ const EditInseminationModal: React.FC<EditInseminationModalProps> = ({
         inseminateur_id: insemination.inseminateur_id,
         responsable_local_id: insemination.responsable_local_id,
       };
-      console.log(initialData);
       setFormData(initialData);
       setHasChanges(false);
       setValidationErrors({});
     }
-  }, [isOpen, insemination]);
+  }, [isOpen, insemination, formData]);
 
   const handleFormChange = (field: keyof FormData, value: string) => {
     setFormData((prev) => {
@@ -355,9 +354,9 @@ const EditInseminationModal: React.FC<EditInseminationModalProps> = ({
             </Label>
             <Select
               value={formData.inseminateur_id}
-              onValueChange={(value) =>
-                handleFormChange("inseminateur_id", value)
-              }
+              onValueChange={(value) => {
+                handleFormChange("inseminateur_id", value);
+              }}
               disabled={loading || usersLoading}
             >
               <SelectTrigger
@@ -393,9 +392,9 @@ const EditInseminationModal: React.FC<EditInseminationModalProps> = ({
             </Label>
             <Select
               value={formData.responsable_local_id}
-              onValueChange={(value) =>
-                handleFormChange("responsable_local_id", value)
-              }
+              onValueChange={(value) => {
+                handleFormChange("responsable_local_id", value);
+              }}
               disabled={loading || usersLoading}
             >
               <SelectTrigger
