@@ -1404,25 +1404,25 @@ const EditIdentificationModal: React.FC<EditIdentificationModalProps> = ({
                       <div className="flex justify-between">
                         <span className="text-green-700">Père:</span>
                         <span
-                          className={`font-medium ${formData.pere_nom !== originalData?.pere_nom || formData.pere_nni !== originalData?.pere_nni ? "text-amber-600" : ""}`}
+                          className={`font-medium ${formData.pere_nni !== originalData?.pere_nni ? "text-amber-600" : ""}`}
                         >
-                          {formData.pere_nom} ({formData.pere_nni})
+                          {formData.pere_nni}
                         </span>
                       </div>
                       <div className="flex justify-between">
                         <span className="text-green-700">Grand-père M:</span>
                         <span
-                          className={`font-medium ${formData.grand_pere_maternel_nom !== originalData?.grand_pere_maternel_nom ? "text-amber-600" : ""}`}
+                          className={`font-medium ${formData.grand_pere_maternel_nni !== originalData?.grand_pere_maternel_nni ? "text-amber-600" : ""}`}
                         >
-                          {formData.grand_pere_maternel_nom}
+                          {formData.grand_pere_maternel_nni}
                         </span>
                       </div>
                       <div className="flex justify-between">
                         <span className="text-green-700">Grand-père P:</span>
                         <span
-                          className={`font-medium ${formData.grand_pere_paternel_nom !== originalData?.grand_pere_paternel_nom ? "text-amber-600" : ""}`}
+                          className={`font-medium ${formData.grand_pere_paternel_nni !== originalData?.grand_pere_paternel_nni ? "text-amber-600" : ""}`}
                         >
-                          {formData.grand_pere_paternel_nom}
+                          {formData.grand_pere_paternel_nni}
                         </span>
                       </div>
                     </div>
