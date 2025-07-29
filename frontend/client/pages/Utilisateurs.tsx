@@ -77,14 +77,16 @@ interface FormData {
   prenom: string;
   nom: string;
   email: string;
+  CIN: string;
+  civilite: string;
   telephone: string;
   role: UtilisateurRole;
   statut: UtilisateurStatus;
   password: string;
   passwordConfirmation: string;
   adresse: string;
-  ville: string;
-  codePostal: string;
+  region: string;
+  province: string;
   notes: string;
 }
 
@@ -113,14 +115,16 @@ const Utilisateurs: React.FC = () => {
     prenom: "",
     nom: "",
     email: "",
+    CIN: "",
+    civilite: "",
     telephone: "",
     role: UtilisateurRole.ELEVEUR,
     statut: UtilisateurStatus.EN_ATTENTE,
     password: "",
     passwordConfirmation: "",
     adresse: "",
-    ville: "",
-    codePostal: "",
+    region: "",
+    province: "",
     notes: "",
   });
 
@@ -151,6 +155,11 @@ const Utilisateurs: React.FC = () => {
 
   const { loading: exportLoading, exportData } = useUtilisateurExport();
 
+  const civiliteOptions = [
+    { value: "M", label: "Monsieur" },
+    { value: "Mme", label: "Madame" },
+    { value: "Mlle", label: "Mademoiselle" },
+  ];
   // Event handlers
   const handleSearchInputChange = (
     field: keyof UtilisateurFilters,
@@ -199,14 +208,16 @@ const Utilisateurs: React.FC = () => {
       prenom: "",
       nom: "",
       email: "",
+      CIN: "",
+      civilite: "",
       telephone: "",
       role: UtilisateurRole.ELEVEUR,
       statut: UtilisateurStatus.EN_ATTENTE,
       password: "",
       passwordConfirmation: "",
       adresse: "",
-      ville: "",
-      codePostal: "",
+      region: "",
+      province: "",
       notes: "",
     });
   };
@@ -225,14 +236,16 @@ const Utilisateurs: React.FC = () => {
         prenom: fullRecord.prenom,
         nom: fullRecord.nom,
         email: fullRecord.email,
+        CIN: fullRecord.CIN,
+        civilite: fullRecord.civilite,
         telephone: fullRecord.telephone || "",
         role: fullRecord.role,
         statut: fullRecord.statut,
         password: fullRecord.email || "",
         passwordConfirmation: fullRecord.email || "",
         adresse: fullRecord.adresse || "",
-        ville: fullRecord.ville || "",
-        codePostal: fullRecord.codePostal || "",
+        region: fullRecord.region || "",
+        province: fullRecord.province || "",
         notes: fullRecord.notes || "",
       });
       setModalMode("edit");
@@ -248,14 +261,16 @@ const Utilisateurs: React.FC = () => {
         prenom: fullRecord.prenom,
         nom: fullRecord.nom,
         email: fullRecord.email,
+        CIN: fullRecord.CIN,
+        civilite: fullRecord.civilite,
         telephone: fullRecord.telephone || "",
         role: fullRecord.role,
         statut: fullRecord.statut,
         password: fullRecord.email || "",
         passwordConfirmation: fullRecord.email || "",
         adresse: fullRecord.adresse || "",
-        ville: fullRecord.ville || "",
-        codePostal: fullRecord.codePostal || "",
+        region: fullRecord.region || "",
+        province: fullRecord.province || "",
         notes: fullRecord.notes || "",
       });
       setModalMode("view");
@@ -278,6 +293,8 @@ const Utilisateurs: React.FC = () => {
           prenom: formData.prenom.trim(),
           nom: formData.nom.trim(),
           email: formData.email.trim(),
+          CIN: formData.CIN.trim(),
+          civilite: formData.civilite.trim(),
           password: formData.password.trim(),
           telephone: formData.telephone.trim() || undefined,
           role: formData.role,
@@ -285,8 +302,8 @@ const Utilisateurs: React.FC = () => {
           exploitation: formData.password.trim() || undefined,
           codeExploitation: formData.passwordConfirmation.trim() || undefined,
           adresse: formData.adresse.trim() || undefined,
-          ville: formData.ville.trim() || undefined,
-          codePostal: formData.codePostal.trim() || undefined,
+          region: formData.region.trim() || undefined,
+          province: formData.province.trim() || undefined,
           notes: formData.notes.trim() || undefined,
         };
 
@@ -321,9 +338,9 @@ const Utilisateurs: React.FC = () => {
           exploitation: formData.password.trim() || undefined,
           codeExploitation: formData.passwordConfirmation.trim() || undefined,
           adresse: formData.adresse.trim() || undefined,
-          ville: formData.ville.trim() || undefined,
-          codePostal: formData.codePostal.trim() || undefined,
-          notes: formData.notes.trim() || undefined,
+          region: formData.region.trim() || undefined,
+          province: formData.province.trim() || undefined,
+          civilite: formData.civilite.trim() || undefined,
         };
 
         const validation = validateUpdateInput(input);
@@ -1035,7 +1052,7 @@ const Utilisateurs: React.FC = () => {
                           Contrôleur
                         </SelectItem>
                         <SelectItem value={UtilisateurRole.SUPPORT}>
-                          Support
+                          Non Définit
                         </SelectItem>
                       </SelectContent>
                     </Select>
@@ -1083,57 +1100,121 @@ const Utilisateurs: React.FC = () => {
                     </Select>
                   )}
                 </div>
-
-                {/* Exploitation */}
                 <div className="space-y-2">
                   <Label
-                    htmlFor="exploitation"
-                    className="text-sm font-normal text-black"
+                    htmlFor="prenom"
+                    className="text-sm font-normal text-black flex items-center gap-2"
                   >
-                    Mot de passe
+                    CIN *
                   </Label>
-                  <div className="relative">
-                    <Input
-                      id="password"
-                      value={formData.password}
-                      type={showPassword ? "text" : "password"}
-                      onChange={(e) =>
-                        handleFormChange("password", e.target.value)
-                      }
-                      className="h-10 sm:h-12 px-3 sm:px-4 text-sm border-boviclouds-gray-100 rounded-xl"
-                      placeholder="Ex: Ferme des Prés"
-                      disabled={true}
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowPassword(false)}
-                      className="absolute right-4 top-1/2 transform -translate-y-1/2 text-[#9A9A9A] hover:text-boviclouds-primary transition-colors"
-                    >
-                      <svg
-                        className="w-5 h-5"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        {showPassword ? (
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M15 12a3 3 0 11-6 0 3 3 0 016 0z M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
-                          />
-                        ) : (
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L3 3m6.878 6.878L21 21"
-                          />
-                        )}
-                      </svg>
-                    </button>
-                  </div>
+                  <Input
+                    id="CIN"
+                    value={formData.CIN}
+                    onChange={(e) => {
+                      handleFormChange("CIN", e.target.value);
+                      setValidationErrors((prev) =>
+                        prev.filter((err) => err.field !== "prenom"),
+                      );
+                    }}
+                    className={`h-10 sm:h-12 px-3 sm:px-4 text-sm rounded-xl ${
+                      getFieldError(validationErrors, "prenom")
+                        ? "border-red-500 focus:border-red-500"
+                        : "border-boviclouds-gray-100"
+                    }`}
+                    placeholder="Ex: Jean"
+                    disabled={modalMode === "view"}
+                  />
+                  {getFieldError(validationErrors, "prenom") && (
+                    <p className="text-sm text-red-600">
+                      {getFieldError(validationErrors, "prenom")}
+                    </p>
+                  )}
                 </div>
+                {modalMode !== "edit" && (
+                  <div className="space-y-2">
+                    <Label
+                      htmlFor="prenom"
+                      className="text-sm font-normal text-black flex items-center gap-2"
+                    >
+                      Civilité *
+                    </Label>
+                    <Input
+                      id="CIN"
+                      value={formData.civilite}
+                      onChange={(e) => {
+                        handleFormChange("civilite", e.target.value);
+                        setValidationErrors((prev) =>
+                          prev.filter((err) => err.field !== "civilite"),
+                        );
+                      }}
+                      className={`h-10 sm:h-12 px-3 sm:px-4 text-sm rounded-xl ${
+                        getFieldError(validationErrors, "civilite")
+                          ? "border-red-500 focus:border-red-500"
+                          : "border-boviclouds-gray-100"
+                      }`}
+                      placeholder="Ex: Jean"
+                      disabled={modalMode === "view"}
+                    />
+                    {getFieldError(validationErrors, "prenom") && (
+                      <p className="text-sm text-red-600">
+                        {getFieldError(validationErrors, "prenom")}
+                      </p>
+                    )}
+                  </div>
+                )}
+
+                {/* Exploitation */}
+                {modalMode === "view" && (
+                  <div className="space-y-2">
+                    <Label
+                      htmlFor="exploitation"
+                      className="text-sm font-normal text-black"
+                    >
+                      Mot de passe
+                    </Label>
+                    <div className="relative">
+                      <Input
+                        id="password"
+                        value={formData.password}
+                        type={showPassword ? "text" : "password"}
+                        onChange={(e) =>
+                          handleFormChange("password", e.target.value)
+                        }
+                        className="h-10 sm:h-12 px-3 sm:px-4 text-sm border-boviclouds-gray-100 rounded-xl"
+                        placeholder="Ex: Ferme des Prés"
+                        disabled={true}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword(false)}
+                        className="absolute right-4 top-1/2 transform -translate-y-1/2 text-[#9A9A9A] hover:text-boviclouds-primary transition-colors"
+                      >
+                        <svg
+                          className="w-5 h-5"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          {showPassword ? (
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M15 12a3 3 0 11-6 0 3 3 0 016 0z M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                            />
+                          ) : (
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L3 3m6.878 6.878L21 21"
+                            />
+                          )}
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
 
@@ -1161,12 +1242,12 @@ const Utilisateurs: React.FC = () => {
                   htmlFor="ville"
                   className="text-sm font-normal text-black"
                 >
-                  Ville
+                  Région
                 </Label>
                 <Input
                   id="ville"
-                  value={formData.ville}
-                  onChange={(e) => handleFormChange("ville", e.target.value)}
+                  value={formData.region}
+                  onChange={(e) => handleFormChange("region", e.target.value)}
                   className="h-10 sm:h-12 px-3 sm:px-4 text-sm border-boviclouds-gray-100 rounded-xl"
                   placeholder="Ex: Paris"
                   disabled={modalMode === "view"}
@@ -1174,38 +1255,38 @@ const Utilisateurs: React.FC = () => {
               </div>
               <div className="space-y-2">
                 <Label
-                  htmlFor="codePostal"
+                  htmlFor="province"
                   className="text-sm font-normal text-black"
                 >
-                  Code Postal
+                  Province
                 </Label>
                 <Input
-                  id="codePostal"
-                  value={formData.codePostal}
+                  id="province"
+                  value={formData.province}
                   onChange={(e) => {
-                    handleFormChange("codePostal", e.target.value);
+                    handleFormChange("province", e.target.value);
                     setValidationErrors((prev) =>
-                      prev.filter((err) => err.field !== "codePostal"),
+                      prev.filter((err) => err.field !== "province"),
                     );
                   }}
                   className={`h-10 sm:h-12 px-3 sm:px-4 text-sm rounded-xl ${
-                    getFieldError(validationErrors, "codePostal")
+                    getFieldError(validationErrors, "province")
                       ? "border-red-500 focus:border-red-500"
                       : "border-boviclouds-gray-100"
                   }`}
                   placeholder="Ex: 75001"
                   disabled={modalMode === "view"}
                 />
-                {getFieldError(validationErrors, "codePostal") && (
+                {getFieldError(validationErrors, "province") && (
                   <p className="text-sm text-red-600">
-                    {getFieldError(validationErrors, "codePostal")}
+                    {getFieldError(validationErrors, "province")}
                   </p>
                 )}
               </div>
             </div>
 
             {/* Notes section */}
-            <div className="space-y-2">
+            {/* <div className="space-y-2">
               <Label htmlFor="notes" className="text-sm font-normal text-black">
                 Notes
               </Label>
@@ -1235,7 +1316,7 @@ const Utilisateurs: React.FC = () => {
                   </span>
                 )}
               </div>
-            </div>
+            </div> */}
 
             {/* User Info Section (View Mode) */}
             {modalMode === "view" && selectedRecord && (
