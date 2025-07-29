@@ -83,8 +83,8 @@ interface FormData {
   password: string;
   passwordConfirmation: string;
   adresse: string;
-  ville: string;
-  codePostal: string;
+  region: string;
+  province: string;
   notes: string;
 }
 
@@ -119,8 +119,8 @@ const Utilisateurs: React.FC = () => {
     password: "",
     passwordConfirmation: "",
     adresse: "",
-    ville: "",
-    codePostal: "",
+    region: "",
+    province: "",
     notes: "",
   });
 
@@ -205,8 +205,8 @@ const Utilisateurs: React.FC = () => {
       password: "",
       passwordConfirmation: "",
       adresse: "",
-      ville: "",
-      codePostal: "",
+      region: "",
+      province: "",
       notes: "",
     });
   };
@@ -231,8 +231,8 @@ const Utilisateurs: React.FC = () => {
         password: fullRecord.email || "",
         passwordConfirmation: fullRecord.email || "",
         adresse: fullRecord.adresse || "",
-        ville: fullRecord.ville || "",
-        codePostal: fullRecord.codePostal || "",
+        region: fullRecord.region || "",
+        province: fullRecord.province || "",
         notes: fullRecord.notes || "",
       });
       setModalMode("edit");
@@ -254,8 +254,8 @@ const Utilisateurs: React.FC = () => {
         password: fullRecord.email || "",
         passwordConfirmation: fullRecord.email || "",
         adresse: fullRecord.adresse || "",
-        ville: fullRecord.ville || "",
-        codePostal: fullRecord.codePostal || "",
+        region: fullRecord.region || "",
+        province: fullRecord.province || "",
         notes: fullRecord.notes || "",
       });
       setModalMode("view");
@@ -285,8 +285,8 @@ const Utilisateurs: React.FC = () => {
           exploitation: formData.password.trim() || undefined,
           codeExploitation: formData.passwordConfirmation.trim() || undefined,
           adresse: formData.adresse.trim() || undefined,
-          ville: formData.ville.trim() || undefined,
-          codePostal: formData.codePostal.trim() || undefined,
+          ville: formData.region.trim() || undefined,
+          codePostal: formData.province.trim() || undefined,
           notes: formData.notes.trim() || undefined,
         };
 
@@ -321,9 +321,8 @@ const Utilisateurs: React.FC = () => {
           exploitation: formData.password.trim() || undefined,
           codeExploitation: formData.passwordConfirmation.trim() || undefined,
           adresse: formData.adresse.trim() || undefined,
-          ville: formData.ville.trim() || undefined,
-          codePostal: formData.codePostal.trim() || undefined,
-          notes: formData.notes.trim() || undefined,
+          region: formData.region.trim() || undefined,
+          province: formData.province.trim() || undefined,
         };
 
         const validation = validateUpdateInput(input);
@@ -1161,12 +1160,12 @@ const Utilisateurs: React.FC = () => {
                   htmlFor="ville"
                   className="text-sm font-normal text-black"
                 >
-                  Ville
+                  Région
                 </Label>
                 <Input
                   id="ville"
-                  value={formData.ville}
-                  onChange={(e) => handleFormChange("ville", e.target.value)}
+                  value={formData.region}
+                  onChange={(e) => handleFormChange("region", e.target.value)}
                   className="h-10 sm:h-12 px-3 sm:px-4 text-sm border-boviclouds-gray-100 rounded-xl"
                   placeholder="Ex: Paris"
                   disabled={modalMode === "view"}
@@ -1174,38 +1173,38 @@ const Utilisateurs: React.FC = () => {
               </div>
               <div className="space-y-2">
                 <Label
-                  htmlFor="codePostal"
+                  htmlFor="province"
                   className="text-sm font-normal text-black"
                 >
-                  Code Postal
+                  Province
                 </Label>
                 <Input
-                  id="codePostal"
-                  value={formData.codePostal}
+                  id="province"
+                  value={formData.province}
                   onChange={(e) => {
-                    handleFormChange("codePostal", e.target.value);
+                    handleFormChange("province", e.target.value);
                     setValidationErrors((prev) =>
-                      prev.filter((err) => err.field !== "codePostal"),
+                      prev.filter((err) => err.field !== "province"),
                     );
                   }}
                   className={`h-10 sm:h-12 px-3 sm:px-4 text-sm rounded-xl ${
-                    getFieldError(validationErrors, "codePostal")
+                    getFieldError(validationErrors, "province")
                       ? "border-red-500 focus:border-red-500"
                       : "border-boviclouds-gray-100"
                   }`}
                   placeholder="Ex: 75001"
                   disabled={modalMode === "view"}
                 />
-                {getFieldError(validationErrors, "codePostal") && (
+                {getFieldError(validationErrors, "province") && (
                   <p className="text-sm text-red-600">
-                    {getFieldError(validationErrors, "codePostal")}
+                    {getFieldError(validationErrors, "province")}
                   </p>
                 )}
               </div>
             </div>
 
             {/* Notes section */}
-            <div className="space-y-2">
+            {/* <div className="space-y-2">
               <Label htmlFor="notes" className="text-sm font-normal text-black">
                 Notes
               </Label>
@@ -1235,7 +1234,7 @@ const Utilisateurs: React.FC = () => {
                   </span>
                 )}
               </div>
-            </div>
+            </div> */}
 
             {/* User Info Section (View Mode) */}
             {modalMode === "view" && selectedRecord && (
