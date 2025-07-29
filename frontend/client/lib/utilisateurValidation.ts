@@ -265,41 +265,41 @@ export const validateUpdateInput = (
     errors.push({ field: "statut", message: "Statut invalide" });
   }
 
-  if (
-    input.codePostal !== undefined &&
-    input.codePostal &&
-    !validatePostalCode(input.codePostal)
-  ) {
-    errors.push({
-      field: "codePostal",
-      message: "Code postal invalide (5 chiffres)",
-    });
-  }
+  // if (
+  //   input.codePostal !== undefined &&
+  //   input.codePostal &&
+  //   !validatePostalCode(input.codePostal)
+  // ) {
+  //   errors.push({
+  //     field: "codePostal",
+  //     message: "Code postal invalide (5 chiffres)",
+  //   });
+  // }
 
-  if (input.notes !== undefined && input.notes && input.notes.length > 500) {
-    errors.push({
-      field: "notes",
-      message: "Les notes ne peuvent pas dépasser 500 caractères",
-    });
-  }
+  // if (input.notes !== undefined && input.notes && input.notes.length > 500) {
+  //   errors.push({
+  //     field: "notes",
+  //     message: "Les notes ne peuvent pas dépasser 500 caractères",
+  //   });
+  // }
 
   // Business logic validation for role changes
-  if (input.role === UtilisateurRole.ELEVEUR && !input.exploitation?.trim()) {
-    errors.push({
-      field: "exploitation",
-      message: "L'exploitation est requise pour les éleveurs",
-    });
-  }
+  // if (input.role === UtilisateurRole.ELEVEUR && !input.exploitation?.trim()) {
+  //   errors.push({
+  //     field: "exploitation",
+  //     message: "L'exploitation est requise pour les éleveurs",
+  //   });
+  // }
 
-  if (
-    input.role === UtilisateurRole.ELEVEUR &&
-    !input.codeExploitation?.trim()
-  ) {
-    errors.push({
-      field: "codeExploitation",
-      message: "Le code d'exploitation est requis pour les éleveurs",
-    });
-  }
+  // if (
+  //   input.role === UtilisateurRole.ELEVEUR &&
+  //   !input.codeExploitation?.trim()
+  // ) {
+  //   errors.push({
+  //     field: "codeExploitation",
+  //     message: "Le code d'exploitation est requis pour les éleveurs",
+  //   });
+  // }
 
   return {
     isValid: errors.length === 0,
