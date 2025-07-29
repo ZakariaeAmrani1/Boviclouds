@@ -119,8 +119,8 @@ export class UtilisateurService {
           Authorization: `Bearer ${token}`,
         },
       });
-
-      response.data.map((user) => {
+      console.log(response);
+      response.data.data.map((user) => {
         UtilisateursData.push({
           id: user._id,
           prenom: user.prenom_lat,
