@@ -26,7 +26,6 @@ import {
   formatValidationErrors,
   validateNNIFormat,
   validateSemenceIdFormat,
-  generateSampleSemenceId,
 } from "../../lib/inseminationValidation";
 
 interface AddInseminationModalProps {
