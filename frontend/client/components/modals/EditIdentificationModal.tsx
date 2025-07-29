@@ -754,133 +754,40 @@ const EditIdentificationModal: React.FC<EditIdentificationModalProps> = ({
                   </div>
                 </div>
 
-                {/* Muzzle Image Upload Section */}
-                <Separator className="my-6" />
-                <div className="space-y-4">
-                  <h3 className="text-base font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                    <ImageIcon className="w-5 h-5" />
-                    Photo du museau
+
+              </div>
+            )}
+
+            {/* Step 2: Image Upload */}
+            {currentStep === 2 && (
+              <div className="space-y-6 animate-fadeIn">
+                <div className="text-center mb-6">
+                  <Images className="w-12 h-12 mx-auto text-boviclouds-primary mb-2" />
+                  <h3 className="text-lg font-semibold text-gray-900">
+                    Photos de l'animal
                   </h3>
+                  <p className="text-gray-600">
+                    Modifiez ou ajoutez des photos pour l'identification de l'animal
+                  </p>
+                </div>
 
-                  <div className="border-2 border-dashed border-gray-300 rounded-lg p-6">
-                    {!imagePreview && !isCapturing && (
-                      <div className="text-center space-y-4">
-                        {/* Cow face placeholder */}
-                        <div className="w-24 h-24 mx-auto bg-gray-100 rounded-full flex items-center justify-center">
-                          <svg
-                            className="w-12 h-12 text-gray-400"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={1.5}
-                              d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4"
-                            />
-                          </svg>
-                        </div>
-                        <p className="text-sm text-gray-600">
-                          Ajoutez une photo du museau de l'animal
-                        </p>
-                        <div className="flex gap-2 justify-center">
-                          <Button
-                            type="button"
-                            variant="outline"
-                            onClick={() => fileInputRef.current?.click()}
-                            className="flex items-center gap-2"
-                          >
-                            <Upload className="w-4 h-4" />
-                            Importer
-                          </Button>
-                          <Button
-                            type="button"
-                            variant="outline"
-                            onClick={startCapture}
-                            className="flex items-center gap-2"
-                          >
-                            <Camera className="w-4 h-4" />
-                            Caméra
-                          </Button>
-                        </div>
-                      </div>
-                    )}
+                <MultiImageUpload
+                  images={formData.images}
+                  onImagesChange={handleImagesChange}
+                  maxImages={5}
+                  maxFileSize={5}
+                  disabled={loading}
+                  className="w-full"
+                />
 
-                    {isCapturing && (
-                      <div className="text-center space-y-4">
-                        <video
-                          ref={videoRef}
-                          autoPlay
-                          className="w-full max-w-md mx-auto rounded-lg"
-                        />
-                        <div className="flex gap-2 justify-center">
-                          <Button
-                            type="button"
-                            onClick={capturePhoto}
-                            className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700"
-                          >
-                            <Camera className="w-4 h-4" />
-                            Capturer
-                          </Button>
-                          <Button
-                            type="button"
-                            variant="outline"
-                            onClick={stopCapture}
-                            className="flex items-center gap-2"
-                          >
-                            <X className="w-4 h-4" />
-                            Annuler
-                          </Button>
-                        </div>
-                      </div>
-                    )}
-
-                    {imagePreview && (
-                      <div className="text-center space-y-4">
-                        <img
-                          src={imagePreview}
-                          alt="Aperçu du museau"
-                          className="w-full max-w-md mx-auto rounded-lg"
-                        />
-                        <div className="flex gap-2 justify-center">
-                          <Button
-                            type="button"
-                            variant="outline"
-                            onClick={() => fileInputRef.current?.click()}
-                            className="flex items-center gap-2"
-                          >
-                            <Upload className="w-4 h-4" />
-                            Remplacer
-                          </Button>
-                          <Button
-                            type="button"
-                            variant="outline"
-                            onClick={removeImage}
-                            className="flex items-center gap-2 text-red-600 hover:text-red-700"
-                          >
-                            <X className="w-4 h-4" />
-                            Supprimer
-                          </Button>
-                        </div>
-                      </div>
-                    )}
-
-                    <input
-                      ref={fileInputRef}
-                      type="file"
-                      accept="image/*"
-                      onChange={handleFileUpload}
-                      className="hidden"
-                    />
-                    <canvas ref={canvasRef} className="hidden" />
-                  </div>
+                <div className="text-xs text-gray-500 text-center bg-blue-50 p-3 rounded-lg">
+                  📝 <strong>Conseil:</strong> Prenez des photos claires du museau, des flancs et de la face de l'animal pour une meilleure identification.
                 </div>
               </div>
             )}
 
-            {/* Step 2: Maternal Line */}
-            {currentStep === 2 && (
+            {/* Step 3: Maternal Line */}
+            {currentStep === 3 && (
               <div className="space-y-8 animate-fadeIn">
                 {/* Mother */}
                 <div>
@@ -1057,8 +964,8 @@ const EditIdentificationModal: React.FC<EditIdentificationModalProps> = ({
               </div>
             )}
 
-            {/* Step 3: Paternal Line */}
-            {currentStep === 3 && (
+            {/* Step 4: Paternal Line */}
+            {currentStep === 4 && (
               <div className="space-y-8 animate-fadeIn">
                 {/* Father */}
                 <div>
@@ -1347,8 +1254,8 @@ const EditIdentificationModal: React.FC<EditIdentificationModalProps> = ({
               </div>
             )}
 
-            {/* Step 4: Complementary Information */}
-            {currentStep === 4 && (
+            {/* Step 5: Complementary Information */}
+            {currentStep === 5 && (
               <div className="space-y-6 animate-fadeIn">
                 <div className="text-center mb-6">
                   <Building className="w-12 h-12 mx-auto text-boviclouds-primary mb-2" />
@@ -1419,8 +1326,8 @@ const EditIdentificationModal: React.FC<EditIdentificationModalProps> = ({
               </div>
             )}
 
-            {/* Step 5: Review with changes highlighted */}
-            {currentStep === 5 && (
+            {/* Step 6: Review with changes highlighted */}
+            {currentStep === 6 && (
               <div className="space-y-6 animate-fadeIn">
                 <div className="text-center mb-6">
                   <Eye className="w-12 h-12 mx-auto text-boviclouds-primary mb-2" />
@@ -1491,6 +1398,12 @@ const EditIdentificationModal: React.FC<EditIdentificationModalProps> = ({
                           className={`font-medium ${formData.sujet_race !== originalData?.sujet_race ? "text-amber-600" : ""}`}
                         >
                           {formData.sujet_race}
+                        </span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-blue-700">Images:</span>
+                        <span className="font-medium">
+                          {formData.images.length} photo(s)
                         </span>
                       </div>
                     </div>
