@@ -62,6 +62,7 @@ interface FormData {
   sujet_race: Race | "";
   sujet_sexe: Sexe | "";
   sujet_type: TypeAnimal | "";
+  muzzle_image: File | null;
 
   // Mother info
   mere_nni: string;
