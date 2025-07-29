@@ -610,172 +610,39 @@ const AddIdentificationModal: React.FC<AddIdentificationModalProps> = ({
                     </Select>
                   </div>
                 </div>
+              </div>
+            )}
 
-                <Separator className="my-6" />
+            {/* Step 2: Image Upload */}
+            {currentStep === 2 && (
+              <div className="space-y-6 animate-fadeIn">
+                <div className="text-center mb-6">
+                  <Images className="w-12 h-12 mx-auto text-boviclouds-primary mb-2" />
+                  <h3 className="text-lg font-semibold text-gray-900">
+                    Photos de l'animal
+                  </h3>
+                  <p className="text-gray-600">
+                    Ajoutez des photos pour l'identification de l'animal (optionnel)
+                  </p>
+                </div>
 
-                {/* Muzzle Image Upload Section */}
-                <div className="space-y-4">
-                  <div className="text-center">
-                    <h3 className="text-base font-semibold text-gray-900 mb-2 flex items-center justify-center gap-2">
-                      <Camera className="w-5 h-5 text-boviclouds-primary" />
-                      Photo du museau
-                    </h3>
-                    <p className="text-sm text-gray-600">
-                      Prenez ou téléchargez une photo du museau de l'animal pour l'identification
-                    </p>
-                  </div>
+                <MultiImageUpload
+                  images={formData.images}
+                  onImagesChange={handleImagesChange}
+                  maxImages={5}
+                  maxFileSize={5}
+                  disabled={loading}
+                  className="w-full"
+                />
 
-                  <div className="border-2 border-dashed border-gray-300 rounded-xl p-6 bg-gray-50">
-                    {!imagePreview && !isCapturing && (
-                      <div className="text-center space-y-4">
-                        {/* Cow Face Placeholder */}
-                        <div className="mx-auto w-32 h-32 bg-gray-200 rounded-lg border-2 border-gray-300 flex items-center justify-center">
-                          <div className="text-center">
-                            <div className="text-6xl text-gray-400 mb-2">🐄</div>
-                            <p className="text-xs text-gray-500">Museau</p>
-                          </div>
-                        </div>
-
-                        <div className="space-y-2">
-                          <p className="text-sm text-gray-600">
-                            Positionnez le museau de l'animal dans le cadre
-                          </p>
-                          <div className="flex flex-col sm:flex-row gap-2 justify-center">
-                            <Button
-                              type="button"
-                              variant="outline"
-                              onClick={startCapture}
-                              className="flex items-center gap-2"
-                              disabled={loading}
-                            >
-                              <Camera className="w-4 h-4" />
-                              Prendre une photo
-                            </Button>
-                            <Button
-                              type="button"
-                              variant="outline"
-                              onClick={() => fileInputRef.current?.click()}
-                              className="flex items-center gap-2"
-                              disabled={loading}
-                            >
-                              <Upload className="w-4 h-4" />
-                              Télécharger
-                            </Button>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-
-                    {isCapturing && (
-                      <div className="text-center space-y-4">
-                        <div className="relative mx-auto max-w-md">
-                          <video
-                            ref={videoRef}
-                            autoPlay
-                            playsInline
-                            className="w-full h-64 object-cover rounded-lg border-2 border-boviclouds-primary"
-                          />
-                          {/* Overlay guide */}
-                          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                            <div className="w-48 h-48 border-2 border-white border-dashed rounded-full bg-black bg-opacity-20 flex items-center justify-center">
-                              <span className="text-white text-sm font-medium">Museau</span>
-                            </div>
-                          </div>
-                        </div>
-                        <div className="flex gap-2 justify-center">
-                          <Button
-                            type="button"
-                            onClick={capturePhoto}
-                            className="bg-boviclouds-primary hover:bg-boviclouds-green-dark flex items-center gap-2"
-                          >
-                            <Camera className="w-4 h-4" />
-                            Capturer
-                          </Button>
-                          <Button
-                            type="button"
-                            variant="outline"
-                            onClick={stopCapture}
-                            className="flex items-center gap-2"
-                          >
-                            <X className="w-4 h-4" />
-                            Annuler
-                          </Button>
-                        </div>
-                      </div>
-                    )}
-
-                    {imagePreview && !isCapturing && (
-                      <div className="text-center space-y-4">
-                        <div className="relative mx-auto max-w-md">
-                          <img
-                            src={imagePreview}
-                            alt="Museau de l'animal"
-                            className="w-full h-64 object-cover rounded-lg border-2 border-green-500"
-                          />
-                          <div className="absolute top-2 right-2">
-                            <Button
-                              type="button"
-                              variant="outline"
-                              size="sm"
-                              onClick={removeImage}
-                              className="bg-white hover:bg-gray-100 text-red-600 hover:text-red-700"
-                            >
-                              <X className="w-4 h-4" />
-                            </Button>
-                          </div>
-                        </div>
-                        <div className="flex items-center justify-center gap-2 text-green-600">
-                          <Check className="w-4 h-4" />
-                          <span className="text-sm font-medium">Photo capturée avec succès</span>
-                        </div>
-                        <div className="flex gap-2 justify-center">
-                          <Button
-                            type="button"
-                            variant="outline"
-                            onClick={startCapture}
-                            className="flex items-center gap-2"
-                            disabled={loading}
-                          >
-                            <Camera className="w-4 h-4" />
-                            Reprendre
-                          </Button>
-                          <Button
-                            type="button"
-                            variant="outline"
-                            onClick={() => fileInputRef.current?.click()}
-                            className="flex items-center gap-2"
-                            disabled={loading}
-                          >
-                            <Upload className="w-4 h-4" />
-                            Remplacer
-                          </Button>
-                        </div>
-                      </div>
-                    )}
-
-                    {/* Hidden file input */}
-                    <input
-                      ref={fileInputRef}
-                      type="file"
-                      accept="image/*"
-                      onChange={handleFileUpload}
-                      className="hidden"
-                    />
-
-                    {/* Hidden canvas for photo capture */}
-                    <canvas ref={canvasRef} className="hidden" />
-                  </div>
-
-                  <div className="text-xs text-gray-500 text-center">
-                    La photo du museau aide à l'identification unique de l'animal.
-                    Formats acceptés: JPG, PNG, WebP (max 5MB)
-                  </div>
+                <div className="text-xs text-gray-500 text-center bg-blue-50 p-3 rounded-lg">
+                  📝 <strong>Conseil:</strong> Prenez des photos claires du museau, des flancs et de la face de l'animal pour une meilleure identification.
                 </div>
               </div>
             )}
 
-            {/* Step 2: Maternal Line */}
-            {currentStep === 2 && (
+            {/* Step 3: Maternal Line */}
+            {currentStep === 3 && (
               <div className="space-y-8 animate-fadeIn">
                 {/* Mother */}
                 <div>
@@ -930,8 +797,8 @@ const AddIdentificationModal: React.FC<AddIdentificationModalProps> = ({
               </div>
             )}
 
-            {/* Step 3: Paternal Line */}
-            {currentStep === 3 && (
+            {/* Step 4: Paternal Line */}
+            {currentStep === 4 && (
               <div className="space-y-8 animate-fadeIn">
                 {/* Father */}
                 <div>
@@ -1179,8 +1046,8 @@ const AddIdentificationModal: React.FC<AddIdentificationModalProps> = ({
               </div>
             )}
 
-            {/* Step 4: Complementary Information */}
-            {currentStep === 4 && (
+            {/* Step 5: Complementary Information */}
+            {currentStep === 5 && (
               <div className="space-y-6 animate-fadeIn">
                 <div className="text-center mb-6">
                   <Building className="w-12 h-12 mx-auto text-boviclouds-primary mb-2" />
@@ -1251,8 +1118,8 @@ const AddIdentificationModal: React.FC<AddIdentificationModalProps> = ({
               </div>
             )}
 
-            {/* Step 5: Review */}
-            {currentStep === 5 && (
+            {/* Step 6: Review */}
+            {currentStep === 6 && (
               <div className="space-y-6 animate-fadeIn">
                 <div className="text-center mb-6">
                   <Eye className="w-12 h-12 mx-auto text-boviclouds-primary mb-2" />
@@ -1288,6 +1155,12 @@ const AddIdentificationModal: React.FC<AddIdentificationModalProps> = ({
                         <span className="text-blue-700">Race:</span>
                         <span className="font-medium">
                           {formData.sujet_race}
+                        </span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-blue-700">Images:</span>
+                        <span className="font-medium">
+                          {formData.images.length} photo(s)
                         </span>
                       </div>
                     </div>
