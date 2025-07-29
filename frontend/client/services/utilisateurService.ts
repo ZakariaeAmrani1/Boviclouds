@@ -196,15 +196,16 @@ export class UtilisateurService {
 
     try {
       const token = localStorage.getItem("access_token");
+
       const response = await axios.post(
-        `${apiUrl}users`,
+        `${apiUrl}admin/create-account-for-user`,
         {
           prenom_lat: input.prenom,
           nom_lat: input.nom,
           email: input.email,
           CIN: input.CIN,
           telephone: input.telephone,
-          role: [
+          role:
             input.role === UtilisateurRole.INSEMINATEUR
               ? "INSEMINATEUR"
               : input.role === UtilisateurRole.ELEVEUR
@@ -214,8 +215,8 @@ export class UtilisateurService {
                   : input.role === UtilisateurRole.CONTROLEUR
                     ? "CONTROLEUR_LAITIER"
                     : "ADMIN",
-          ],
-          statut:
+
+          status:
             input.statut === UtilisateurStatus.ACTIF
               ? "APPROVED"
               : input.statut === UtilisateurStatus.INACTIF
@@ -224,6 +225,7 @@ export class UtilisateurService {
           adresse: input.adresse,
           region: input.region,
           province: input.province,
+          civilite: input.civilite,
         },
         {
           headers: {
