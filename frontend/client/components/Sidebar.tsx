@@ -63,6 +63,12 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, onToggle }) => {
       badge: null,
     },
     {
+      icon: FlaskConical,
+      label: "Semences",
+      path: "/semences",
+      badge: null,
+    },
+    {
       icon: Users,
       label: "Utilisateurs",
       path: "/utilisateurs",
