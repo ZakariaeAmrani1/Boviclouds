@@ -28,6 +28,17 @@ export class AuthService {
     private readonly rateLimiterService:RateLimiterService
   ) {}
 
+  //
+  async generateAccessToken(user: any): Promise<string> {
+    if (!user?._id || !user?.email) {
+      throw new BadRequestException('Invalid user data provided for token generation');
+    }
+    const payload = { sub: user._id, email: user.email,role:user.role };
+    return this.jwtService.sign(payload, {
+      secret: process.env.JWT_SECRET,
+      expiresIn: process.env.JWT_EXPIRATION || '1d',
+    });
+  }
   async register(dto: CreateUserDto, req:Request) {
     const userExists = await this.userModel.findOne({ email: dto.email });
     if (userExists) throw new ConflictException('Email already exists');
@@ -60,7 +71,6 @@ export class AuthService {
     const user = await this.userModel
       .findOne({ email: dto.email })
       .select('+passwordHash');
-    // console.log(user);
     if (!user || !(await user.correctPassword(dto.password))) {
       throw new UnauthorizedException('Invalid credentials');
     }
@@ -68,11 +78,7 @@ export class AuthService {
       throw new UnauthorizedException('Email not confirmed. Please confirm your email and check again');
     if (!user || user?.statut !== AccountStatus.APPROVED)
       throw new UnauthorizedException('Account not approved');
-    const access_token = this.jwtService.sign({
-      sub: user._id,
-      email: user.email,
-      role: user.role,
-    });
+    const access_token = await this.generateAccessToken(user);
     return {
       status: 'success',
       message: 'user logged in successfully',

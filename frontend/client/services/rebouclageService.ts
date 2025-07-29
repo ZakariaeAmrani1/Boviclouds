@@ -7,80 +7,10 @@ import {
   PaginatedResponse,
   RebouclageStatus,
 } from "@shared/rebouclage";
+import axios from "axios";
 
 // Mock data store - this will simulate a database
-let mockRebouclageData: RebouclageRecord[] = [
-  {
-    id: "1",
-    ancienNNI: "FR2541963478",
-    nouveauNNI: "FR2541963501",
-    dateRebouclage: "2024-03-15T10:30:00",
-    creePar: "Jean Dupont",
-    statut: RebouclageStatus.ACTIF,
-    dateCreation: "2024-03-15T10:30:00",
-    dateModification: "2024-03-15T10:30:00",
-    codeExploitation: "EXP001",
-    notes: "Rebouclage effectué suite à changement d'exploitant",
-  },
-  {
-    id: "2",
-    ancienNNI: "FR2541963479",
-    nouveauNNI: "FR2541963502",
-    dateRebouclage: "2024-03-14T14:15:00",
-    creePar: "Marie Martin",
-    statut: RebouclageStatus.EN_ATTENTE,
-    dateCreation: "2024-03-14T14:15:00",
-    dateModification: "2024-03-14T14:15:00",
-    codeExploitation: "EXP002",
-    notes: "En attente de validation administrative",
-  },
-  {
-    id: "3",
-    ancienNNI: "FR2541963480",
-    nouveauNNI: "FR2541963503",
-    dateRebouclage: "2024-03-13T09:45:00",
-    creePar: "Pierre Durand",
-    statut: RebouclageStatus.ACTIF,
-    dateCreation: "2024-03-13T09:45:00",
-    dateModification: "2024-03-13T09:45:00",
-    codeExploitation: "EXP003",
-  },
-  {
-    id: "4",
-    ancienNNI: "FR2541963481",
-    nouveauNNI: "FR2541963504",
-    dateRebouclage: "2024-03-12T16:20:00",
-    creePar: "Sophie Bernard",
-    statut: RebouclageStatus.ANNULE,
-    dateCreation: "2024-03-12T16:20:00",
-    dateModification: "2024-03-12T18:30:00",
-    codeExploitation: "EXP004",
-    notes: "Annulé - erreur dans les données",
-  },
-  {
-    id: "5",
-    ancienNNI: "FR2541963482",
-    nouveauNNI: "FR2541963505",
-    dateRebouclage: "2024-03-11T11:10:00",
-    creePar: "Michel Robert",
-    statut: RebouclageStatus.ACTIF,
-    dateCreation: "2024-03-11T11:10:00",
-    dateModification: "2024-03-11T11:10:00",
-    codeExploitation: "EXP005",
-  },
-  {
-    id: "6",
-    ancienNNI: "FR2541963483",
-    nouveauNNI: "FR2541963506",
-    dateRebouclage: "2024-03-10T08:30:00",
-    creePar: "Anne Dubois",
-    statut: RebouclageStatus.ACTIF,
-    dateCreation: "2024-03-10T08:30:00",
-    dateModification: "2024-03-10T08:30:00",
-    codeExploitation: "EXP006",
-    notes: "Rebouclage automatique",
-  },
-];
+let rebouclageData: RebouclageRecord[] = [];
 
 // Generate unique ID for new records
 const generateId = (): string => {
@@ -113,20 +43,12 @@ const applyFilters = (
     ) {
       return false;
     }
-    if (
-      filters.codeExploitation &&
-      !record.codeExploitation
-        ?.toLowerCase()
-        .includes(filters.codeExploitation.toLowerCase())
-    ) {
-      return false;
-    }
-    if (filters.statut && record.statut !== filters.statut) {
-      return false;
-    }
+
     if (
       filters.creePar &&
-      !record.creePar.toLowerCase().includes(filters.creePar.toLowerCase())
+      !record.identificateur_id
+        .toLowerCase()
+        .includes(filters.creePar.toLowerCase())
     ) {
       return false;
     }
@@ -169,10 +91,36 @@ export class RebouclageService {
     filters: RebouclageFilters = {},
     pagination: PaginationParams = { page: 1, limit: 10 },
   ): Promise<PaginatedResponse<RebouclageRecord>> {
-    // Simulate API delay
-    await new Promise((resolve) => setTimeout(resolve, 100));
+    const apiUrl = import.meta.env.VITE_API_URL;
+    rebouclageData = [];
 
-    const filteredData = applyFilters(mockRebouclageData, filters);
+    try {
+      const token = localStorage.getItem("access_token");
+      const response = await axios.get(`${apiUrl}rebouclages`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      response.data.map((rebouclage) => {
+        rebouclageData.push({
+          id: rebouclage._id,
+          ancienNNI: rebouclage.ancien_nni,
+          nouveauNNI: rebouclage.nouveau_nni,
+          dateRebouclage: rebouclage.date_creation,
+          identificateur_id: rebouclage.identificateur_id._id,
+          CréePar:
+            rebouclage.identificateur_id.nom_lat +
+            " " +
+            rebouclage.identificateur_id.prenom_lat,
+          dateCreation: rebouclage.createdAt,
+          dateModification: rebouclage.updatedAt,
+        });
+      });
+    } catch (error) {
+      console.error("Error getting inseminations:", error);
+    }
+
+    const filteredData = applyFilters(rebouclageData, filters);
     const paginatedResult = applyPagination(filteredData, pagination);
 
     return paginatedResult;
@@ -185,7 +133,7 @@ export class RebouclageService {
     // Simulate API delay
     await new Promise((resolve) => setTimeout(resolve, 50));
 
-    const record = mockRebouclageData.find((r) => r.id === id);
+    const record = rebouclageData.find((r) => r.id === id);
     return record || null;
   }
 
@@ -199,18 +147,16 @@ export class RebouclageService {
     const now = new Date().toISOString();
     const newRecord: RebouclageRecord = {
       id: generateId(),
+      identificateur_id: input.identificateur_id,
+      CréePar: "",
       ancienNNI: input.ancienNNI,
       nouveauNNI: input.nouveauNNI,
       dateRebouclage: input.dateRebouclage || now,
-      creePar: input.creePar,
-      statut: input.statut || RebouclageStatus.EN_ATTENTE,
       dateCreation: now,
       dateModification: now,
-      notes: input.notes,
-      codeExploitation: input.codeExploitation,
     };
 
-    mockRebouclageData.unshift(newRecord);
+    rebouclageData.unshift(newRecord);
     return newRecord;
   }
 
@@ -224,19 +170,19 @@ export class RebouclageService {
     // Simulate API delay
     await new Promise((resolve) => setTimeout(resolve, 150));
 
-    const recordIndex = mockRebouclageData.findIndex((r) => r.id === id);
+    const recordIndex = rebouclageData.findIndex((r) => r.id === id);
     if (recordIndex === -1) {
       return null;
     }
 
-    const existingRecord = mockRebouclageData[recordIndex];
+    const existingRecord = rebouclageData[recordIndex];
     const updatedRecord: RebouclageRecord = {
       ...existingRecord,
       ...input,
       dateModification: new Date().toISOString(),
     };
 
-    mockRebouclageData[recordIndex] = updatedRecord;
+    rebouclageData[recordIndex] = updatedRecord;
     return updatedRecord;
   }
 
@@ -247,9 +193,9 @@ export class RebouclageService {
     // Simulate API delay
     await new Promise((resolve) => setTimeout(resolve, 100));
 
-    const initialLength = mockRebouclageData.length;
-    mockRebouclageData = mockRebouclageData.filter((r) => r.id !== id);
-    return mockRebouclageData.length < initialLength;
+    const initialLength = rebouclageData.length;
+    rebouclageData = rebouclageData.filter((r) => r.id !== id);
+    return rebouclageData.length < initialLength;
   }
 
   /**
@@ -264,18 +210,18 @@ export class RebouclageService {
     // Simulate API delay
     await new Promise((resolve) => setTimeout(resolve, 50));
 
-    const total = mockRebouclageData.length;
-    const actif = mockRebouclageData.filter(
-      (r) => r.statut === RebouclageStatus.ACTIF,
-    ).length;
-    const enAttente = mockRebouclageData.filter(
-      (r) => r.statut === RebouclageStatus.EN_ATTENTE,
-    ).length;
-    const annule = mockRebouclageData.filter(
-      (r) => r.statut === RebouclageStatus.ANNULE,
-    ).length;
+    // const total = rebouclageData.length;
+    // const actif = rebouclageData.filter(
+    //   (r) => r.statut === RebouclageStatus.ACTIF,
+    // ).length;
+    // const enAttente = rebouclageData.filter(
+    //   (r) => r.statut === RebouclageStatus.EN_ATTENTE,
+    // ).length;
+    // const annule = rebouclageData.filter(
+    //   (r) => r.statut === RebouclageStatus.ANNULE,
+    // ).length;
 
-    return { total, actif, enAttente, annule };
+    return { total: 0, actif: 0, enAttente: 0, annule: 0 };
   }
 
   /**
@@ -288,7 +234,7 @@ export class RebouclageService {
     // Simulate API delay
     await new Promise((resolve) => setTimeout(resolve, 300));
 
-    const filteredData = applyFilters(mockRebouclageData, filters);
+    const filteredData = applyFilters(rebouclageData, filters);
 
     if (format === "csv") {
       const headers = [
@@ -296,10 +242,7 @@ export class RebouclageService {
         "Ancien NNI",
         "Nouveau NNI",
         "Date Rebouclage",
-        "Créé par",
-        "Statut",
-        "Code Exploitation",
-        "Notes",
+        "Identificateur",
         "Date Création",
       ];
 
@@ -311,10 +254,7 @@ export class RebouclageService {
             record.ancienNNI,
             record.nouveauNNI,
             formatDateToFrench(record.dateRebouclage),
-            record.creePar,
-            record.statut,
-            record.codeExploitation || "",
-            record.notes || "",
+            record.identificateur_id,
             formatDateToFrench(record.dateCreation),
           ].join(","),
         ),
@@ -330,10 +270,7 @@ export class RebouclageService {
       "Ancien NNI",
       "Nouveau NNI",
       "Date Rebouclage",
-      "Créé par",
-      "Statut",
-      "Code Exploitation",
-      "Notes",
+      "Identificateur",
       "Date Création",
     ];
 
@@ -345,10 +282,7 @@ export class RebouclageService {
           record.ancienNNI,
           record.nouveauNNI,
           formatDateToFrench(record.dateRebouclage),
-          record.creePar,
-          record.statut,
-          record.codeExploitation || "",
-          record.notes || "",
+          record.identificateur_id,
           formatDateToFrench(record.dateCreation),
         ].join("\t"),
       ),
@@ -362,78 +296,4 @@ export class RebouclageService {
   /**
    * Reset mock data to initial state (useful for testing)
    */
-  static resetMockData(): void {
-    mockRebouclageData = [
-      {
-        id: "1",
-        ancienNNI: "FR2541963478",
-        nouveauNNI: "FR2541963501",
-        dateRebouclage: "2024-03-15T10:30:00",
-        creePar: "Jean Dupont",
-        statut: RebouclageStatus.ACTIF,
-        dateCreation: "2024-03-15T10:30:00",
-        dateModification: "2024-03-15T10:30:00",
-        codeExploitation: "EXP001",
-        notes: "Rebouclage effectué suite à changement d'exploitant",
-      },
-      {
-        id: "2",
-        ancienNNI: "FR2541963479",
-        nouveauNNI: "FR2541963502",
-        dateRebouclage: "2024-03-14T14:15:00",
-        creePar: "Marie Martin",
-        statut: RebouclageStatus.EN_ATTENTE,
-        dateCreation: "2024-03-14T14:15:00",
-        dateModification: "2024-03-14T14:15:00",
-        codeExploitation: "EXP002",
-        notes: "En attente de validation administrative",
-      },
-      {
-        id: "3",
-        ancienNNI: "FR2541963480",
-        nouveauNNI: "FR2541963503",
-        dateRebouclage: "2024-03-13T09:45:00",
-        creePar: "Pierre Durand",
-        statut: RebouclageStatus.ACTIF,
-        dateCreation: "2024-03-13T09:45:00",
-        dateModification: "2024-03-13T09:45:00",
-        codeExploitation: "EXP003",
-      },
-      {
-        id: "4",
-        ancienNNI: "FR2541963481",
-        nouveauNNI: "FR2541963504",
-        dateRebouclage: "2024-03-12T16:20:00",
-        creePar: "Sophie Bernard",
-        statut: RebouclageStatus.ANNULE,
-        dateCreation: "2024-03-12T16:20:00",
-        dateModification: "2024-03-12T18:30:00",
-        codeExploitation: "EXP004",
-        notes: "Annulé - erreur dans les données",
-      },
-      {
-        id: "5",
-        ancienNNI: "FR2541963482",
-        nouveauNNI: "FR2541963505",
-        dateRebouclage: "2024-03-11T11:10:00",
-        creePar: "Michel Robert",
-        statut: RebouclageStatus.ACTIF,
-        dateCreation: "2024-03-11T11:10:00",
-        dateModification: "2024-03-11T11:10:00",
-        codeExploitation: "EXP005",
-      },
-      {
-        id: "6",
-        ancienNNI: "FR2541963483",
-        nouveauNNI: "FR2541963506",
-        dateRebouclage: "2024-03-10T08:30:00",
-        creePar: "Anne Dubois",
-        statut: RebouclageStatus.ACTIF,
-        dateCreation: "2024-03-10T08:30:00",
-        dateModification: "2024-03-10T08:30:00",
-        codeExploitation: "EXP006",
-        notes: "Rebouclage automatique",
-      },
-    ];
-  }
 }

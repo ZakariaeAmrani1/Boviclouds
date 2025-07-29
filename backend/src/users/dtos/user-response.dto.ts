@@ -48,7 +48,9 @@ export class UserResponseDto {
 
   @Expose()
   date_modification: Date;
-
+  
+  @Expose()
+  telephone: string;
   @Exclude()
   passwordHash: string;
 
