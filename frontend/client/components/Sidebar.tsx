@@ -239,7 +239,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, onToggle }) => {
         <div
           className={`p-4 border-b border-gray-100 flex-shrink-0 ${isOpen ? "" : "px-2"}`}
         >
-          <div className="flex items-center gap-3">
+          <div className="flex items-center justify-center gap-3">
             {isOpen ? (
               <img
                 src="https://cdn.builder.io/api/v1/image/assets%2F9c3f5518114a4d9c95471253796f59d3%2F53555526c6924d53896a8aecabe47366?format=webp&width=800"
