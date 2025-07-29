@@ -327,6 +327,7 @@ const Utilisateurs: React.FC = () => {
         };
 
         const validation = validateUpdateInput(input);
+        console.log(input);
         if (!validation.isValid) {
           setValidationErrors(validation.errors);
           toast({
@@ -1035,7 +1036,7 @@ const Utilisateurs: React.FC = () => {
                           Contrôleur
                         </SelectItem>
                         <SelectItem value={UtilisateurRole.SUPPORT}>
-                          Support
+                          Non Définit
                         </SelectItem>
                       </SelectContent>
                     </Select>
