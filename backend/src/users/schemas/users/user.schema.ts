@@ -8,10 +8,10 @@ import * as crypto from "crypto";
 export type UserDocument = HydratedDocument<User, UserMethods>;
 @Schema()
 export class User {
-  @Prop({ required: true, unique: true })
+  @Prop({ required: true,unique: true })
   CIN: string;
 
-  @Prop({ required: true, unique: true })
+  @Prop({ required: true,unique: true })
   email: string;
 
   @Prop()
