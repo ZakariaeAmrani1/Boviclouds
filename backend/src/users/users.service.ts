@@ -1,13 +1,14 @@
-import { HttpException, HttpStatus, Injectable, InternalServerErrorException } from '@nestjs/common';
+import { BadRequestException, HttpException, HttpStatus, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { User, UserMethods } from './schemas/users/user.schema';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { CreateUserDto } from 'src/auth/dto/users/register.dto';
 import { UpdateUserDto } from './dtos/update-user.dto';
 import { console } from 'inspector';
 import { Request } from 'express';
 import { EmailService } from 'src/utils/services/emails/email.service';
 import { UpdatePwdDto } from './dtos/update-pwd.dto';
+import { UserRole } from './schemas/users/user.role';
 
 export class UserNotFoundException extends HttpException {
   constructor(message: string) {
@@ -40,6 +41,9 @@ export class UsersService {
     return user;
   }
   async findById(id: string): Promise<User> {
+    if (!Types.ObjectId.isValid(id)) {
+        throw new UserNotFoundException(`User with id "${id}" not found`);
+    }
     const user = await this.userModel.findById(id);
     if (!user) throw new UserNotFoundException(`User with id:${id} not found!`);
     return user
@@ -53,6 +57,9 @@ export class UsersService {
     id: string,
     updateUserDto: UpdateUserDto,
   ): Promise<User> {
+    if (!Types.ObjectId.isValid(id)) {
+      throw new UserNotFoundException(`User with id "${id}" not found`);
+    }
     const user = await this.userModel.findByIdAndUpdate(id, updateUserDto, {
       new: true,
       runValidators: true,
@@ -63,8 +70,13 @@ export class UsersService {
   }
 
   async deleteUser(id: string): Promise<User> {
+    if (!Types.ObjectId.isValid(id)) {
+      throw new UserNotFoundException(`User with id "${id}" not found`);
+    }
     const user = await this.userModel.findByIdAndDelete(id);
     if (!user) throw new UserNotFoundException(`User with id:${id} not found!`);
+    if(user && user.role.includes(UserRole.ADMIN)) 
+      throw new BadRequestException('Cannot delete an admin user.');
     return user;
   }
 
@@ -93,6 +105,8 @@ export class UsersService {
     return { message: 'Password reset link sent to your email.' };
   }
   async resetPassword(token: string, dto: UpdatePwdDto): Promise<User> {
+    if(dto.password !== dto.confirmPassword) 
+      throw new BadRequestException('Passwords do not match.');
     const user = await this.userModel.findOne({
       passwordResetToken: token,
       passwordResetTokenExpires: { $gt: Date.now() },
