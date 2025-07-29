@@ -154,8 +154,6 @@ export class UtilisateurService {
           dateModification: user.date_modification,
         });
       });
-
-      console.log(response.data.data);
     } catch (error) {
       console.error("Error getting inseminations:", error);
     }
@@ -185,8 +183,7 @@ export class UtilisateurService {
   static async create(
     input: CreateUtilisateurInput,
   ): Promise<UtilisateurRecord> {
-    // Simulate API delay
-    await new Promise((resolve) => setTimeout(resolve, 200));
+    const apiUrl = import.meta.env.VITE_API_URL;
 
     // Check if email already exists
     const existingUser = UtilisateursData.find(
@@ -194,6 +191,46 @@ export class UtilisateurService {
     );
     if (existingUser) {
       throw new Error("Un utilisateur avec cet email existe déjà");
+    }
+
+    try {
+      const token = localStorage.getItem("access_token");
+      const response = await axios.post(
+        `${apiUrl}users`,
+        {
+          prenom_lat: input.prenom,
+          nom_lat: input.nom,
+          email: input.email,
+          telephone: input.telephone,
+          role: [
+            input.role === UtilisateurRole.INSEMINATEUR
+              ? "INSEMINATEUR"
+              : input.role === UtilisateurRole.ELEVEUR
+                ? "ELEVEUR"
+                : input.role === UtilisateurRole.IDENTIFICATEUR
+                  ? "IDENTIFICATEUR"
+                  : input.role === UtilisateurRole.CONTROLEUR
+                    ? "CONTROLEUR_LAITIER"
+                    : "ADMIN",
+          ],
+          statut:
+            input.statut === UtilisateurStatus.ACTIF
+              ? "APPROVED"
+              : input.statut === UtilisateurStatus.INACTIF
+                ? "REJECTED"
+                : "PENDING",
+          adresse: input.adresse,
+          region: input.region,
+          province: input.province,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
+    } catch (e) {
+      console.log(e);
     }
 
     const now = new Date().toISOString();
@@ -247,25 +284,24 @@ export class UtilisateurService {
 
     try {
       const token = localStorage.getItem("access_token");
-      const response = await axios.patch(`${apiUrl}users/${id}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        data: {
+      const response = await axios.patch(
+        `${apiUrl}users/${id}`,
+        {
           prenom_lat: input.prenom,
           nom_lat: input.nom,
           email: input.email,
           telephone: input.telephone,
-          role:
+          role: [
             input.role === UtilisateurRole.INSEMINATEUR
               ? "INSEMINATEUR"
               : input.role === UtilisateurRole.ELEVEUR
-                ? "ELVEUR"
+                ? "ELEVEUR"
                 : input.role === UtilisateurRole.IDENTIFICATEUR
-                  ? "INDENTIFICATUR"
+                  ? "IDENTIFICATEUR"
                   : input.role === UtilisateurRole.CONTROLEUR
                     ? "CONTROLEUR_LAITIER"
                     : "ADMIN",
+          ],
           statut:
             input.statut === UtilisateurStatus.ACTIF
               ? "APPROVED"
@@ -276,7 +312,12 @@ export class UtilisateurService {
           region: input.region,
           province: input.province,
         },
-      });
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
     } catch (e) {
       console.log(e);
     }
