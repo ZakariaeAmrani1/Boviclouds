@@ -123,49 +123,49 @@ export const validateCreateInput = (
   }
 
   // Exploitation code validation
-  if (
-    input.codeExploitation &&
-    !/^[A-Z0-9]{3,10}$/.test(input.codeExploitation)
-  ) {
-    errors.push({
-      field: "codeExploitation",
-      message: "Code exploitation invalide (3-10 caractères alphanumériques)",
-    });
-  }
+  // if (
+  //   input.codeExploitation &&
+  //   !/^[A-Z0-9]{3,10}$/.test(input.codeExploitation)
+  // ) {
+  //   errors.push({
+  //     field: "codeExploitation",
+  //     message: "Code exploitation invalide (3-10 caractères alphanumériques)",
+  //   });
+  // }
 
-  // Postal code validation
-  if (input.codePostal && !validatePostalCode(input.codePostal)) {
-    errors.push({
-      field: "codePostal",
-      message: "Code postal invalide (5 chiffres)",
-    });
-  }
+  // // Postal code validation
+  // if (input.codePostal && !validatePostalCode(input.codePostal)) {
+  //   errors.push({
+  //     field: "codePostal",
+  //     message: "Code postal invalide (5 chiffres)",
+  //   });
+  // }
 
   // Notes length validation
-  if (input.notes && input.notes.length > 500) {
-    errors.push({
-      field: "notes",
-      message: "Les notes ne peuvent pas dépasser 500 caractères",
-    });
-  }
+  // if (input.notes && input.notes.length > 500) {
+  //   errors.push({
+  //     field: "notes",
+  //     message: "Les notes ne peuvent pas dépasser 500 caractères",
+  //   });
+  // }
 
   // Business logic validation
-  if (input.role === UtilisateurRole.ELEVEUR && !input.exploitation?.trim()) {
-    errors.push({
-      field: "exploitation",
-      message: "L'exploitation est requise pour les éleveurs",
-    });
-  }
+  // if (input.role === UtilisateurRole.ELEVEUR && !input.exploitation?.trim()) {
+  //   errors.push({
+  //     field: "exploitation",
+  //     message: "L'exploitation est requise pour les éleveurs",
+  //   });
+  // }
 
-  if (
-    input.role === UtilisateurRole.ELEVEUR &&
-    !input.codeExploitation?.trim()
-  ) {
-    errors.push({
-      field: "codeExploitation",
-      message: "Le code d'exploitation est requis pour les éleveurs",
-    });
-  }
+  // if (
+  //   input.role === UtilisateurRole.ELEVEUR &&
+  //   !input.codeExploitation?.trim()
+  // ) {
+  //   errors.push({
+  //     field: "codeExploitation",
+  //     message: "Le code d'exploitation est requis pour les éleveurs",
+  //   });
+  // }
 
   return {
     isValid: errors.length === 0,
