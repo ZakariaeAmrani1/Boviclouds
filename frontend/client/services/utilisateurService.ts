@@ -119,13 +119,13 @@ export class UtilisateurService {
           Authorization: `Bearer ${token}`,
         },
       });
-      console.log(response);
       response.data.data.map((user) => {
         UtilisateursData.push({
           id: user._id,
           prenom: user.prenom_lat,
           nom: user.nom_lat,
           email: user.email,
+          CIN: user.CIN,
           password: user.passwordHash,
           telephone: "0666666666",
           role:
@@ -135,7 +135,11 @@ export class UtilisateurService {
                 ? UtilisateurRole.ELEVEUR
                 : user.role[0] === "CONTROLEUR_LAITIER"
                   ? UtilisateurRole.CONTROLEUR
-                  : UtilisateurRole.IDENTIFICATEUR,
+                  : user.role[0] === "IDENTIFICATEUR"
+                    ? UtilisateurRole.IDENTIFICATEUR
+                    : user.role[0] === "ADMIN"
+                      ? UtilisateurRole.ADMINISTRATEUR
+                      : UtilisateurRole.SUPPORT,
           statut:
             user.statut === "APPROVED"
               ? UtilisateurStatus.ACTIF
@@ -145,6 +149,7 @@ export class UtilisateurService {
           civilite: user.civilite,
           adresse: user.adresse,
           region: user.region,
+          province: user.province,
           codePostal: "69002",
           dateCreation: user.date_creation,
           dateModification: user.date_modification,
@@ -179,8 +184,7 @@ export class UtilisateurService {
   static async create(
     input: CreateUtilisateurInput,
   ): Promise<UtilisateurRecord> {
-    // Simulate API delay
-    await new Promise((resolve) => setTimeout(resolve, 200));
+    const apiUrl = import.meta.env.VITE_API_URL;
 
     // Check if email already exists
     const existingUser = UtilisateursData.find(
@@ -190,6 +194,49 @@ export class UtilisateurService {
       throw new Error("Un utilisateur avec cet email existe déjà");
     }
 
+    try {
+      const token = localStorage.getItem("access_token");
+
+      const response = await axios.post(
+        `${apiUrl}admin/create-account-for-user`,
+        {
+          prenom_lat: input.prenom,
+          nom_lat: input.nom,
+          email: input.email,
+          CIN: input.CIN,
+          telephone: input.telephone,
+          role:
+            input.role === UtilisateurRole.INSEMINATEUR
+              ? "INSEMINATEUR"
+              : input.role === UtilisateurRole.ELEVEUR
+                ? "ELEVEUR"
+                : input.role === UtilisateurRole.IDENTIFICATEUR
+                  ? "IDENTIFICATEUR"
+                  : input.role === UtilisateurRole.CONTROLEUR
+                    ? "CONTROLEUR_LAITIER"
+                    : "ADMIN",
+
+          status:
+            input.statut === UtilisateurStatus.ACTIF
+              ? "APPROVED"
+              : input.statut === UtilisateurStatus.INACTIF
+                ? "REJECTED"
+                : "PENDING",
+          adresse: input.adresse,
+          region: input.region,
+          province: input.province,
+          civilite: input.civilite,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
+    } catch (e) {
+      console.log(e);
+    }
+
     const now = new Date().toISOString();
     const newRecord: UtilisateurRecord = {
       id: generateId(),
@@ -197,6 +244,7 @@ export class UtilisateurService {
       nom: input.nom,
       password: input.password,
       email: input.email,
+      CIN: input.CIN,
       telephone: input.telephone,
       role: input.role,
       statut: input.statut || UtilisateurStatus.EN_ATTENTE,
@@ -221,10 +269,9 @@ export class UtilisateurService {
     id: string,
     input: UpdateUtilisateurInput,
   ): Promise<UtilisateurRecord | null> {
-    // Simulate API delay
-    await new Promise((resolve) => setTimeout(resolve, 150));
-
+    const apiUrl = import.meta.env.VITE_API_URL;
     const recordIndex = UtilisateursData.findIndex((u) => u.id === id);
+
     if (recordIndex === -1) {
       return null;
     }
@@ -238,6 +285,46 @@ export class UtilisateurService {
       if (existingUser) {
         throw new Error("Un utilisateur avec cet email existe déjà");
       }
+    }
+
+    try {
+      const token = localStorage.getItem("access_token");
+      const response = await axios.patch(
+        `${apiUrl}users/${id}`,
+        {
+          prenom_lat: input.prenom,
+          nom_lat: input.nom,
+          email: input.email,
+          telephone: input.telephone,
+          role: [
+            input.role === UtilisateurRole.INSEMINATEUR
+              ? "INSEMINATEUR"
+              : input.role === UtilisateurRole.ELEVEUR
+                ? "ELEVEUR"
+                : input.role === UtilisateurRole.IDENTIFICATEUR
+                  ? "IDENTIFICATEUR"
+                  : input.role === UtilisateurRole.CONTROLEUR
+                    ? "CONTROLEUR_LAITIER"
+                    : "ADMIN",
+          ],
+          statut:
+            input.statut === UtilisateurStatus.ACTIF
+              ? "APPROVED"
+              : input.statut === UtilisateurStatus.INACTIF
+                ? "REJECTED"
+                : "PENDING",
+          adresse: input.adresse,
+          region: input.region,
+          province: input.province,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
+    } catch (e) {
+      console.log(e);
     }
 
     const existingRecord = UtilisateursData[recordIndex];
@@ -255,11 +342,21 @@ export class UtilisateurService {
    * Delete a utilisateur record
    */
   static async delete(id: string): Promise<boolean> {
-    // Simulate API delay
-    await new Promise((resolve) => setTimeout(resolve, 100));
-
+    const apiUrl = import.meta.env.VITE_API_URL;
     const initialLength = UtilisateursData.length;
-    UtilisateursData = UtilisateursData.filter((u) => u.id !== id);
+    // Simulate API delay
+    try {
+      const token = localStorage.getItem("access_token");
+      const response = await axios.delete(`${apiUrl}users/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      UtilisateursData = UtilisateursData.filter((u) => u.id !== id);
+    } catch (e) {
+      console.log(e);
+    }
+
     return UtilisateursData.length < initialLength;
   }
 

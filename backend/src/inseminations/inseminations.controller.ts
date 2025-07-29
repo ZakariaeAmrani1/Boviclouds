@@ -3,6 +3,7 @@ import { InseminationsService } from './inseminations.service';
 import { CreateInseminationDto } from './dto/create-insemination.dto';
 import { UpdateInseminationDto } from './dto/update-insemination.dto';
 
+
 @Controller('api/v1/inseminations')
 export class InseminationsController {
   constructor(private readonly inseminationsService: InseminationsService) {}
