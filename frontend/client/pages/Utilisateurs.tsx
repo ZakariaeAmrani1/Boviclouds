@@ -78,6 +78,7 @@ interface FormData {
   nom: string;
   email: string;
   CIN: string;
+  civilite: string;
   telephone: string;
   role: UtilisateurRole;
   statut: UtilisateurStatus;
@@ -115,6 +116,7 @@ const Utilisateurs: React.FC = () => {
     nom: "",
     email: "",
     CIN: "",
+    civilite: "",
     telephone: "",
     role: UtilisateurRole.ELEVEUR,
     statut: UtilisateurStatus.EN_ATTENTE,
@@ -153,6 +155,11 @@ const Utilisateurs: React.FC = () => {
 
   const { loading: exportLoading, exportData } = useUtilisateurExport();
 
+  const civiliteOptions = [
+    { value: "M", label: "Monsieur" },
+    { value: "Mme", label: "Madame" },
+    { value: "Mlle", label: "Mademoiselle" },
+  ];
   // Event handlers
   const handleSearchInputChange = (
     field: keyof UtilisateurFilters,
@@ -202,6 +209,7 @@ const Utilisateurs: React.FC = () => {
       nom: "",
       email: "",
       CIN: "",
+      civilite: "",
       telephone: "",
       role: UtilisateurRole.ELEVEUR,
       statut: UtilisateurStatus.EN_ATTENTE,
@@ -229,6 +237,7 @@ const Utilisateurs: React.FC = () => {
         nom: fullRecord.nom,
         email: fullRecord.email,
         CIN: fullRecord.CIN,
+        civilite: fullRecord.civilite,
         telephone: fullRecord.telephone || "",
         role: fullRecord.role,
         statut: fullRecord.statut,
@@ -253,6 +262,7 @@ const Utilisateurs: React.FC = () => {
         nom: fullRecord.nom,
         email: fullRecord.email,
         CIN: fullRecord.CIN,
+        civilite: fullRecord.civilite,
         telephone: fullRecord.telephone || "",
         role: fullRecord.role,
         statut: fullRecord.statut,
@@ -284,6 +294,7 @@ const Utilisateurs: React.FC = () => {
           nom: formData.nom.trim(),
           email: formData.email.trim(),
           CIN: formData.CIN.trim(),
+          civilite: formData.civilite.trim(),
           password: formData.password.trim(),
           telephone: formData.telephone.trim() || undefined,
           role: formData.role,
@@ -329,6 +340,7 @@ const Utilisateurs: React.FC = () => {
           adresse: formData.adresse.trim() || undefined,
           region: formData.region.trim() || undefined,
           province: formData.province.trim() || undefined,
+          civilite: formData.civilite.trim() || undefined,
         };
 
         const validation = validateUpdateInput(input);
@@ -1096,10 +1108,10 @@ const Utilisateurs: React.FC = () => {
                     CIN *
                   </Label>
                   <Input
-                    id="prenom"
+                    id="CIN"
                     value={formData.CIN}
                     onChange={(e) => {
-                      handleFormChange("prenom", e.target.value);
+                      handleFormChange("CIN", e.target.value);
                       setValidationErrors((prev) =>
                         prev.filter((err) => err.field !== "prenom"),
                       );
@@ -1118,6 +1130,38 @@ const Utilisateurs: React.FC = () => {
                     </p>
                   )}
                 </div>
+                {modalMode !== "edit" && (
+                  <div className="space-y-2">
+                    <Label
+                      htmlFor="prenom"
+                      className="text-sm font-normal text-black flex items-center gap-2"
+                    >
+                      Civilité *
+                    </Label>
+                    <Input
+                      id="CIN"
+                      value={formData.civilite}
+                      onChange={(e) => {
+                        handleFormChange("civilite", e.target.value);
+                        setValidationErrors((prev) =>
+                          prev.filter((err) => err.field !== "civilite"),
+                        );
+                      }}
+                      className={`h-10 sm:h-12 px-3 sm:px-4 text-sm rounded-xl ${
+                        getFieldError(validationErrors, "civilite")
+                          ? "border-red-500 focus:border-red-500"
+                          : "border-boviclouds-gray-100"
+                      }`}
+                      placeholder="Ex: Jean"
+                      disabled={modalMode === "view"}
+                    />
+                    {getFieldError(validationErrors, "prenom") && (
+                      <p className="text-sm text-red-600">
+                        {getFieldError(validationErrors, "prenom")}
+                      </p>
+                    )}
+                  </div>
+                )}
 
                 {/* Exploitation */}
                 {modalMode === "view" && (

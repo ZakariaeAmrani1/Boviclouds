@@ -12,30 +12,26 @@ export interface RebouclageRecord {
   id: string;
   ancienNNI: string;
   nouveauNNI: string;
+  identificateur_id: string;
   dateRebouclage: string;
-  creePar: string;
-  statut: RebouclageStatus;
   dateCreation: string;
   dateModification: string;
-  notes?: string;
-  codeExploitation?: string;
+  CréePar: string;
 }
 
 // Input for creating a new rebouclage record
 export interface CreateRebouclageInput {
   ancienNNI: string;
   nouveauNNI: string;
+  identificateur_id: string;
   dateRebouclage?: string;
-  creePar: string;
-  statut?: RebouclageStatus;
-  notes?: string;
-  codeExploitation?: string;
 }
 
 // Input for updating an existing rebouclage record
 export interface UpdateRebouclageInput {
   ancienNNI?: string;
   nouveauNNI?: string;
+  identificateur_id: string;
   dateRebouclage?: string;
   statut?: RebouclageStatus;
   notes?: string;
