@@ -140,6 +140,13 @@ const EditIdentificationModal: React.FC<EditIdentificationModalProps> = ({
   const { toast } = useToast();
   const { loading, error, updateRecord } = useIdentification();
 
+  // Image upload state
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [isCapturing, setIsCapturing] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+
   const [currentStep, setCurrentStep] = useState(1);
   const [originalData, setOriginalData] = useState<FormData | null>(null);
   const [formData, setFormData] = useState<FormData>({
@@ -148,6 +155,7 @@ const EditIdentificationModal: React.FC<EditIdentificationModalProps> = ({
     sujet_race: "",
     sujet_sexe: "",
     sujet_type: "",
+    muzzle_image: null,
     mere_nni: "",
     mere_date_naissance: "",
     mere_race: "",
@@ -188,6 +196,7 @@ const EditIdentificationModal: React.FC<EditIdentificationModalProps> = ({
         sujet_race: identification.infos_sujet.race,
         sujet_sexe: identification.infos_sujet.sexe,
         sujet_type: identification.infos_sujet.type,
+        muzzle_image: null,
         mere_nni: identification.infos_mere.nni,
         mere_date_naissance:
           identification.infos_mere.date_naissance.split("T")[0],
@@ -219,6 +228,100 @@ const EditIdentificationModal: React.FC<EditIdentificationModalProps> = ({
     }
   }, [identification]);
 
+  // Image upload handlers
+  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      if (file.size > 5 * 1024 * 1024) {
+        toast({
+          title: "Erreur",
+          description: "L'image ne doit pas dépasser 5MB.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      if (!file.type.startsWith('image/')) {
+        toast({
+          title: "Erreur",
+          description: "Veuillez sélectionner un fichier image valide.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const result = e.target?.result as string;
+        setImagePreview(result);
+        setFormData(prev => ({ ...prev, muzzle_image: file }));
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const startCapture = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+      if (videoRef.current) {
+        videoRef.current.srcObject = stream;
+        setIsCapturing(true);
+      }
+    } catch (error) {
+      toast({
+        title: "Erreur",
+        description: "Impossible d'accéder à la caméra. Veuillez vérifier les permissions.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const capturePhoto = () => {
+    if (videoRef.current && canvasRef.current) {
+      const video = videoRef.current;
+      const canvas = canvasRef.current;
+      const context = canvas.getContext('2d');
+
+      if (context) {
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+        canvas.toBlob((blob) => {
+          if (blob) {
+            const file = new File([blob], 'muzzle-capture.jpg', { type: 'image/jpeg' });
+            const reader = new FileReader();
+            reader.onload = (e) => {
+              const result = e.target?.result as string;
+              setImagePreview(result);
+              setFormData(prev => ({ ...prev, muzzle_image: file }));
+            };
+            reader.readAsDataURL(file);
+          }
+        }, 'image/jpeg', 0.8);
+      }
+
+      stopCapture();
+    }
+  };
+
+  const stopCapture = () => {
+    if (videoRef.current?.srcObject) {
+      const stream = videoRef.current.srcObject as MediaStream;
+      stream.getTracks().forEach(track => track.stop());
+      videoRef.current.srcObject = null;
+    }
+    setIsCapturing(false);
+  };
+
+  const removeImage = () => {
+    setImagePreview(null);
+    setFormData(prev => ({ ...prev, muzzle_image: null }));
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
+
   const handleFormChange = (field: keyof FormData, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
     // Clear validation error for this field
@@ -237,6 +340,13 @@ const EditIdentificationModal: React.FC<EditIdentificationModalProps> = ({
     }
     setValidationErrors({});
     setCurrentStep(1);
+    // Reset image states
+    setImagePreview(null);
+    setIsCapturing(false);
+    stopCapture();
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
   };
 
   const validateCurrentStep = (): boolean => {
@@ -744,6 +854,129 @@ const EditIdentificationModal: React.FC<EditIdentificationModalProps> = ({
                         {getFieldError("race")}
                       </p>
                     )}
+                  </div>
+                </div>
+
+                {/* Muzzle Image Upload Section */}
+                <Separator className="my-6" />
+                <div className="space-y-4">
+                  <h3 className="text-base font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                    <ImageIcon className="w-5 h-5" />
+                    Photo du museau
+                  </h3>
+
+                  <div className="border-2 border-dashed border-gray-300 rounded-lg p-6">
+                    {!imagePreview && !isCapturing && (
+                      <div className="text-center space-y-4">
+                        {/* Cow face placeholder */}
+                        <div className="w-24 h-24 mx-auto bg-gray-100 rounded-full flex items-center justify-center">
+                          <svg
+                            className="w-12 h-12 text-gray-400"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={1.5}
+                              d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4"
+                            />
+                          </svg>
+                        </div>
+                        <p className="text-sm text-gray-600">
+                          Ajoutez une photo du museau de l'animal
+                        </p>
+                        <div className="flex gap-2 justify-center">
+                          <Button
+                            type="button"
+                            variant="outline"
+                            onClick={() => fileInputRef.current?.click()}
+                            className="flex items-center gap-2"
+                          >
+                            <Upload className="w-4 h-4" />
+                            Importer
+                          </Button>
+                          <Button
+                            type="button"
+                            variant="outline"
+                            onClick={startCapture}
+                            className="flex items-center gap-2"
+                          >
+                            <Camera className="w-4 h-4" />
+                            Caméra
+                          </Button>
+                        </div>
+                      </div>
+                    )}
+
+                    {isCapturing && (
+                      <div className="text-center space-y-4">
+                        <video
+                          ref={videoRef}
+                          autoPlay
+                          className="w-full max-w-md mx-auto rounded-lg"
+                        />
+                        <div className="flex gap-2 justify-center">
+                          <Button
+                            type="button"
+                            onClick={capturePhoto}
+                            className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700"
+                          >
+                            <Camera className="w-4 h-4" />
+                            Capturer
+                          </Button>
+                          <Button
+                            type="button"
+                            variant="outline"
+                            onClick={stopCapture}
+                            className="flex items-center gap-2"
+                          >
+                            <X className="w-4 h-4" />
+                            Annuler
+                          </Button>
+                        </div>
+                      </div>
+                    )}
+
+                    {imagePreview && (
+                      <div className="text-center space-y-4">
+                        <img
+                          src={imagePreview}
+                          alt="Aperçu du museau"
+                          className="w-full max-w-md mx-auto rounded-lg"
+                        />
+                        <div className="flex gap-2 justify-center">
+                          <Button
+                            type="button"
+                            variant="outline"
+                            onClick={() => fileInputRef.current?.click()}
+                            className="flex items-center gap-2"
+                          >
+                            <Upload className="w-4 h-4" />
+                            Remplacer
+                          </Button>
+                          <Button
+                            type="button"
+                            variant="outline"
+                            onClick={removeImage}
+                            className="flex items-center gap-2 text-red-600 hover:text-red-700"
+                          >
+                            <X className="w-4 h-4" />
+                            Supprimer
+                          </Button>
+                        </div>
+                      </div>
+                    )}
+
+                    <input
+                      ref={fileInputRef}
+                      type="file"
+                      accept="image/*"
+                      onChange={handleFileUpload}
+                      className="hidden"
+                    />
+                    <canvas ref={canvasRef} className="hidden" />
                   </div>
                 </div>
               </div>
