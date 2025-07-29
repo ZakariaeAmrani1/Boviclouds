@@ -327,7 +327,6 @@ const Utilisateurs: React.FC = () => {
         };
 
         const validation = validateUpdateInput(input);
-        console.log(input);
         if (!validation.isValid) {
           setValidationErrors(validation.errors);
           toast({

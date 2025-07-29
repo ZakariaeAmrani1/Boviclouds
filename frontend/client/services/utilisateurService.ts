@@ -259,6 +259,7 @@ export class UtilisateurService {
    */
   static async delete(id: string): Promise<boolean> {
     const apiUrl = import.meta.env.VITE_API_URL;
+    const initialLength = UtilisateursData.length;
     // Simulate API delay
     try {
       const token = localStorage.getItem("access_token");
@@ -267,14 +268,11 @@ export class UtilisateurService {
           Authorization: `Bearer ${token}`,
         },
       });
+      UtilisateursData = UtilisateursData.filter((u) => u.id !== id);
     } catch (e) {
       console.log(e);
     }
 
-    console.log(id);
-
-    const initialLength = UtilisateursData.length;
-    UtilisateursData = UtilisateursData.filter((u) => u.id !== id);
     return UtilisateursData.length < initialLength;
   }
 
