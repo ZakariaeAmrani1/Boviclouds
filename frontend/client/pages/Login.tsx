@@ -156,12 +156,33 @@ const Login = () => {
           {/* Logo */}
           <div className="text-center mb-8">
             <div className="inline-flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 bg-boviclouds-primary rounded-xl flex items-center justify-center">
-                <span className="text-white font-bold text-lg">B</span>
+              <div className="relative">
+                <svg className="w-12 h-12" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  {/* Background circle */}
+                  <circle cx="24" cy="24" r="24" fill="#21DB69"/>
+
+                  {/* Cloud shape */}
+                  <path d="M32 18.5C32 16.567 30.433 15 28.5 15C27.567 15 26.733 15.4 26.2 16.067C25.533 14.833 24.333 14 23 14C21 14 19.4 15.6 19.4 17.6C19.4 17.733 19.4 17.867 19.433 18C18.633 18.333 18 19.1 18 20C18 21.1 18.9 22 20 22H31C32.1 22 33 21.1 33 20C33 19.233 32.567 18.567 32 18.5Z" fill="white"/>
+
+                  {/* Cow head silhouette */}
+                  <ellipse cx="24" cy="30" rx="8" ry="6" fill="white"/>
+                  <circle cx="21" cy="29" r="1" fill="#21DB69"/>
+                  <circle cx="27" cy="29" r="1" fill="#21DB69"/>
+                  <ellipse cx="24" cy="32" rx="1.5" ry="1" fill="#21DB69"/>
+
+                  {/* Cow ears */}
+                  <ellipse cx="18" cy="28" rx="2" ry="3" fill="white" transform="rotate(-20 18 28)"/>
+                  <ellipse cx="30" cy="28" rx="2" ry="3" fill="white" transform="rotate(20 30 28)"/>
+                </svg>
               </div>
-              <span className="text-2xl font-poppins font-semibold text-gray-900">
-                boviclouds
-              </span>
+              <div className="flex flex-col items-start">
+                <span className="text-2xl font-poppins font-bold text-gray-900 leading-none">
+                  BoviClouds
+                </span>
+                <span className="text-xs font-inter text-gray-500 uppercase tracking-wider">
+                  Livestock Management
+                </span>
+              </div>
             </div>
           </div>
 
