@@ -56,10 +56,12 @@ const EditInseminationModal: React.FC<EditInseminationModalProps> = ({
   const { toast } = useToast();
   const { loading, error, updateRecord } = useInsemination();
   const { users, loading: usersLoading, getUserName } = useUsers();
+  const { data: semenceData, loading: semenceLoading } = useSemenceList({}, { page: 1, limit: 100 });
   const inseminateurs = users.filter((user) => user.role === "INSEMINATEUR");
   const responsables = users.filter(
     (user) => user.role === "RESPONSABLE_LOCAL",
   );
+  const semences = semenceData?.data || [];
 
   const [formData, setFormData] = useState<FormData>({
     nni: "",
