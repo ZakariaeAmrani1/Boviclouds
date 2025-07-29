@@ -4,6 +4,7 @@ import { Model } from 'mongoose';
 import { ValidateUserDto } from 'src/auth/dto/users/validate-user.dto';
 import { AccountStatus } from 'src/users/schemas/users/user.acc.status';
 import { User } from 'src/users/schemas/users/user.schema';
+import { CreateAccForUserDto } from './dtos/create-acc-for-user.dto';
 
 @Injectable()
 export class AdminService {
@@ -35,10 +36,10 @@ export class AdminService {
     );
   }
 
-  async createUserAccount(): Promise<User> {
+  async createUserAccount(dto:CreateAccForUserDto): Promise<User> {
     const newUser = new this.userModel({
-      role: ['user'],
-      statut: AccountStatus.PENDING,
+      ...dto,
+      role: [dto.role],
     });
     return await newUser.save();
   }
