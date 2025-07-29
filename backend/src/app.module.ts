@@ -12,6 +12,7 @@ import { InseminationsModule } from './inseminations/inseminations.module';
 import { SemencesModule } from './semences/semences.module';
 import { ExploitationsModule } from './exploitations/exploitations.module';
 import { RebouclageModule } from './rebouclage/rebouclage.module';
+import { IdentificationModule } from './identification/identification.module';
 
 
 @Module({
@@ -26,6 +27,7 @@ import { RebouclageModule } from './rebouclage/rebouclage.module';
       }),
       inject: [ConfigService],
     }),
+    IdentificationModule,
     AuthModule,
     UsersModule,
     AuthModule,
@@ -37,6 +39,7 @@ import { RebouclageModule } from './rebouclage/rebouclage.module';
     ExploitationsModule,
     SemencesModule,
     RebouclageModule,
+    IdentificationModule,
 
 
   ],
