@@ -3,21 +3,23 @@ import {
   IsOptional,
   IsPhoneNumber,
   IsString,
-  IsStrongPassword,
   Length,
 } from 'class-validator';
+import { AccountStatus } from 'src/users/schemas/users/user.acc.status';
+import { UserRole } from 'src/users/schemas/users/user.role';
 
 export class CreateAccForUserDto {
-  @IsString()
+  @IsString({ message: 'CIN must be a string' })
   readonly CIN: string;
 
   @IsEmail()
   readonly email: string;
 
-  @IsString()
+  @IsOptional()
+  @IsString({ message: 'Nom arabe must be a string' })
   readonly nom_ar?: string;
-
-  @IsString()
+  @IsOptional()
+  @IsString({ message: 'Prenom arabe must be a string' })
   readonly prenom_ar?: string;
 
   @IsString()
@@ -25,6 +27,12 @@ export class CreateAccForUserDto {
 
   @IsString()
   readonly prenom_lat: string;
+
+  @IsString()
+  readonly role: UserRole;
+
+  @IsString()
+  readonly status: AccountStatus;
 
   @IsString()
   readonly civilite: string;
@@ -46,5 +54,4 @@ export class CreateAccForUserDto {
   @IsOptional()
   @IsString()
   readonly raison_sociale?: string;
-
 }
