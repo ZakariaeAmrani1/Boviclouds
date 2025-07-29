@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import {
   RefreshCw,
   ChevronLeft,
@@ -9,6 +9,10 @@ import {
   Building,
   Eye,
   Calendar,
+  Camera,
+  Upload,
+  X,
+  ImageIcon,
 } from "lucide-react";
 import {
   Dialog,
