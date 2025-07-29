@@ -35,4 +35,8 @@ export class UpdateUserDto {
   @IsOptional()
   @IsString()
   readonly raison_sociale?: string;
+
+  @IsOptional()
+  @IsString()
+  readonly role?: string;
 }
