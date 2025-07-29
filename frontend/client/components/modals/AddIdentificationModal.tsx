@@ -137,6 +137,11 @@ const AddIdentificationModal: React.FC<AddIdentificationModalProps> = ({
   const { loading, error, createRecord } = useIdentification();
 
   const [currentStep, setCurrentStep] = useState(1);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [isCapturing, setIsCapturing] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
   const [formData, setFormData] = useState<FormData>({
     sujet_nni: "",
     sujet_date_naissance: "",
