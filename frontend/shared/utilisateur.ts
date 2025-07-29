@@ -56,6 +56,8 @@ export interface CreateUtilisateurInput {
   codeExploitation?: string;
   adresse?: string;
   ville?: string;
+  province?: string;
+  region?: string;
   codePostal?: string;
   notes?: string;
 }
