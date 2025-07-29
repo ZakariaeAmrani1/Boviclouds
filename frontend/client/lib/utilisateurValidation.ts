@@ -266,17 +266,6 @@ export const validateUpdateInput = (
   }
 
   if (
-    input.codeExploitation !== undefined &&
-    input.codeExploitation &&
-    !/^[A-Z0-9]{3,10}$/.test(input.codeExploitation)
-  ) {
-    errors.push({
-      field: "codeExploitation",
-      message: "Code exploitation invalide (3-10 caractères alphanumériques)",
-    });
-  }
-
-  if (
     input.codePostal !== undefined &&
     input.codePostal &&
     !validatePostalCode(input.codePostal)
@@ -350,11 +339,11 @@ export const validateFormCompletion = (
       if (!formData.codeExploitation?.trim())
         missingFields.push("Code d'exploitation");
       break;
-    case UtilisateurRole.VETERINAIRE:
+    case UtilisateurRole.IDENTIFICATEUR:
       if (!formData.telephone?.trim()) missingFields.push("Téléphone");
       break;
     case UtilisateurRole.ADMINISTRATEUR:
-    case UtilisateurRole.GESTIONNAIRE:
+    case UtilisateurRole.INSEMINATEUR:
       // No additional required fields
       break;
   }

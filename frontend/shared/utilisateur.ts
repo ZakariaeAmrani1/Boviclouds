@@ -15,7 +15,7 @@ export enum UtilisateurRole {
   IDENTIFICATEUR = "Identificateur",
   ELEVEUR = "Éleveur",
   CONTROLEUR = "Contrôleur",
-  SUPPORT = "Support",
+  SUPPORT = "Non Définit",
 }
 
 // Base utilisateur record interface
