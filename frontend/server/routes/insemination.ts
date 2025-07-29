@@ -263,7 +263,6 @@ export const handleCreateInsemination: RequestHandler = async (req, res) => {
       inseminateur_id: input.inseminateur_id,
       responsable_local_id: input.responsable_local_id,
     });
-    console.log(response);
     // Create new record
     const newRecord: InseminationRecord = {
       id: nextId.toString(),
@@ -348,17 +347,19 @@ export const handleUpdateInsemination: RequestHandler = (req, res) => {
 };
 
 // DELETE /api/insemination/:id - Delete an insemination record
-export const handleDeleteInsemination: RequestHandler = (req, res) => {
+export const handleDeleteInsemination: RequestHandler = async (req, res) => {
   try {
     const { id } = req.params;
     const recordIndex = inseminationRecords.findIndex((r) => r.id === id);
-
     if (recordIndex === -1) {
       return res.status(404).json({
         success: false,
         message: "Insémination non trouvée",
       });
     }
+
+    const apiUrl = process.env.SERVER_API_URL;
+    const response = await axios.delete(`${apiUrl}inseminations/${id}`);
 
     inseminationRecords.splice(recordIndex, 1);
 

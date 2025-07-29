@@ -265,52 +265,41 @@ export const validateUpdateInput = (
     errors.push({ field: "statut", message: "Statut invalide" });
   }
 
-  if (
-    input.codeExploitation !== undefined &&
-    input.codeExploitation &&
-    !/^[A-Z0-9]{3,10}$/.test(input.codeExploitation)
-  ) {
-    errors.push({
-      field: "codeExploitation",
-      message: "Code exploitation invalide (3-10 caractères alphanumériques)",
-    });
-  }
+  // if (
+  //   input.codePostal !== undefined &&
+  //   input.codePostal &&
+  //   !validatePostalCode(input.codePostal)
+  // ) {
+  //   errors.push({
+  //     field: "codePostal",
+  //     message: "Code postal invalide (5 chiffres)",
+  //   });
+  // }
 
-  if (
-    input.codePostal !== undefined &&
-    input.codePostal &&
-    !validatePostalCode(input.codePostal)
-  ) {
-    errors.push({
-      field: "codePostal",
-      message: "Code postal invalide (5 chiffres)",
-    });
-  }
-
-  if (input.notes !== undefined && input.notes && input.notes.length > 500) {
-    errors.push({
-      field: "notes",
-      message: "Les notes ne peuvent pas dépasser 500 caractères",
-    });
-  }
+  // if (input.notes !== undefined && input.notes && input.notes.length > 500) {
+  //   errors.push({
+  //     field: "notes",
+  //     message: "Les notes ne peuvent pas dépasser 500 caractères",
+  //   });
+  // }
 
   // Business logic validation for role changes
-  if (input.role === UtilisateurRole.ELEVEUR && !input.exploitation?.trim()) {
-    errors.push({
-      field: "exploitation",
-      message: "L'exploitation est requise pour les éleveurs",
-    });
-  }
+  // if (input.role === UtilisateurRole.ELEVEUR && !input.exploitation?.trim()) {
+  //   errors.push({
+  //     field: "exploitation",
+  //     message: "L'exploitation est requise pour les éleveurs",
+  //   });
+  // }
 
-  if (
-    input.role === UtilisateurRole.ELEVEUR &&
-    !input.codeExploitation?.trim()
-  ) {
-    errors.push({
-      field: "codeExploitation",
-      message: "Le code d'exploitation est requis pour les éleveurs",
-    });
-  }
+  // if (
+  //   input.role === UtilisateurRole.ELEVEUR &&
+  //   !input.codeExploitation?.trim()
+  // ) {
+  //   errors.push({
+  //     field: "codeExploitation",
+  //     message: "Le code d'exploitation est requis pour les éleveurs",
+  //   });
+  // }
 
   return {
     isValid: errors.length === 0,
@@ -350,11 +339,11 @@ export const validateFormCompletion = (
       if (!formData.codeExploitation?.trim())
         missingFields.push("Code d'exploitation");
       break;
-    case UtilisateurRole.VETERINAIRE:
+    case UtilisateurRole.IDENTIFICATEUR:
       if (!formData.telephone?.trim()) missingFields.push("Téléphone");
       break;
     case UtilisateurRole.ADMINISTRATEUR:
-    case UtilisateurRole.GESTIONNAIRE:
+    case UtilisateurRole.INSEMINATEUR:
       // No additional required fields
       break;
   }
