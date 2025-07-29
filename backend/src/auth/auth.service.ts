@@ -14,8 +14,6 @@ import { JwtService } from '@nestjs/jwt';
 import { CreateUserDto } from './dto/users/register.dto';
 import { AccountStatus } from 'src/users/schemas/users/user.acc.status';
 import { EmailService } from 'src/utils/services/emails/email.service';
-import { UserResponseDto } from 'src/users/dtos/user-response.dto';
-import { plainToInstance } from 'class-transformer';
 import { RateLimiterService } from 'src/utils/services/rate-limiter.service';
 import * as crypto from "crypto";
 
@@ -30,6 +28,17 @@ export class AuthService {
     private readonly rateLimiterService:RateLimiterService
   ) {}
 
+  //
+  async generateAccessToken(user: any): Promise<string> {
+    if (!user?._id || !user?.email) {
+      throw new BadRequestException('Invalid user data provided for token generation');
+    }
+    const payload = { sub: user._id, email: user.email,role:user.role };
+    return this.jwtService.sign(payload, {
+      secret: process.env.JWT_SECRET,
+      expiresIn: process.env.JWT_EXPIRATION || '1d',
+    });
+  }
   async register(dto: CreateUserDto, req:Request) {
     const userExists = await this.userModel.findOne({ email: dto.email });
     if (userExists) throw new ConflictException('Email already exists');
@@ -37,14 +46,9 @@ export class AuthService {
     const emailValToken = user.CreateEmailValiationToken();
     await user.save();
     const confirmEmailLink = `${req.protocol}://${req.get('host')}/api/v1/auth/confirm-email/${emailValToken}`;
-    const userRes = plainToInstance(
-      UserResponseDto,
-      user,
-      { excludeExtraneousValues: true },
-    );
     try {
           await this.emailService.sendEmailVerification(
-            userRes,
+            user,
             confirmEmailLink,
           );
     } catch (error) {
@@ -59,7 +63,7 @@ export class AuthService {
     return {
       status: 'success',
       message: 'User registered successfully. Please check your email for verification.',
-      data: { user:userRes },
+      data: { user },
     };
   }
 
@@ -67,7 +71,6 @@ export class AuthService {
     const user = await this.userModel
       .findOne({ email: dto.email })
       .select('+passwordHash');
-    // console.log(user);
     if (!user || !(await user.correctPassword(dto.password))) {
       throw new UnauthorizedException('Invalid credentials');
     }
@@ -75,20 +78,11 @@ export class AuthService {
       throw new UnauthorizedException('Email not confirmed. Please confirm your email and check again');
     if (!user || user?.statut !== AccountStatus.APPROVED)
       throw new UnauthorizedException('Account not approved');
-    const access_token = this.jwtService.sign({
-      sub: user._id,
-      email: user.email,
-      role: user.role,
-    });
-    const userRes = plainToInstance(
-      UserResponseDto,
-      user,
-      {excludeExtraneousValues:true}
-    );
+    const access_token = await this.generateAccessToken(user);
     return {
       status: 'success',
       message: 'user logged in successfully',
-      data: { access_token, user:userRes },
+      data: { access_token, user },
     };
   }
   //
@@ -135,9 +129,7 @@ export class AuthService {
     const confirmEmailLink = `${req.protocol}://${req.get('host')}/api/v1/auth/confirm-email/${newEmailValToken}`;
     try {
       await this.emailService.sendEmailVerification(
-        plainToInstance(UserResponseDto, user, {
-          excludeExtraneousValues: true,
-        }),
+        user,
         confirmEmailLink,
       );
     } catch (error) {

@@ -6,10 +6,10 @@ import { convert } from 'html-to-text';
 import { ConfigService } from '@nestjs/config';
 import * as path from 'path';
 import * as fs from 'fs/promises'; 
-import { UserResponseDto } from 'src/users/dtos/user-response.dto';
+import { User } from 'src/users/schemas/users/user.schema';
 
 // EmailUser is just an alias/extension of User
-export class EmailUser extends UserResponseDto {}
+export class EmailUser extends User {}
 
 @Injectable()
 export class EmailService {
