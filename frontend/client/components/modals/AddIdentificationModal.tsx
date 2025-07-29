@@ -148,6 +148,7 @@ const AddIdentificationModal: React.FC<AddIdentificationModalProps> = ({
     sujet_race: "",
     sujet_sexe: "",
     sujet_type: "",
+    muzzle_image: null,
     mere_nni: "",
     mere_date_naissance: "",
     mere_race: "",
