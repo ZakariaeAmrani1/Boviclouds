@@ -271,6 +271,7 @@ const AddIdentificationModal: React.FC<AddIdentificationModalProps> = ({
       sujet_race: "",
       sujet_sexe: "",
       sujet_type: "",
+      muzzle_image: null,
       mere_nni: "",
       mere_date_naissance: "",
       mere_race: "",
@@ -293,6 +294,12 @@ const AddIdentificationModal: React.FC<AddIdentificationModalProps> = ({
     setValidationErrors({});
     setCurrentStep(1);
     setCompletedSteps(new Set());
+    setImagePreview(null);
+    setIsCapturing(false);
+    stopCapture();
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
   };
 
   const validateCurrentStep = (): boolean => {
