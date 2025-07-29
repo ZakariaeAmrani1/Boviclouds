@@ -1,6 +1,13 @@
-import { IsEmail, IsOptional, IsPhoneNumber, IsString, IsStrongPassword, Length } from 'class-validator';
+import {
+  IsEmail,
+  IsOptional,
+  IsPhoneNumber,
+  IsString,
+  IsStrongPassword,
+  Length,
+} from 'class-validator';
 
-export class CreateUserDto {
+export class CreateAccForUserDto {
   @IsString()
   readonly CIN: string;
 
@@ -33,14 +40,11 @@ export class CreateUserDto {
 
   @IsString()
   @IsPhoneNumber('MA')
-  @Length(10,14)
+  @Length(10, 14)
   readonly telephone: string;
 
   @IsOptional()
   @IsString()
-  readonly raison_sociale?: string; 
+  readonly raison_sociale?: string;
 
-  @IsString()
-  @IsStrongPassword()
-  readonly password:string
 }
