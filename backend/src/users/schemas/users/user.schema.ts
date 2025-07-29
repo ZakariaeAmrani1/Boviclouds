@@ -38,6 +38,9 @@ export class User {
   @Prop()
   province: string;
 
+  @Prop()
+  telephone: string;
+  
   @Prop({ default: Date.now })
   date_creation: Date;
 

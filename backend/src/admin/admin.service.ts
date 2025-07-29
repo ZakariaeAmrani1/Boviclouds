@@ -34,4 +34,12 @@ export class AdminService {
       { new: true },
     );
   }
+
+  async createUserAccount(): Promise<User> {
+    const newUser = new this.userModel({
+      role: ['user'],
+      statut: AccountStatus.PENDING,
+    });
+    return await newUser.save();
+  }
 }
