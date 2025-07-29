@@ -57,6 +57,15 @@ import {
   handleExportInseminations,
 } from "./routes/insemination";
 import {
+  handleGetSemences,
+  handleGetSemence,
+  handleCreateSemence,
+  handleUpdateSemence,
+  handleDeleteSemence,
+  handleGetSemenceStats,
+  handleExportSemences,
+} from "./routes/semence";
+import {
   handleGetUsers,
   handleGetUser,
   handleGetUsersByRole,
