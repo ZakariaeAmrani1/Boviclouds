@@ -349,7 +349,7 @@ const Login = () => {
                   onClick={handleRequestAccount}
                   className="w-full bg-white border border-[#E6E8E7] text-[#232323] py-3 px-4 rounded-lg button-base hover:bg-gray-50 transition-colors shadow-sm flex items-center justify-center gap-3"
                 >
-                  <span>Request an account</span>
+                  <span>Demander un compte</span>
                   <svg
                     className="w-5 h-5"
                     fill="none"
