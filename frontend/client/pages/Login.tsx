@@ -176,9 +176,9 @@ const Login = () => {
             >
               {/* Header Text */}
               <div className="text-center mb-6">
-                <h1 className="heading-2 mb-2">Welcome back</h1>
+                <h1 className="heading-2 mb-2">Bienvenue</h1>
                 <p className="body-base text-[#969696]">
-                  Please sign in to your account
+                  Veuillez vous connecter à votre compte
                 </p>
               </div>
 
