@@ -116,9 +116,9 @@ const Login = () => {
     } else {
       toast({
         title: "Erreur",
-        description: "Error while sending request",
+        description: "Erreur lors de l'envoi de la demande",
       });
-      setError("Error while sending request");
+      setError("Erreur lors de l'envoi de la demande");
     }
     // You could show a success message here
   };
