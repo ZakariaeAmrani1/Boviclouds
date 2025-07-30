@@ -18,6 +18,7 @@ import Traitement from "./pages/Traitement";
 import Identification from "./pages/Identification";
 import Insemination from "./pages/Insemination";
 import Semences from "./pages/Semences";
+import Exploitations from "./pages/Exploitations";
 import EditProfile from "./pages/EditProfile";
 import NotFound from "./pages/NotFound";
 import Index from "./pages/Index";
