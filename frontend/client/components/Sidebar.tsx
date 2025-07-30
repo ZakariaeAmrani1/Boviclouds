@@ -23,6 +23,7 @@ import {
   Stethoscope,
   FileSearch,
   FlaskConical,
+  Building2,
 } from "lucide-react";
 
 interface SidebarProps {
@@ -66,6 +67,12 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, onToggle }) => {
       icon: FlaskConical,
       label: "Semences",
       path: "/semences",
+      badge: null,
+    },
+    {
+      icon: Building2,
+      label: "Exploitations",
+      path: "/exploitations",
       badge: null,
     },
     {

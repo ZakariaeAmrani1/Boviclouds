@@ -30,20 +30,20 @@ const Login = () => {
   const validateEmail = (email: string) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!email) {
-      return "Email is required";
+      return "L'email est requis";
     }
     if (!emailRegex.test(email)) {
-      return "Please enter a valid email address";
+      return "Veuillez saisir une adresse email valide";
     }
     return "";
   };
 
   const validatePassword = (password: string) => {
     if (!password) {
-      return "Password is required";
+      return "Le mot de passe est requis";
     }
     if (password.length < 6) {
-      return "Password must be at least 6 characters";
+      return "Le mot de passe doit contenir au moins 6 caractères";
     }
     return "";
   };
@@ -91,10 +91,10 @@ const Login = () => {
       if (success) {
         navigate("/", { replace: true });
       } else {
-        setError("Invalid email or password. Please try again.");
+        setError("Email ou mot de passe invalide. Veuillez réessayer.");
       }
     } catch (err) {
-      setError("An error occurred during login. Please try again.");
+      setError("Une erreur s'est produite lors de la connexion. Veuillez réessayer.");
     }
   };
 
@@ -116,9 +116,9 @@ const Login = () => {
     } else {
       toast({
         title: "Erreur",
-        description: "Error while sending request",
+        description: "Erreur lors de l'envoi de la demande",
       });
-      setError("Error while sending request");
+      setError("Erreur lors de l'envoi de la demande");
     }
     // You could show a success message here
   };
@@ -149,40 +149,18 @@ const Login = () => {
       >
         {/* Left Panel - Login/Registration Form */}
         <div
-          className={`flex-1 p-8 flex flex-col justify-center relative ${
-            showRegistration ? "overflow-y-auto" : "overflow-hidden"
+          className={`flex-1 p-8 flex flex-col relative ${
+            showRegistration ? "overflow-y-auto justify-start pt-6" : "overflow-hidden justify-center"
           }`}
         >
           {/* Logo */}
-          <div className="text-center mb-8">
-            <div className="inline-flex items-center gap-3 mb-4">
-              <div className="relative">
-                <svg className="w-12 h-12" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  {/* Background circle */}
-                  <circle cx="24" cy="24" r="24" fill="#21DB69"/>
-
-                  {/* Cloud shape */}
-                  <path d="M32 18.5C32 16.567 30.433 15 28.5 15C27.567 15 26.733 15.4 26.2 16.067C25.533 14.833 24.333 14 23 14C21 14 19.4 15.6 19.4 17.6C19.4 17.733 19.4 17.867 19.433 18C18.633 18.333 18 19.1 18 20C18 21.1 18.9 22 20 22H31C32.1 22 33 21.1 33 20C33 19.233 32.567 18.567 32 18.5Z" fill="white"/>
-
-                  {/* Cow head silhouette */}
-                  <ellipse cx="24" cy="30" rx="8" ry="6" fill="white"/>
-                  <circle cx="21" cy="29" r="1" fill="#21DB69"/>
-                  <circle cx="27" cy="29" r="1" fill="#21DB69"/>
-                  <ellipse cx="24" cy="32" rx="1.5" ry="1" fill="#21DB69"/>
-
-                  {/* Cow ears */}
-                  <ellipse cx="18" cy="28" rx="2" ry="3" fill="white" transform="rotate(-20 18 28)"/>
-                  <ellipse cx="30" cy="28" rx="2" ry="3" fill="white" transform="rotate(20 30 28)"/>
-                </svg>
-              </div>
-              <div className="flex flex-col items-start">
-                <span className="text-2xl font-poppins font-bold text-gray-900 leading-none">
-                  BoviClouds
-                </span>
-                <span className="text-xs font-inter text-gray-500 uppercase tracking-wider">
-                  Livestock Management
-                </span>
-              </div>
+          <div className={`text-center ${showRegistration ? "mb-6" : "mb-8"}`}>
+            <div className="inline-flex items-center justify-center mb-4">
+              <img
+                src="https://cdn.builder.io/api/v1/image/assets%2Fef086fb3af634f3aac577b85a6876642%2Fac45bd6de4fb4237917d13b8b391636c?format=webp&width=800"
+                alt="BoviClouds Logo"
+                className="h-12 object-contain"
+              />
             </div>
           </div>
 
@@ -198,9 +176,9 @@ const Login = () => {
             >
               {/* Header Text */}
               <div className="text-center mb-6">
-                <h1 className="heading-2 mb-2">Welcome back</h1>
+                <h1 className="heading-2 mb-2">Bienvenue</h1>
                 <p className="body-base text-[#969696]">
-                  Please sign in to your account
+                  Veuillez vous connecter à votre compte
                 </p>
               </div>
 
@@ -252,7 +230,7 @@ const Login = () => {
                   <div className="relative">
                     <input
                       type={showPassword ? "text" : "password"}
-                      placeholder="Password"
+                      placeholder="Mot de passe"
                       value={password}
                       onChange={(e) => handlePasswordChange(e.target.value)}
                       onBlur={() =>
@@ -323,7 +301,7 @@ const Login = () => {
                     )}
                   </button>
                   <label className="label-base text-[#232323]">
-                    Keep me logged in
+                    Rester connecté
                   </label>
                 </div>
 
@@ -355,13 +333,13 @@ const Login = () => {
                       ></path>
                     </svg>
                   )}
-                  {isLoading ? "Signing in..." : "Sign in"}
+                  {isLoading ? "Connexion en cours..." : "Se connecter"}
                 </button>
 
                 {/* Divider */}
                 <div className="flex items-center justify-center py-4">
                   <div className="flex-1 h-px bg-[#D9D9D9]"></div>
-                  <span className="px-4 body-small text-[#6E6E6E]">or</span>
+                  <span className="px-4 body-small text-[#6E6E6E]">ou</span>
                   <div className="flex-1 h-px bg-[#D9D9D9]"></div>
                 </div>
 
@@ -371,7 +349,7 @@ const Login = () => {
                   onClick={handleRequestAccount}
                   className="w-full bg-white border border-[#E6E8E7] text-[#232323] py-3 px-4 rounded-lg button-base hover:bg-gray-50 transition-colors shadow-sm flex items-center justify-center gap-3"
                 >
-                  <span>Request an account</span>
+                  <span>Demander un compte</span>
                   <svg
                     className="w-5 h-5"
                     fill="none"
@@ -395,7 +373,7 @@ const Login = () => {
                   onClick={() => setShowForgotPassword(true)}
                   className="body-base text-boviclouds-primary font-medium hover:underline transition-colors"
                 >
-                  Forgot your password?
+                  Mot de passe oublié ?
                 </button>
               </div>
             </div>
