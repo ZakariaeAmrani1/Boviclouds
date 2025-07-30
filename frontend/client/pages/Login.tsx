@@ -373,7 +373,7 @@ const Login = () => {
                   onClick={() => setShowForgotPassword(true)}
                   className="body-base text-boviclouds-primary font-medium hover:underline transition-colors"
                 >
-                  Forgot your password?
+                  Mot de passe oublié ?
                 </button>
               </div>
             </div>
