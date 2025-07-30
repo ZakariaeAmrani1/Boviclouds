@@ -333,7 +333,7 @@ const Login = () => {
                       ></path>
                     </svg>
                   )}
-                  {isLoading ? "Signing in..." : "Sign in"}
+                  {isLoading ? "Connexion en cours..." : "Se connecter"}
                 </button>
 
                 {/* Divider */}
