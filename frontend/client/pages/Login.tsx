@@ -154,7 +154,7 @@ const Login = () => {
           }`}
         >
           {/* Logo */}
-          <div className="text-center mb-8">
+          <div className={`text-center ${showRegistration ? "mb-6" : "mb-8"}`}>
             <div className="inline-flex items-center justify-center mb-4">
               <img
                 src="https://cdn.builder.io/api/v1/image/assets%2Fef086fb3af634f3aac577b85a6876642%2Fac45bd6de4fb4237917d13b8b391636c?format=webp&width=800"
