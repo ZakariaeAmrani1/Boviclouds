@@ -92,6 +92,7 @@ const App = () => (
               <Route path="identification" element={<Identification />} />
               <Route path="insemination" element={<Insemination />} />
               <Route path="semences" element={<Semences />} />
+              <Route path="exploitations" element={<Exploitations />} />
               <Route path="utilisateurs" element={<Utilisateurs />} />
               <Route path="cctv" element={<CCTV />} />
               <Route path="traitement" element={<Traitement />} />
