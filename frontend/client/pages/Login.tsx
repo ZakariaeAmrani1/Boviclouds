@@ -149,8 +149,8 @@ const Login = () => {
       >
         {/* Left Panel - Login/Registration Form */}
         <div
-          className={`flex-1 p-8 flex flex-col justify-center relative ${
-            showRegistration ? "overflow-y-auto" : "overflow-hidden"
+          className={`flex-1 p-8 flex flex-col relative ${
+            showRegistration ? "overflow-y-auto justify-start pt-6" : "overflow-hidden justify-center"
           }`}
         >
           {/* Logo */}
