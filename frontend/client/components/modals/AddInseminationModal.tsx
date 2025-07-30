@@ -50,7 +50,10 @@ const AddInseminationModal: React.FC<AddInseminationModalProps> = ({
   const { toast } = useToast();
   const { loading, error, createRecord } = useInsemination();
   const { users, loading: usersLoading, getUserName } = useUsers();
-  const { data: semenceData, loading: semenceLoading } = useSemenceList({}, { page: 1, limit: 100 });
+  const { data: semenceData, loading: semenceLoading } = useSemenceList(
+    {},
+    { page: 1, limit: 100 },
+  );
   const inseminateurs = users.filter((user) => user.role === "INSEMINATEUR");
   const responsables = users.filter(
     (user) => user.role === "RESPONSABLE_LOCAL",
@@ -127,8 +130,6 @@ const AddInseminationModal: React.FC<AddInseminationModalProps> = ({
     resetForm();
     onClose();
   };
-
-
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -263,7 +264,7 @@ const AddInseminationModal: React.FC<AddInseminationModalProps> = ({
               </SelectTrigger>
               <SelectContent>
                 {semences.map((semence) => (
-                  <SelectItem key={semence.id} value={semence.identificateur}>
+                  <SelectItem key={semence.id} value={semence.id}>
                     <div className="flex items-center gap-2">
                       <span className="font-mono text-blue-800 bg-blue-100 px-2 py-1 rounded text-xs">
                         {semence.identificateur}
