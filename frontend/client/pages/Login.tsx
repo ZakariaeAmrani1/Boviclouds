@@ -230,7 +230,7 @@ const Login = () => {
                   <div className="relative">
                     <input
                       type={showPassword ? "text" : "password"}
-                      placeholder="Password"
+                      placeholder="Mot de passe"
                       value={password}
                       onChange={(e) => handlePasswordChange(e.target.value)}
                       onBlur={() =>
