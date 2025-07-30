@@ -64,7 +64,9 @@ const applyFilters = (
   return records.filter((record) => {
     if (
       filters.identificateur &&
-      !record.identificateur.toLowerCase().includes(filters.identificateur.toLowerCase())
+      !record.identificateur
+        .toLowerCase()
+        .includes(filters.identificateur.toLowerCase())
     ) {
       return false;
     }
@@ -86,7 +88,9 @@ const applyFilters = (
     }
     if (
       filters.num_taureau &&
-      !record.num_taureau.toLowerCase().includes(filters.num_taureau.toLowerCase())
+      !record.num_taureau
+        .toLowerCase()
+        .includes(filters.num_taureau.toLowerCase())
     ) {
       return false;
     }
@@ -132,24 +136,23 @@ const paginate = <T>(
 
 // GET /api/semence - Get all semence records with filtering and pagination
 export const handleGetSemences: RequestHandler = async (req, res) => {
+  semenceRecords = [];
   try {
     // In a real application, you would fetch from the backend API
     // For now, we'll use mock data but keep the structure for future backend integration
-    /*
+
     const apiUrl = process.env.SERVER_API_URL;
     const response = await axios.get(`${apiUrl}semences`);
-    
     semenceRecords = response.data.map((data) => ({
       id: data._id,
       identificateur: data.identificateur,
       nom_taureau: data.nom_taureau,
       race_taureau: data.race_taureau,
       num_taureau: data.num_taureau,
-      createdBy: data.createdBy,
+      createdBy: "Administrateur",
       createdAt: data.createdAt,
       updatedAt: data.updatedAt,
     }));
-    */
 
     const page = parseInt(req.query.page as string) || 1;
     const limit = parseInt(req.query.limit as string) || 10;
@@ -261,7 +264,6 @@ export const handleCreateSemence: RequestHandler = async (req, res) => {
       });
     }
 
-    /*
     // Backend API call would be like this:
     const apiUrl = process.env.SERVER_API_URL;
     const response = await axios.post(`${apiUrl}semences`, {
@@ -269,14 +271,13 @@ export const handleCreateSemence: RequestHandler = async (req, res) => {
       nom_taureau: input.nom_taureau,
       race_taureau: input.race_taureau,
       num_taureau: input.num_taureau,
-      createdBy: input.createdBy,
     });
-    */
 
     // Create new record
     const newRecord: SemenceRecord = {
       id: nextId.toString(),
       ...input,
+      createdBy: input.createdBy,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };
@@ -341,11 +342,14 @@ export const handleUpdateSemence: RequestHandler = async (req, res) => {
       }
     }
 
-    /*
     // Backend API call would be like this:
     const apiUrl = process.env.SERVER_API_URL;
-    const response = await axios.put(`${apiUrl}semences/${id}`, input);
-    */
+    const response = await axios.patch(`${apiUrl}semences/${id}`, {
+      identificateur: input.identificateur,
+      nom_taureau: input.nom_taureau,
+      race_taureau: input.race_taureau,
+      num_taureau: input.num_taureau,
+    });
 
     // Update record
     const updatedRecord: SemenceRecord = {
@@ -383,11 +387,9 @@ export const handleDeleteSemence: RequestHandler = async (req, res) => {
       });
     }
 
-    /*
     // Backend API call would be like this:
     const apiUrl = process.env.SERVER_API_URL;
     const response = await axios.delete(`${apiUrl}semences/${id}`);
-    */
 
     semenceRecords.splice(recordIndex, 1);
 
@@ -529,10 +531,7 @@ export const handleExportSemences: RequestHandler = (req, res) => {
       ].join("\n");
 
       res.setHeader("Content-Type", "text/csv");
-      res.setHeader(
-        "Content-Disposition",
-        "attachment; filename=semences.csv",
-      );
+      res.setHeader("Content-Disposition", "attachment; filename=semences.csv");
       res.send(csvContent);
     } else {
       // For Excel format, we'd typically use a library like xlsx
