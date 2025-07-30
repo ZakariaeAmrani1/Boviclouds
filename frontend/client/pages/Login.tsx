@@ -40,10 +40,10 @@ const Login = () => {
 
   const validatePassword = (password: string) => {
     if (!password) {
-      return "Password is required";
+      return "Le mot de passe est requis";
     }
     if (password.length < 6) {
-      return "Password must be at least 6 characters";
+      return "Le mot de passe doit contenir au moins 6 caractères";
     }
     return "";
   };
