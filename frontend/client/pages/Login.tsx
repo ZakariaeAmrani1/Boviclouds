@@ -301,7 +301,7 @@ const Login = () => {
                     )}
                   </button>
                   <label className="label-base text-[#232323]">
-                    Keep me logged in
+                    Rester connecté
                   </label>
                 </div>
 
