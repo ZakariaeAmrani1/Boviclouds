@@ -76,7 +76,11 @@ const AddSemenceModal: React.FC<AddSemenceModalProps> = ({
     }
 
     // Real-time validation for specific fields
-    if (field === "identificateur" && value && !validateIdentificateurFormat(value)) {
+    if (
+      field === "identificateur" &&
+      value &&
+      !validateIdentificateurFormat(value)
+    ) {
       setValidationErrors((prev) => ({
         ...prev,
         [field]: "Format d'identificateur invalide (ex: SEM123456)",
@@ -135,7 +139,7 @@ const AddSemenceModal: React.FC<AddSemenceModalProps> = ({
         nom_taureau: formData.nom_taureau.trim(),
         race_taureau: formData.race_taureau.trim(),
         num_taureau: formData.num_taureau.toUpperCase(),
-        createdBy: "current_user", // In a real app, this would come from auth context
+        createdBy: "Administrateur",
       };
 
       // Validate using Zod schema
@@ -203,7 +207,9 @@ const AddSemenceModal: React.FC<AddSemenceModalProps> = ({
                 id="identificateur"
                 type="text"
                 value={formData.identificateur}
-                onChange={(e) => handleFormChange("identificateur", e.target.value)}
+                onChange={(e) =>
+                  handleFormChange("identificateur", e.target.value)
+                }
                 placeholder="SEM123456"
                 className={
                   validationErrors.identificateur
@@ -248,7 +254,9 @@ const AddSemenceModal: React.FC<AddSemenceModalProps> = ({
               disabled={loading}
             />
             {validationErrors.nom_taureau && (
-              <p className="text-sm text-red-600">{validationErrors.nom_taureau}</p>
+              <p className="text-sm text-red-600">
+                {validationErrors.nom_taureau}
+              </p>
             )}
             <p className="text-xs text-gray-500">
               Nom du taureau (2-50 caractères, lettres et espaces uniquement)
@@ -266,7 +274,9 @@ const AddSemenceModal: React.FC<AddSemenceModalProps> = ({
               disabled={loading}
             >
               <SelectTrigger
-                className={validationErrors.race_taureau ? "border-red-500" : ""}
+                className={
+                  validationErrors.race_taureau ? "border-red-500" : ""
+                }
               >
                 <SelectValue placeholder="Sélectionner une race" />
               </SelectTrigger>
@@ -282,15 +292,25 @@ const AddSemenceModal: React.FC<AddSemenceModalProps> = ({
             {formData.race_taureau === "custom" && (
               <Input
                 type="text"
-                value={formData.race_taureau === "custom" ? "" : formData.race_taureau}
-                onChange={(e) => handleFormChange("race_taureau", e.target.value)}
+                value={
+                  formData.race_taureau === "custom"
+                    ? ""
+                    : formData.race_taureau
+                }
+                onChange={(e) =>
+                  handleFormChange("race_taureau", e.target.value)
+                }
                 placeholder="Saisir la race manuellement"
-                className={validationErrors.race_taureau ? "border-red-500" : ""}
+                className={
+                  validationErrors.race_taureau ? "border-red-500" : ""
+                }
                 disabled={loading}
               />
             )}
             {validationErrors.race_taureau && (
-              <p className="text-sm text-red-600">{validationErrors.race_taureau}</p>
+              <p className="text-sm text-red-600">
+                {validationErrors.race_taureau}
+              </p>
             )}
             <p className="text-xs text-gray-500">
               Race du taureau (2-30 caractères)
@@ -308,7 +328,9 @@ const AddSemenceModal: React.FC<AddSemenceModalProps> = ({
                 id="num_taureau"
                 type="text"
                 value={formData.num_taureau}
-                onChange={(e) => handleFormChange("num_taureau", e.target.value)}
+                onChange={(e) =>
+                  handleFormChange("num_taureau", e.target.value)
+                }
                 placeholder="FR12345678"
                 className={
                   validationErrors.num_taureau
@@ -342,7 +364,8 @@ const AddSemenceModal: React.FC<AddSemenceModalProps> = ({
           {validationErrors.num_taureau?.includes("différents") && (
             <div className="p-3 bg-yellow-50 border border-yellow-200 rounded-md">
               <p className="text-sm text-yellow-800">
-                L'identificateur et le numéro du taureau doivent être différents.
+                L'identificateur et le numéro du taureau doivent être
+                différents.
               </p>
             </div>
           )}

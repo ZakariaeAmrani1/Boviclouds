@@ -16,8 +16,9 @@ export const useSemenceList = (
   initialFilters: SemenceFilters = {},
   initialPagination: PaginationParams = { page: 1, limit: 10 },
 ) => {
-  const [data, setData] =
-    useState<PaginatedResponse<SemenceRecord> | null>(null);
+  const [data, setData] = useState<PaginatedResponse<SemenceRecord> | null>(
+    null,
+  );
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [filters, setFilters] = useState<SemenceFilters>(initialFilters);
@@ -73,9 +74,7 @@ export const useSemence = () => {
   const [error, setError] = useState<string | null>(null);
 
   const createRecord = useCallback(
-    async (
-      input: CreateSemenceInput,
-    ): Promise<SemenceRecord | null> => {
+    async (input: CreateSemenceInput): Promise<SemenceRecord | null> => {
       setLoading(true);
       setError(null);
       try {
@@ -315,7 +314,8 @@ export const useSemenceSearch = () => {
       setLoading(true);
       setError(null);
       try {
-        const result = await SemenceService.searchByIdentificateur(identificateur);
+        const result =
+          await SemenceService.searchByIdentificateur(identificateur);
         return result;
       } catch (err) {
         setError(
