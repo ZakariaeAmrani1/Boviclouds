@@ -23,6 +23,7 @@ import {
   Stethoscope,
   FileSearch,
   FlaskConical,
+  Building2,
 } from "lucide-react";
 
 interface SidebarProps {
