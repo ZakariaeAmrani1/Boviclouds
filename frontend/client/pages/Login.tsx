@@ -339,7 +339,7 @@ const Login = () => {
                 {/* Divider */}
                 <div className="flex items-center justify-center py-4">
                   <div className="flex-1 h-px bg-[#D9D9D9]"></div>
-                  <span className="px-4 body-small text-[#6E6E6E]">or</span>
+                  <span className="px-4 body-small text-[#6E6E6E]">ou</span>
                   <div className="flex-1 h-px bg-[#D9D9D9]"></div>
                 </div>
 
