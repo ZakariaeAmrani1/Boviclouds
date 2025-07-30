@@ -91,10 +91,10 @@ const Login = () => {
       if (success) {
         navigate("/", { replace: true });
       } else {
-        setError("Invalid email or password. Please try again.");
+        setError("Email ou mot de passe invalide. Veuillez réessayer.");
       }
     } catch (err) {
-      setError("An error occurred during login. Please try again.");
+      setError("Une erreur s'est produite lors de la connexion. Veuillez réessayer.");
     }
   };
 
