@@ -70,6 +70,15 @@ import {
   handleGetUser,
   handleGetUsersByRole,
 } from "./routes/utilisateur";
+import {
+  getExploitations,
+  getExploitationById,
+  createExploitation,
+  updateExploitation,
+  deleteExploitation,
+  getExploitationStats,
+  exportExploitations,
+} from "./routes/exploitation";
 
 export function createServer() {
   const app = express();
