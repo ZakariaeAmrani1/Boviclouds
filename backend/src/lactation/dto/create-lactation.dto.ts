@@ -1,3 +1,4 @@
+
 import {
   IsString,
   IsOptional,
@@ -18,27 +19,32 @@ export class CreateLactationDto {
   @Type(() => Date)
   date_velage?: Date;
 
-  @IsOptional()
   @IsNumber()
-  n_lactation?: number;
+  @Min(1)
+  @Transform(({ value }) => parseInt(value))
+  n_lactation: number;
 
-  @IsOptional()
   @IsNumber()
-  lait_kg?: number;
+  @Min(0)
+  @Transform(({ value }) => parseFloat(value))
+  lait_kg: number;
 
-  @IsOptional()
   @IsNumber()
-  kg_mg?: number;
+  @Min(0)
+  @Transform(({ value }) => parseFloat(value))
+  kg_mg: number;
 
-  @IsOptional()
   @IsNumber()
-  pct_proteine?: number;
+  @Min(0)
+  @Transform(({ value }) => parseFloat(value))
+  pct_proteine: number;
 
-  @IsOptional()
   @IsNumber()
-  pct_mg?: number;
+  @Min(0)
+  @Transform(({ value }) => parseFloat(value))
+  pct_mg: number;
 
-  @IsOptional()
   @IsMongoId()
-  responsable_laitier_id?: string;
+  @IsNotEmpty()
+  controleur_laitier_id: string;
 }
