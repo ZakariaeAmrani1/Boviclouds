@@ -144,6 +144,7 @@ const Login = () => {
     setShowForgotPassword(false);
     setForgotPasswordEmail("");
     setForgotPasswordSent(false);
+    setForgotPasswordEmailError("");
   };
 
   return (
