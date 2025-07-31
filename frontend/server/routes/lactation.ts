@@ -378,18 +378,18 @@ export const handleCreateLactation: RequestHandler = async (req, res) => {
       });
     }
 
-    // Backend API call would be like this:
-    const apiUrl = process.env.SERVER_API_URL;
-    const response = await axios.post(`${apiUrl}lactations`, {
-      sujet_id: input.sujet_id,
-      date_velage: input.date_velage,
-      n_lactation: input.n_lactation,
-      lait_kg: input.lait_kg,
-      kg_mg: input.kg_mg,
-      pct_proteine: input.pct_proteine,
-      pct_mg: input.pct_mg,
-      controleur_laitier_id: input.controleur_laitier_id,
-    });
+    // TODO: Backend API call would be like this:
+    // const apiUrl = process.env.SERVER_API_URL;
+    // const response = await axios.post(`${apiUrl}lactations`, {
+    //   sujet_id: input.sujet_id,
+    //   date_velage: input.date_velage,
+    //   n_lactation: input.n_lactation,
+    //   lait_kg: input.lait_kg,
+    //   kg_mg: input.kg_mg,
+    //   pct_proteine: input.pct_proteine,
+    //   pct_mg: input.pct_mg,
+    //   controleur_laitier_id: input.controleur_laitier_id,
+    // });
 
     // Create new record
     const newRecord: LactationRecord = {
