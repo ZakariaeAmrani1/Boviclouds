@@ -24,6 +24,7 @@ export interface UtilisateurRecord {
   prenom: string;
   nom: string;
   email: string;
+  CIN: string;
   password: string;
   telephone?: string;
   role: UtilisateurRole;
@@ -48,6 +49,8 @@ export interface CreateUtilisateurInput {
   prenom: string;
   nom: string;
   email: string;
+  CIN: string;
+  civilite?: string;
   password: string;
   telephone?: string;
   role: UtilisateurRole;
@@ -78,6 +81,8 @@ export interface UpdateUtilisateurInput {
   region?: string;
   codePostal?: string;
   notes?: string;
+  CIN?: string;
+  civilite?: string;
 }
 
 // Search/filter parameters
