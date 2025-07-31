@@ -57,9 +57,11 @@ export class Insemination {
 
 export const InseminationSchema = SchemaFactory.createForClass(Insemination);
 
-InseminationSchema.pre(/^find/,function(this: Query<any, Insemination>,next){
-  this.populate('semence_id')
-      .populate('inseminateur_id')
-      .populate('responsable_local_id')
-  next();
-});
+InseminationSchema.pre(/^find/, function (this: Query<any, Insemination>,next) {
+  this
+    .populate('semence_id')
+    .populate('inseminateur_id')
+    .populate('responsable_local_id');
+  next()
+})
+
