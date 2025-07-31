@@ -66,6 +66,15 @@ import {
   handleExportSemences,
 } from "./routes/semence";
 import {
+  handleGetLactations,
+  handleGetLactation,
+  handleCreateLactation,
+  handleUpdateLactation,
+  handleDeleteLactation,
+  handleGetLactationStats,
+  handleExportLactations,
+} from "./routes/lactation";
+import {
   handleGetUsers,
   handleGetUser,
   handleGetUsersByRole,
@@ -165,6 +174,15 @@ export function createServer() {
   app.post("/api/semence", handleCreateSemence);
   app.put("/api/semence/:id", handleUpdateSemence);
   app.delete("/api/semence/:id", handleDeleteSemence);
+
+  // Lactation API routes
+  app.get("/api/lactation/stats", handleGetLactationStats);
+  app.get("/api/lactation/export", handleExportLactations);
+  app.get("/api/lactation/:id", handleGetLactation);
+  app.get("/api/lactation", handleGetLactations);
+  app.post("/api/lactation", handleCreateLactation);
+  app.put("/api/lactation/:id", handleUpdateLactation);
+  app.delete("/api/lactation/:id", handleDeleteLactation);
 
   // Utilisateur API routes
   app.get("/api/utilisateur/role/:role", handleGetUsersByRole);

@@ -3,20 +3,18 @@ import { CreateLactationDto } from './dto/create-lactation.dto';
 import { UpdateLactationDto } from './dto/update-lactation.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { Lactation } from './schemas/lactation.schema';
-import { Model, Types } from 'mongoose';
-import { LactationQueryDto } from './dto/lactation-quey.dto';
-import { UserRole } from 'src/users/schemas/users/user.role';
+import { Model } from 'mongoose';
 
-export class LactationNotFountiondException extends HttpException {
+export class LactationNotFoundException extends HttpException {
   constructor(id: string) {
     super(`Lactation with ID (${id}) not found`, HttpStatus.NOT_FOUND);
   }
 }
+
 @Injectable()
 export class LactationService {
   constructor(
-    @InjectModel(Lactation.name)
-    private readonly lactationModel: Model<Lactation>,
+    @InjectModel(Lactation.name) private readonly lactationModel: Model<Lactation>,
   ) {}
 
   async findAll(
@@ -69,34 +67,24 @@ export class LactationService {
     )
       throw new HttpException('Unauthorized! Only admin user or controller can add lactations!', HttpStatus.UNAUTHORIZED);
     return await this.lactationModel.create(createLactationDto);
+
   }
 
-  async findOne(id: string): Promise<Lactation | null> {
-    if (!Types.ObjectId.isValid(id))
-      throw new LactationNotFountiondException(id);
-    const lactation = await this.lactationModel.findById(id).exec();
-    if (!lactation) throw new LactationNotFountiondException(id);
+  async findOne(id: string) {
+    const lactation = await this.lactationModel.findById(id);
+    if (!lactation) throw new LactationNotFoundException(id);
     return lactation;
   }
 
-  async update(
-    id: string,
-    updateLactationDto: UpdateLactationDto,
-  ): Promise<Lactation> {
-    if (!Types.ObjectId.isValid(id))
-      throw new LactationNotFountiondException(id);
-    const lactation = await this.lactationModel
-      .findByIdAndUpdate(id, updateLactationDto, { new: true })
-      .exec();
-    if (!lactation) throw new LactationNotFountiondException(id);
+  async update(id: string, updateLactationDto: UpdateLactationDto) {
+    const lactation = await this.lactationModel.findByIdAndUpdate(id, updateLactationDto, { new: true });
+    if (!lactation) throw new LactationNotFoundException(id);
     return lactation;
   }
 
-  async remove(id: string): Promise<Lactation> {
-    if (!Types.ObjectId.isValid(id))
-      throw new LactationNotFountiondException(id);
-    const lactation = await this.lactationModel.findByIdAndDelete(id).exec();
-    if (!lactation) throw new LactationNotFountiondException(id);
+  async remove(id: string) {
+    const lactation = await this.lactationModel.findByIdAndDelete(id);
+    if (!lactation) throw new LactationNotFoundException(id);
     return lactation;
   }
 }
