@@ -413,17 +413,17 @@ const Login = () => {
           <div className="bg-white rounded-xl shadow-xl max-w-md w-full p-6 transform animate-slideUp">
             <div className="text-center">
               <h3 className="text-xl font-poppins font-semibold text-gray-900 mb-2">
-                Reset Password
+                Réinitialiser le mot de passe
               </h3>
               {!forgotPasswordSent ? (
                 <>
                   <p className="text-gray-600 font-inter text-sm mb-4">
-                    Enter your email address and we'll send you a link to reset
-                    your password.
+                    Saisissez votre adresse e-mail et nous vous enverrons un lien pour réinitialiser
+                    votre mot de passe.
                   </p>
                   <input
                     type="email"
-                    placeholder="Enter your email"
+                    placeholder="Saisissez votre e-mail"
                     value={forgotPasswordEmail}
                     onChange={(e) => setForgotPasswordEmail(e.target.value)}
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg font-inter text-sm focus:outline-none focus:border-boviclouds-primary mb-4"
@@ -433,14 +433,14 @@ const Login = () => {
                       onClick={resetForgotPasswordModal}
                       className="flex-1 px-4 py-2 text-gray-600 border border-gray-300 rounded-lg font-inter text-sm hover:bg-gray-50 transition-colors"
                     >
-                      Cancel
+                      Annuler
                     </button>
                     <button
                       onClick={handleForgotPassword}
                       disabled={!forgotPasswordEmail}
                       className="flex-1 px-4 py-2 bg-boviclouds-primary text-white rounded-lg font-inter text-sm hover:bg-boviclouds-primary/90 transition-colors disabled:opacity-50"
                     >
-                      Send Reset Link
+                      Envoyer le lien
                     </button>
                   </div>
                 </>
@@ -462,13 +462,13 @@ const Login = () => {
                     </svg>
                   </div>
                   <p className="text-gray-600 font-inter text-sm mb-4">
-                    Reset link sent to <strong>{forgotPasswordEmail}</strong>
+                    Lien de réinitialisation envoyé à <strong>{forgotPasswordEmail}</strong>
                   </p>
                   <button
                     onClick={resetForgotPasswordModal}
                     className="w-full px-4 py-2 bg-boviclouds-primary text-white rounded-lg font-inter text-sm hover:bg-boviclouds-primary/90 transition-colors"
                   >
-                    Close
+                    Fermer
                   </button>
                 </>
               )}
