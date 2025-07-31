@@ -10,10 +10,7 @@ import {
   Eye,
   Calendar,
   Edit3,
-  Camera,
-  Upload,
-  X,
-  ImageIcon,
+  Images,
 } from "lucide-react";
 import {
   Dialog,
@@ -38,6 +35,7 @@ import { Separator } from "../ui/separator";
 import { Badge } from "../ui/badge";
 import { useToast } from "../../hooks/use-toast";
 import { useIdentification } from "../../hooks/useIdentification";
+import MultiImageUpload, { ImageData } from "../ui/multi-image-upload";
 import {
   IdentificationRecord,
   UpdateIdentificationInput,
@@ -65,7 +63,7 @@ interface FormData {
   sujet_race: Race | "";
   sujet_sexe: Sexe | "";
   sujet_type: TypeAnimal | "";
-  muzzle_image: File | null;
+  images: ImageData[];
 
   // Mother info
   mere_nni: string;
@@ -107,24 +105,30 @@ const steps = [
   },
   {
     id: 2,
+    title: "Photos de l'animal",
+    description: "Images d'identification",
+    icon: Images,
+  },
+  {
+    id: 3,
     title: "Lignée maternelle",
     description: "Mère et grand-père maternel",
     icon: Users,
   },
   {
-    id: 3,
+    id: 4,
     title: "Lignée paternelle",
     description: "Père et grands-parents paternels",
     icon: Users,
   },
   {
-    id: 4,
+    id: 5,
     title: "Informations complémentaires",
     description: "Éleveur, exploitation et responsable",
     icon: Building,
   },
   {
-    id: 5,
+    id: 6,
     title: "Vérification",
     description: "Validation des modifications",
     icon: Eye,
@@ -140,12 +144,7 @@ const EditIdentificationModal: React.FC<EditIdentificationModalProps> = ({
   const { toast } = useToast();
   const { loading, error, updateRecord } = useIdentification();
 
-  // Image upload state
-  const [imagePreview, setImagePreview] = useState<string | null>(null);
-  const [isCapturing, setIsCapturing] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const canvasRef = useRef<HTMLCanvasElement>(null);
+
 
   const [currentStep, setCurrentStep] = useState(1);
   const [originalData, setOriginalData] = useState<FormData | null>(null);
@@ -155,20 +154,17 @@ const EditIdentificationModal: React.FC<EditIdentificationModalProps> = ({
     sujet_race: "",
     sujet_sexe: "",
     sujet_type: "",
-    muzzle_image: null,
+    images: [],
     mere_nni: "",
     mere_date_naissance: "",
     mere_race: "",
     grand_pere_maternel_nni: "",
-    grand_pere_maternel_nom: "",
     grand_pere_maternel_date_naissance: "",
     grand_pere_maternel_race: "",
     pere_nni: "",
-    pere_nom: "",
     pere_date_naissance: "",
     pere_race: "",
     grand_pere_paternel_nni: "",
-    grand_pere_paternel_nom: "",
     grand_pere_paternel_date_naissance: "",
     grand_pere_paternel_race: "",
     grand_mere_paternelle_nni: "",
@@ -183,7 +179,7 @@ const EditIdentificationModal: React.FC<EditIdentificationModalProps> = ({
     Record<string, string>
   >({});
   const [completedSteps, setCompletedSteps] = useState<Set<number>>(
-    new Set([1, 2, 3, 4, 5]),
+    new Set([1, 2, 3, 4, 5, 6]),
   ); // All steps are completed initially for edit
 
   // Initialize form with identification data
@@ -196,22 +192,19 @@ const EditIdentificationModal: React.FC<EditIdentificationModalProps> = ({
         sujet_race: identification.infos_sujet.race,
         sujet_sexe: identification.infos_sujet.sexe,
         sujet_type: identification.infos_sujet.type,
-        muzzle_image: null,
+        images: [],
         mere_nni: identification.infos_mere.nni,
         mere_date_naissance:
           identification.infos_mere.date_naissance.split("T")[0],
         mere_race: identification.infos_mere.race,
         grand_pere_maternel_nni: identification.grand_pere_maternel.nni,
-        grand_pere_maternel_nom: identification.grand_pere_maternel.nom,
         grand_pere_maternel_date_naissance:
           identification.grand_pere_maternel.date_naissance.split("T")[0],
         grand_pere_maternel_race: identification.grand_pere_maternel.race,
         pere_nni: identification.pere.nni,
-        pere_nom: identification.pere.nom,
         pere_date_naissance: identification.pere.date_naissance.split("T")[0],
         pere_race: identification.pere.race,
         grand_pere_paternel_nni: identification.grand_pere_paternel.nni,
-        grand_pere_paternel_nom: identification.grand_pere_paternel.nom,
         grand_pere_paternel_date_naissance:
           identification.grand_pere_paternel.date_naissance.split("T")[0],
         grand_pere_paternel_race: identification.grand_pere_paternel.race,
@@ -228,101 +221,11 @@ const EditIdentificationModal: React.FC<EditIdentificationModalProps> = ({
     }
   }, [identification]);
 
-  // Image upload handlers
-  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      if (file.size > 5 * 1024 * 1024) {
-        toast({
-          title: "Erreur",
-          description: "L'image ne doit pas dépasser 5MB.",
-          variant: "destructive",
-        });
-        return;
-      }
-
-      if (!file.type.startsWith('image/')) {
-        toast({
-          title: "Erreur",
-          description: "Veuillez sélectionner un fichier image valide.",
-          variant: "destructive",
-        });
-        return;
-      }
-
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const result = e.target?.result as string;
-        setImagePreview(result);
-        setFormData(prev => ({ ...prev, muzzle_image: file }));
-      };
-      reader.readAsDataURL(file);
-    }
+  const handleImagesChange = (images: ImageData[]) => {
+    setFormData(prev => ({ ...prev, images }));
   };
 
-  const startCapture = async () => {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream;
-        setIsCapturing(true);
-      }
-    } catch (error) {
-      toast({
-        title: "Erreur",
-        description: "Impossible d'accéder à la caméra. Veuillez vérifier les permissions.",
-        variant: "destructive",
-      });
-    }
-  };
-
-  const capturePhoto = () => {
-    if (videoRef.current && canvasRef.current) {
-      const video = videoRef.current;
-      const canvas = canvasRef.current;
-      const context = canvas.getContext('2d');
-
-      if (context) {
-        canvas.width = video.videoWidth;
-        canvas.height = video.videoHeight;
-        context.drawImage(video, 0, 0, canvas.width, canvas.height);
-
-        canvas.toBlob((blob) => {
-          if (blob) {
-            const file = new File([blob], 'muzzle-capture.jpg', { type: 'image/jpeg' });
-            const reader = new FileReader();
-            reader.onload = (e) => {
-              const result = e.target?.result as string;
-              setImagePreview(result);
-              setFormData(prev => ({ ...prev, muzzle_image: file }));
-            };
-            reader.readAsDataURL(file);
-          }
-        }, 'image/jpeg', 0.8);
-      }
-
-      stopCapture();
-    }
-  };
-
-  const stopCapture = () => {
-    if (videoRef.current?.srcObject) {
-      const stream = videoRef.current.srcObject as MediaStream;
-      stream.getTracks().forEach(track => track.stop());
-      videoRef.current.srcObject = null;
-    }
-    setIsCapturing(false);
-  };
-
-  const removeImage = () => {
-    setImagePreview(null);
-    setFormData(prev => ({ ...prev, muzzle_image: null }));
-    if (fileInputRef.current) {
-      fileInputRef.current.value = '';
-    }
-  };
-
-  const handleFormChange = (field: keyof FormData, value: string) => {
+  const handleFormChange = (field: keyof FormData, value: string | ImageData[]) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
     // Clear validation error for this field
     if (validationErrors[field]) {
@@ -340,13 +243,6 @@ const EditIdentificationModal: React.FC<EditIdentificationModalProps> = ({
     }
     setValidationErrors({});
     setCurrentStep(1);
-    // Reset image states
-    setImagePreview(null);
-    setIsCapturing(false);
-    stopCapture();
-    if (fileInputRef.current) {
-      fileInputRef.current.value = '';
-    }
   };
 
   const validateCurrentStep = (): boolean => {
@@ -366,6 +262,10 @@ const EditIdentificationModal: React.FC<EditIdentificationModalProps> = ({
           return true;
         }
         case 2: {
+          // Image step - no validation required
+          return true;
+        }
+        case 3: {
           const mereData = {
             nni: formData.mere_nni.trim().toUpperCase(),
             date_naissance: formData.mere_date_naissance,
@@ -373,7 +273,6 @@ const EditIdentificationModal: React.FC<EditIdentificationModalProps> = ({
           };
           const grandPereMData = {
             nni: formData.grand_pere_maternel_nni.trim().toUpperCase(),
-            nom: formData.grand_pere_maternel_nom.trim(),
             date_naissance: formData.grand_pere_maternel_date_naissance,
             race: formData.grand_pere_maternel_race as Race,
           };
@@ -381,16 +280,14 @@ const EditIdentificationModal: React.FC<EditIdentificationModalProps> = ({
           QuickValidationSchemas.grandPereMaternel.parse(grandPereMData);
           return true;
         }
-        case 3: {
+        case 4: {
           const pereData = {
             nni: formData.pere_nni.trim().toUpperCase(),
-            nom: formData.pere_nom.trim(),
             date_naissance: formData.pere_date_naissance,
             race: formData.pere_race as Race,
           };
           const grandPerePData = {
             nni: formData.grand_pere_paternel_nni.trim().toUpperCase(),
-            nom: formData.grand_pere_paternel_nom.trim(),
             date_naissance: formData.grand_pere_paternel_date_naissance,
             race: formData.grand_pere_paternel_race as Race,
           };
@@ -404,7 +301,7 @@ const EditIdentificationModal: React.FC<EditIdentificationModalProps> = ({
           QuickValidationSchemas.grandMerePaternelle.parse(grandMerePData);
           return true;
         }
-        case 4: {
+        case 5: {
           const complemData = {
             eleveur_id: formData.eleveur_id.trim(),
             exploitation_id: formData.exploitation_id.trim(),
@@ -580,7 +477,7 @@ const EditIdentificationModal: React.FC<EditIdentificationModalProps> = ({
     // Validate all steps first
     const originalStep = currentStep;
 
-    for (let step = 1; step <= 4; step++) {
+    for (let step = 1; step <= 5; step++) {
       setCurrentStep(step);
       if (!validateCurrentStep()) {
         toast({
@@ -857,133 +754,40 @@ const EditIdentificationModal: React.FC<EditIdentificationModalProps> = ({
                   </div>
                 </div>
 
-                {/* Muzzle Image Upload Section */}
-                <Separator className="my-6" />
-                <div className="space-y-4">
-                  <h3 className="text-base font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                    <ImageIcon className="w-5 h-5" />
-                    Photo du museau
+
+              </div>
+            )}
+
+            {/* Step 2: Image Upload */}
+            {currentStep === 2 && (
+              <div className="space-y-6 animate-fadeIn">
+                <div className="text-center mb-6">
+                  <Images className="w-12 h-12 mx-auto text-boviclouds-primary mb-2" />
+                  <h3 className="text-lg font-semibold text-gray-900">
+                    Photos de l'animal
                   </h3>
+                  <p className="text-gray-600">
+                    Modifiez ou ajoutez des photos pour l'identification de l'animal
+                  </p>
+                </div>
 
-                  <div className="border-2 border-dashed border-gray-300 rounded-lg p-6">
-                    {!imagePreview && !isCapturing && (
-                      <div className="text-center space-y-4">
-                        {/* Cow face placeholder */}
-                        <div className="w-24 h-24 mx-auto bg-gray-100 rounded-full flex items-center justify-center">
-                          <svg
-                            className="w-12 h-12 text-gray-400"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={1.5}
-                              d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4"
-                            />
-                          </svg>
-                        </div>
-                        <p className="text-sm text-gray-600">
-                          Ajoutez une photo du museau de l'animal
-                        </p>
-                        <div className="flex gap-2 justify-center">
-                          <Button
-                            type="button"
-                            variant="outline"
-                            onClick={() => fileInputRef.current?.click()}
-                            className="flex items-center gap-2"
-                          >
-                            <Upload className="w-4 h-4" />
-                            Importer
-                          </Button>
-                          <Button
-                            type="button"
-                            variant="outline"
-                            onClick={startCapture}
-                            className="flex items-center gap-2"
-                          >
-                            <Camera className="w-4 h-4" />
-                            Caméra
-                          </Button>
-                        </div>
-                      </div>
-                    )}
+                <MultiImageUpload
+                  images={formData.images}
+                  onImagesChange={handleImagesChange}
+                  maxImages={5}
+                  maxFileSize={5}
+                  disabled={loading}
+                  className="w-full"
+                />
 
-                    {isCapturing && (
-                      <div className="text-center space-y-4">
-                        <video
-                          ref={videoRef}
-                          autoPlay
-                          className="w-full max-w-md mx-auto rounded-lg"
-                        />
-                        <div className="flex gap-2 justify-center">
-                          <Button
-                            type="button"
-                            onClick={capturePhoto}
-                            className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700"
-                          >
-                            <Camera className="w-4 h-4" />
-                            Capturer
-                          </Button>
-                          <Button
-                            type="button"
-                            variant="outline"
-                            onClick={stopCapture}
-                            className="flex items-center gap-2"
-                          >
-                            <X className="w-4 h-4" />
-                            Annuler
-                          </Button>
-                        </div>
-                      </div>
-                    )}
-
-                    {imagePreview && (
-                      <div className="text-center space-y-4">
-                        <img
-                          src={imagePreview}
-                          alt="Aperçu du museau"
-                          className="w-full max-w-md mx-auto rounded-lg"
-                        />
-                        <div className="flex gap-2 justify-center">
-                          <Button
-                            type="button"
-                            variant="outline"
-                            onClick={() => fileInputRef.current?.click()}
-                            className="flex items-center gap-2"
-                          >
-                            <Upload className="w-4 h-4" />
-                            Remplacer
-                          </Button>
-                          <Button
-                            type="button"
-                            variant="outline"
-                            onClick={removeImage}
-                            className="flex items-center gap-2 text-red-600 hover:text-red-700"
-                          >
-                            <X className="w-4 h-4" />
-                            Supprimer
-                          </Button>
-                        </div>
-                      </div>
-                    )}
-
-                    <input
-                      ref={fileInputRef}
-                      type="file"
-                      accept="image/*"
-                      onChange={handleFileUpload}
-                      className="hidden"
-                    />
-                    <canvas ref={canvasRef} className="hidden" />
-                  </div>
+                <div className="text-xs text-gray-500 text-center bg-blue-50 p-3 rounded-lg">
+                  📝 <strong>Conseil:</strong> Prenez des photos claires du museau, des flancs et de la face de l'animal pour une meilleure identification.
                 </div>
               </div>
             )}
 
-            {/* Step 2: Maternal Line */}
-            {currentStep === 2 && (
+            {/* Step 3: Maternal Line */}
+            {currentStep === 3 && (
               <div className="space-y-8 animate-fadeIn">
                 {/* Mother */}
                 <div>
@@ -1066,7 +870,7 @@ const EditIdentificationModal: React.FC<EditIdentificationModalProps> = ({
                     <User className="w-5 h-5" />
                     Grand-père maternel
                   </h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div className="space-y-2">
                       <Label
                         htmlFor="grand_pere_maternel_nni"
@@ -1085,28 +889,6 @@ const EditIdentificationModal: React.FC<EditIdentificationModalProps> = ({
                         }
                         className="h-12 px-4 text-sm rounded-xl border-boviclouds-gray-100"
                         placeholder="Ex: FR1234567890"
-                        disabled={loading}
-                      />
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label
-                        htmlFor="grand_pere_maternel_nom"
-                        className="text-sm font-normal text-black"
-                      >
-                        Nom *
-                      </Label>
-                      <Input
-                        id="grand_pere_maternel_nom"
-                        value={formData.grand_pere_maternel_nom}
-                        onChange={(e) =>
-                          handleFormChange(
-                            "grand_pere_maternel_nom",
-                            e.target.value,
-                          )
-                        }
-                        className="h-12 px-4 text-sm rounded-xl border-boviclouds-gray-100"
-                        placeholder="Nom du grand-père"
                         disabled={loading}
                       />
                     </div>
@@ -1160,8 +942,8 @@ const EditIdentificationModal: React.FC<EditIdentificationModalProps> = ({
               </div>
             )}
 
-            {/* Step 3: Paternal Line */}
-            {currentStep === 3 && (
+            {/* Step 4: Paternal Line */}
+            {currentStep === 4 && (
               <div className="space-y-8 animate-fadeIn">
                 {/* Father */}
                 <div>
@@ -1450,8 +1232,8 @@ const EditIdentificationModal: React.FC<EditIdentificationModalProps> = ({
               </div>
             )}
 
-            {/* Step 4: Complementary Information */}
-            {currentStep === 4 && (
+            {/* Step 5: Complementary Information */}
+            {currentStep === 5 && (
               <div className="space-y-6 animate-fadeIn">
                 <div className="text-center mb-6">
                   <Building className="w-12 h-12 mx-auto text-boviclouds-primary mb-2" />
@@ -1522,8 +1304,8 @@ const EditIdentificationModal: React.FC<EditIdentificationModalProps> = ({
               </div>
             )}
 
-            {/* Step 5: Review with changes highlighted */}
-            {currentStep === 5 && (
+            {/* Step 6: Review with changes highlighted */}
+            {currentStep === 6 && (
               <div className="space-y-6 animate-fadeIn">
                 <div className="text-center mb-6">
                   <Eye className="w-12 h-12 mx-auto text-boviclouds-primary mb-2" />
@@ -1596,6 +1378,12 @@ const EditIdentificationModal: React.FC<EditIdentificationModalProps> = ({
                           {formData.sujet_race}
                         </span>
                       </div>
+                      <div className="flex justify-between">
+                        <span className="text-blue-700">Images:</span>
+                        <span className="font-medium">
+                          {formData.images.length} photo(s)
+                        </span>
+                      </div>
                     </div>
                   </div>
 
@@ -1616,25 +1404,25 @@ const EditIdentificationModal: React.FC<EditIdentificationModalProps> = ({
                       <div className="flex justify-between">
                         <span className="text-green-700">Père:</span>
                         <span
-                          className={`font-medium ${formData.pere_nom !== originalData?.pere_nom || formData.pere_nni !== originalData?.pere_nni ? "text-amber-600" : ""}`}
+                          className={`font-medium ${formData.pere_nni !== originalData?.pere_nni ? "text-amber-600" : ""}`}
                         >
-                          {formData.pere_nom} ({formData.pere_nni})
+                          {formData.pere_nni}
                         </span>
                       </div>
                       <div className="flex justify-between">
                         <span className="text-green-700">Grand-père M:</span>
                         <span
-                          className={`font-medium ${formData.grand_pere_maternel_nom !== originalData?.grand_pere_maternel_nom ? "text-amber-600" : ""}`}
+                          className={`font-medium ${formData.grand_pere_maternel_nni !== originalData?.grand_pere_maternel_nni ? "text-amber-600" : ""}`}
                         >
-                          {formData.grand_pere_maternel_nom}
+                          {formData.grand_pere_maternel_nni}
                         </span>
                       </div>
                       <div className="flex justify-between">
                         <span className="text-green-700">Grand-père P:</span>
                         <span
-                          className={`font-medium ${formData.grand_pere_paternel_nom !== originalData?.grand_pere_paternel_nom ? "text-amber-600" : ""}`}
+                          className={`font-medium ${formData.grand_pere_paternel_nni !== originalData?.grand_pere_paternel_nni ? "text-amber-600" : ""}`}
                         >
-                          {formData.grand_pere_paternel_nom}
+                          {formData.grand_pere_paternel_nni}
                         </span>
                       </div>
                     </div>

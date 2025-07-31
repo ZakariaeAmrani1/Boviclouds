@@ -149,17 +149,17 @@ export const UpdateInseminationValidationSchema = z
       });
     }
 
-    // 4. Validate semence_id format (if present)
-    if (data.semence_id) {
-      const semencePattern = /^SEM\d{6}$/;
-      if (!semencePattern.test(data.semence_id)) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: "Format d'ID de semence invalide (ex: SEM123456)",
-          path: ["semence_id"],
-        });
-      }
-    }
+    // // 4. Validate semence_id format (if present)
+    // if (data.semence_id) {
+    //   const semencePattern = /^SEM\d{6}$/;
+    //   if (!semencePattern.test(data.semence_id)) {
+    //     ctx.addIssue({
+    //       code: z.ZodIssueCode.custom,
+    //       message: "Format d'ID de semence invalide (ex: SEM123456)",
+    //       path: ["semence_id"],
+    //     });
+    //   }
+    // }
   });
 
 // Filter validation schema
@@ -200,7 +200,7 @@ export const validateDate = (dateString: string): boolean => {
 // Utility function to validate semence ID format
 export const validateSemenceIdFormat = (semenceId: string): boolean => {
   const semencePattern = /^SEM\d{6}$/;
-  return semencePattern.test(semenceId);
+  return true;
 };
 
 // Utility function to generate a sample semence ID

@@ -289,7 +289,7 @@ export const handleCreateInsemination: RequestHandler = async (req, res) => {
 };
 
 // PUT /api/insemination/:id - Update an existing insemination record
-export const handleUpdateInsemination: RequestHandler = (req, res) => {
+export const handleUpdateInsemination: RequestHandler = async (req, res) => {
   try {
     const { id } = req.params;
     const input: UpdateInseminationInput = req.body;
@@ -330,6 +330,15 @@ export const handleUpdateInsemination: RequestHandler = (req, res) => {
       updatedAt: new Date().toISOString(),
     };
 
+    const apiUrl = process.env.SERVER_API_URL;
+    const response = await axios.patch(`${apiUrl}inseminations/${id}`, {
+      nni: updatedRecord.nni,
+      date_dissemination: updatedRecord.date_dissemination,
+      semence_id: updatedRecord.semence_id,
+      inseminateur_id: updatedRecord.inseminateur_id,
+      responsable_local_id: updatedRecord.responsable_local_id,
+    });
+
     inseminationRecords[recordIndex] = updatedRecord;
 
     res.json({
@@ -338,7 +347,7 @@ export const handleUpdateInsemination: RequestHandler = (req, res) => {
       message: "Insémination mise à jour avec succès",
     });
   } catch (error) {
-    console.error("Error updating insemination:", error);
+    console.error("Error updating insemination:", error.response.data.message);
     res.status(500).json({
       success: false,
       message: "Erreur lors de la mise à jour de l'insémination",

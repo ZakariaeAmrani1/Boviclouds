@@ -70,6 +70,15 @@ import {
   handleGetUser,
   handleGetUsersByRole,
 } from "./routes/utilisateur";
+import {
+  getExploitations,
+  getExploitationById,
+  createExploitation,
+  updateExploitation,
+  deleteExploitation,
+  getExploitationStats,
+  exportExploitations,
+} from "./routes/exploitation";
 
 export function createServer() {
   const app = express();
@@ -161,6 +170,15 @@ export function createServer() {
   app.get("/api/utilisateur/role/:role", handleGetUsersByRole);
   app.get("/api/utilisateur/:id", handleGetUser);
   app.post("/api/utilisateur", handleGetUsers);
+
+  // Exploitation API routes
+  app.get("/api/exploitation/stats", getExploitationStats);
+  app.get("/api/exploitation/export", exportExploitations);
+  app.get("/api/exploitation/:id", getExploitationById);
+  app.get("/api/exploitation", getExploitations);
+  app.post("/api/exploitation", createExploitation);
+  app.put("/api/exploitation/:id", updateExploitation);
+  app.delete("/api/exploitation/:id", deleteExploitation);
 
   return app;
 }
