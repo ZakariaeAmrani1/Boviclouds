@@ -1,8 +1,10 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, HttpStatus, HttpCode } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, HttpStatus, HttpCode, UseInterceptors, UploadedFile } from '@nestjs/common';
 import { InseminationsService } from './inseminations.service';
 import { CreateInseminationDto } from './dto/create-insemination.dto';
 import { UpdateInseminationDto } from './dto/update-insemination.dto';
-
+import { multerMemoryStorage } from 'multer-config';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { File as MulterFile } from 'multer';
 
 @Controller('api/v1/inseminations')
 export class InseminationsController {
@@ -35,5 +37,11 @@ export class InseminationsController {
   @HttpCode(HttpStatus.NO_CONTENT)
   remove(@Param('id') id: string) {
     return this.inseminationsService.remove(id);
+  }
+
+  @Post('import-inseminations')
+  @UseInterceptors(FileInterceptor('file', multerMemoryStorage))
+  async importInseminations(@UploadedFile() file: MulterFile) {
+    await this.inseminationsService.importInseminations(file)
   }
 }
