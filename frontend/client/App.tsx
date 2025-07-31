@@ -18,6 +18,7 @@ import Traitement from "./pages/Traitement";
 import Identification from "./pages/Identification";
 import Insemination from "./pages/Insemination";
 import Semences from "./pages/Semences";
+import Lactations from "./pages/Lactations";
 import Exploitations from "./pages/Exploitations";
 import EditProfile from "./pages/EditProfile";
 import NotFound from "./pages/NotFound";
@@ -92,6 +93,7 @@ const App = () => (
               <Route path="identification" element={<Identification />} />
               <Route path="insemination" element={<Insemination />} />
               <Route path="semences" element={<Semences />} />
+              <Route path="lactations" element={<Lactations />} />
               <Route path="exploitations" element={<Exploitations />} />
               <Route path="utilisateurs" element={<Utilisateurs />} />
               <Route path="cctv" element={<CCTV />} />
