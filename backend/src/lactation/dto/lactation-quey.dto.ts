@@ -4,13 +4,13 @@ import { Type } from 'class-transformer';
 export class LactationQueryDto {
   @IsOptional()
   @IsString()
-  nni?: string;
+  sujet_id?: string;
 
   @IsOptional()
   @Type(() => Number)
   @IsNumber()
   n_lactation?: number;
-  
+
   @IsOptional()
   @IsDateString()
   date_min?: string;

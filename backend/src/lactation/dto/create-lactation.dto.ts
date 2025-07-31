@@ -4,15 +4,17 @@ import {
   IsNumber,
   IsMongoId,
   IsDateString,
+  IsDate,
 } from 'class-validator';
 import { Type } from 'class-transformer';
 
 export class CreateLactationDto {
-  @IsString()
-  nni: string;
+  @IsOptional()
+  @IsMongoId()
+  sujet_id: string;
 
   @IsOptional()
-  @IsDateString()
+  @IsDate()
   @Type(() => Date)
   date_velage?: Date;
 
