@@ -1,14 +1,23 @@
-import { IsString, IsNotEmpty, IsNumber, IsDateString, IsMongoId, Min } from 'class-validator';
-import { Transform } from 'class-transformer';
+
+import {
+  IsString,
+  IsOptional,
+  IsNumber,
+  IsMongoId,
+  IsDateString,
+  IsDate,
+} from 'class-validator';
+import { Type } from 'class-transformer';
 
 export class CreateLactationDto {
+  @IsOptional()
   @IsMongoId()
-  @IsNotEmpty()
   sujet_id: string;
 
-  @IsDateString()
-  @IsNotEmpty()
-  date_velage: string;
+  @IsOptional()
+  @IsDate()
+  @Type(() => Date)
+  date_velage?: Date;
 
   @IsNumber()
   @Min(1)
