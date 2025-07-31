@@ -6,14 +6,13 @@ import {
   Patch,
   Param,
   Delete,
-  Req,
   UseGuards,
 } from '@nestjs/common';
 import { LactationService } from './lactation.service';
 import { CreateLactationDto } from './dto/create-lactation.dto';
 import { UpdateLactationDto } from './dto/update-lactation.dto';
-import { Request } from 'express';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { CurrentUser } from 'src/auth/decorators/active-user.decorator';
 
 @Controller('api/v1/lactations')
 export class LactationController {
@@ -21,8 +20,8 @@ export class LactationController {
 
   @UseGuards(JwtAuthGuard)
   @Post()
-  create(@Req() req: Request, @Body() createLactationDto: CreateLactationDto) {
-    return this.lactationService.create(req.user, createLactationDto);
+  create(@CurrentUser() user:any, @Body() createLactationDto: CreateLactationDto) {
+    return this.lactationService.create(user, createLactationDto);
   }
 
   @Get()
