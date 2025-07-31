@@ -40,8 +40,8 @@ export class AuthService {
     });
   }
   async register(dto: CreateUserDto, req:Request) {
-    const userExists = await this.userModel.findOne({ email: dto.email });
-    if (userExists) throw new ConflictException('Email already exists');
+    const userExists = await this.userModel.findOne({ email: dto.email, CIN:dto.CIN });
+    if (userExists) throw new ConflictException('User with this email or CIN already exists');
     const user = await new this.userModel(dto).save();
     const emailValToken = user.CreateEmailValiationToken();
     await user.save();
