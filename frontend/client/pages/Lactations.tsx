@@ -119,11 +119,11 @@ const Lactations: React.FC = () => {
 
   const handleReset = () => {
     const emptyFilters = {
-      sujet_id: "",
+      sujet_id: "all",
       n_lactation: "",
       lait_kg_min: "",
       lait_kg_max: "",
-      controleur_laitier_id: "",
+      controleur_laitier_id: "all",
       date_min: "",
       date_max: "",
     };
