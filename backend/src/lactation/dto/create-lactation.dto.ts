@@ -1,4 +1,3 @@
-
 import {
   IsString,
   IsOptional,
@@ -6,8 +5,10 @@ import {
   IsMongoId,
   IsDateString,
   IsDate,
+  Min,
+  IsNotEmpty,
 } from 'class-validator';
-import { Type } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 
 export class CreateLactationDto {
   @IsOptional()

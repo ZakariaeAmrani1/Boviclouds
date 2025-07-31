@@ -4,6 +4,7 @@ import { UpdateLactationDto } from './dto/update-lactation.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { Lactation } from './schemas/lactation.schema';
 import { Model } from 'mongoose';
+import { UserRole } from 'src/users/schemas/users/user.role';
 
 export class LactationNotFoundException extends HttpException {
   constructor(id: string) {
@@ -14,77 +15,49 @@ export class LactationNotFoundException extends HttpException {
 @Injectable()
 export class LactationService {
   constructor(
-    @InjectModel(Lactation.name) private readonly lactationModel: Model<Lactation>,
+    @InjectModel(Lactation.name)
+    private readonly lactationModel: Model<Lactation>,
   ) {}
 
-  async findAll(
-    query: LactationQueryDto,
-    user:any
-  ): Promise<{
-    lacations: Lactation[];
-    total: number;
-    page: number;
-    limit: number;
-    totalPages: number;
-  }> {
-    const {
-      sujet_id,
-      n_lactation,
-      date_min,
-      date_max,
-      page = 1,
-      limit = 10,
-    } = query;
-    const filter: any = {};
-    if (sujet_id) filter.sujet_id = new RegExp(sujet_id, 'i');
-    if (n_lactation !== undefined) filter.n_lactation = n_lactation;
-    if (date_min || date_max) {
-      filter.date_velage = {};
-      if (date_min) filter.date_velage.$gte = new Date(date_min);
-      if (date_max) filter.date_velage.$lte = new Date(date_max);
-    }
-    if (user?.role?.includes(UserRole.CONTROLEUR_LAITIER)) {
-      filter.controleur_laitier_id = user.userId;
-    }
-    const skip = (page - 1) * limit;
-    const [lactations, total] = await Promise.all([
-      this.lactationModel.find(filter).skip(skip).limit(limit).exec(),
-      this.lactationModel.countDocuments(filter).exec(),
-    ]);
-    return {
-      lacations: lactations,
-      total,
-      page,
-      limit,
-      totalPages: Math.ceil(total / limit),
-    };
+  async findAll(): Promise<Lactation[]> {
+    return this.lactationModel.find().exec();
   }
 
-  async create(user:any,createLactationDto: CreateLactationDto) {
-    if (
-      !user?.role?.some((role) => role.includes(UserRole.CONTROLEUR_LAITIER) || 
-      role.includes(UserRole.ADMIN))
-    )
-      throw new HttpException('Unauthorized! Only admin user or controller can add lactations!', HttpStatus.UNAUTHORIZED);
-    return await this.lactationModel.create(createLactationDto);
+  async create(user: any, createLactationDto: CreateLactationDto) {
+    const isAuthorized =
+      user?.role?.includes(UserRole.CONTROLEUR_LAITIER) ||
+      user?.role?.includes(UserRole.ADMIN);
 
+    if (!isAuthorized) {
+      throw new HttpException(
+        'Unauthorized! Only admin or controller can add lactations.',
+        HttpStatus.UNAUTHORIZED,
+      );
+    }
+
+    return this.lactationModel.create(createLactationDto);
   }
 
   async findOne(id: string) {
-    const lactation = await this.lactationModel.findById(id);
+    const lactation = await this.lactationModel.findById(id).exec();
     if (!lactation) throw new LactationNotFoundException(id);
     return lactation;
   }
 
   async update(id: string, updateLactationDto: UpdateLactationDto) {
-    const lactation = await this.lactationModel.findByIdAndUpdate(id, updateLactationDto, { new: true });
-    if (!lactation) throw new LactationNotFoundException(id);
-    return lactation;
+    const updated = await this.lactationModel
+      .findByIdAndUpdate(id, updateLactationDto, {
+        new: true,
+      })
+      .exec();
+
+    if (!updated) throw new LactationNotFoundException(id);
+    return updated;
   }
 
   async remove(id: string) {
-    const lactation = await this.lactationModel.findByIdAndDelete(id);
-    if (!lactation) throw new LactationNotFoundException(id);
-    return lactation;
+    const deleted = await this.lactationModel.findByIdAndDelete(id).exec();
+    if (!deleted) throw new LactationNotFoundException(id);
+    return deleted;
   }
 }
