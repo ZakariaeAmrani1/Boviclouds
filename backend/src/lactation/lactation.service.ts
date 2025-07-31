@@ -30,7 +30,7 @@ export class LactationService {
     totalPages: number;
   }> {
     const {
-      nni,
+      sujet_id,
       n_lactation,
       date_min,
       date_max,
@@ -38,7 +38,7 @@ export class LactationService {
       limit = 10,
     } = query;
     const filter: any = {};
-    if (nni) filter.nni = new RegExp(nni, 'i');
+    if (sujet_id) filter.sujet_id = new RegExp(sujet_id, 'i');
     if (n_lactation !== undefined) filter.n_lactation = n_lactation;
     if (date_min || date_max) {
       filter.date_velage = {};
@@ -63,9 +63,11 @@ export class LactationService {
   }
 
   async create(user:any,createLactationDto: CreateLactationDto) {
-    if (!user?.role?.some(role => role.includes(UserRole.CONTROLEUR_LAITIER)) ||
-        !user?.role?.some(role => role.includes(UserRole.ADMIN)))
-      throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
+    if (
+      !user?.role?.some((role) => role.includes(UserRole.CONTROLEUR_LAITIER) || 
+      role.includes(UserRole.ADMIN))
+    )
+      throw new HttpException('Unauthorized! Only admin user or controller can add lactations!', HttpStatus.UNAUTHORIZED);
     return await this.lactationModel.create(createLactationDto);
   }
 

@@ -3,10 +3,12 @@ import { HydratedDocument, Query, Types } from 'mongoose';
 
 export type LactationDocument = HydratedDocument<Lactation>;
 
-@Schema({timestamps: { createdAt: 'date_creation', updatedAt: 'date_modification' } })
+@Schema({
+  timestamps: { createdAt: 'date_creation', updatedAt: 'date_modification' },
+})
 export class Lactation {
-  @Prop({ type: String, required: true }) 
-  nni: string;
+  @Prop({ type: Types.ObjectId, ref: 'Identification' })
+  sujet_id: Types.ObjectId;
 
   @Prop({ type: Date })
   date_velage: Date;
@@ -26,15 +28,20 @@ export class Lactation {
   @Prop({ type: Number })
   pct_mg: number;
 
-  @Prop({ type: Types.ObjectId, ref: 'User' }) 
+  @Prop({ type: Types.ObjectId, ref: 'User' })
   controleur_laitier_id: Types.ObjectId;
 }
 
 export const LactationSchema = SchemaFactory.createForClass(Lactation);
 LactationSchema.pre(/^find/,function(this:Query<any,Lactation>,next){
-  this.populate({
+  this
+  .populate({
     path: 'controleur_laitier_id',
     select: 'CIN name email phone role',
+  })
+  .populate({
+    path: 'sujet_id',
+    select: 'infos_sujet'
   });
   next();
 })
