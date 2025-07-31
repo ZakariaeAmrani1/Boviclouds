@@ -1,42 +1,41 @@
-import {
-  IsString,
-  IsOptional,
-  IsNumber,
-  IsMongoId,
-  IsDateString,
-} from 'class-validator';
-import { Type } from 'class-transformer';
+import { IsString, IsNotEmpty, IsNumber, IsDateString, IsMongoId, Min } from 'class-validator';
+import { Transform } from 'class-transformer';
 
 export class CreateLactationDto {
-  @IsString()
-  nni: string;
-
-  @IsOptional()
-  @IsDateString()
-  @Type(() => Date)
-  date_velage?: Date;
-
-  @IsOptional()
-  @IsNumber()
-  n_lactation?: number;
-
-  @IsOptional()
-  @IsNumber()
-  lait_kg?: number;
-
-  @IsOptional()
-  @IsNumber()
-  kg_mg?: number;
-
-  @IsOptional()
-  @IsNumber()
-  pct_proteine?: number;
-
-  @IsOptional()
-  @IsNumber()
-  pct_mg?: number;
-
-  @IsOptional()
   @IsMongoId()
-  responsable_laitier_id?: string;
+  @IsNotEmpty()
+  sujet_id: string;
+
+  @IsDateString()
+  @IsNotEmpty()
+  date_velage: string;
+
+  @IsNumber()
+  @Min(1)
+  @Transform(({ value }) => parseInt(value))
+  n_lactation: number;
+
+  @IsNumber()
+  @Min(0)
+  @Transform(({ value }) => parseFloat(value))
+  lait_kg: number;
+
+  @IsNumber()
+  @Min(0)
+  @Transform(({ value }) => parseFloat(value))
+  kg_mg: number;
+
+  @IsNumber()
+  @Min(0)
+  @Transform(({ value }) => parseFloat(value))
+  pct_proteine: number;
+
+  @IsNumber()
+  @Min(0)
+  @Transform(({ value }) => parseFloat(value))
+  pct_mg: number;
+
+  @IsMongoId()
+  @IsNotEmpty()
+  controleur_laitier_id: string;
 }
