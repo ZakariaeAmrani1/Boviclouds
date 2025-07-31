@@ -431,9 +431,9 @@ export const handleUpdateLactation: RequestHandler = async (req, res) => {
       });
     }
 
-    // Backend API call would be like this:
-    const apiUrl = process.env.SERVER_API_URL;
-    const response = await axios.patch(`${apiUrl}lactations/${id}`, input);
+    // TODO: Backend API call would be like this:
+    // const apiUrl = process.env.SERVER_API_URL;
+    // const response = await axios.patch(`${apiUrl}lactations/${id}`, input);
 
     // Update record
     const updatedRecord: LactationRecord = {
