@@ -150,4 +150,20 @@ export class EmailService {
       },
     );
   }
+  async sendAccountCreationEmail(user: EmailUser, password: string, link: string) {
+    const displayFirstName =
+      `${user.prenom_lat || ''} ${user.prenom_ar ? `(${user.prenom_ar})` : ''}`.trim();
+
+    await this.send(
+      user.email,
+      'Your account has been created successfully',
+      'accountCreation',
+      {
+        firstName: displayFirstName,
+        url: link,
+        password: password,
+        email: user.email,
+      },
+    );
+  }
 }
