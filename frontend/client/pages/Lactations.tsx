@@ -104,13 +104,13 @@ const Lactations: React.FC = () => {
   };
 
   const handleSearch = () => {
-    // Convert empty strings to undefined for filtering
+    // Convert empty strings and "all" values to undefined for filtering
     const cleanFilters: LactationFilters = {
-      sujet_id: searchForm.sujet_id || undefined,
+      sujet_id: searchForm.sujet_id && searchForm.sujet_id !== "all" ? searchForm.sujet_id : undefined,
       n_lactation: searchForm.n_lactation ? parseInt(searchForm.n_lactation) : undefined,
       lait_kg_min: searchForm.lait_kg_min ? parseFloat(searchForm.lait_kg_min) : undefined,
       lait_kg_max: searchForm.lait_kg_max ? parseFloat(searchForm.lait_kg_max) : undefined,
-      controleur_laitier_id: searchForm.controleur_laitier_id || undefined,
+      controleur_laitier_id: searchForm.controleur_laitier_id && searchForm.controleur_laitier_id !== "all" ? searchForm.controleur_laitier_id : undefined,
       date_min: searchForm.date_min || undefined,
       date_max: searchForm.date_max || undefined,
     };
