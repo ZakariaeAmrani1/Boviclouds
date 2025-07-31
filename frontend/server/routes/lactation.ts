@@ -471,9 +471,9 @@ export const handleDeleteLactation: RequestHandler = async (req, res) => {
       });
     }
 
-    // Backend API call would be like this:
-    const apiUrl = process.env.SERVER_API_URL;
-    const response = await axios.delete(`${apiUrl}lactations/${id}`);
+    // TODO: Backend API call would be like this:
+    // const apiUrl = process.env.SERVER_API_URL;
+    // const response = await axios.delete(`${apiUrl}lactations/${id}`);
 
     lactationRecords.splice(recordIndex, 1);
 
