@@ -8,10 +8,11 @@ import { CreateInseminationDto } from './dto/create-insemination.dto';
 import { UpdateInseminationDto } from './dto/update-insemination.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { Insemination } from './schemas/insemination.schema';
-import { Model, Types } from 'mongoose';
+import { Model } from 'mongoose';
 import * as csv from 'csv-parser';
 import * as XLSX from 'xlsx';
-import {File as MulterFile} from 'multer';
+import type { File as MulterFile } from 'multer';
+
 export class InseminationNotFoundException extends HttpException {
   constructor(id: string) {
     super(`Insemination with ID (${id}) not found`, HttpStatus.NOT_FOUND);

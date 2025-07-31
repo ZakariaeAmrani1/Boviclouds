@@ -64,3 +64,4 @@ InseminationSchema.pre(/^find/, function (this: Query<any, Insemination>,next) {
     .populate('responsable_local_id');
   next()
 })
+
