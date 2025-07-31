@@ -13,6 +13,7 @@ import { SemencesModule } from './semences/semences.module';
 import { ExploitationsModule } from './exploitations/exploitations.module';
 import { RebouclageModule } from './rebouclage/rebouclage.module';
 import { IdentificationModule } from './identification/identification.module';
+import { LactationModule } from './lactation/lactation.module';
 
 
 @Module({
@@ -40,6 +41,7 @@ import { IdentificationModule } from './identification/identification.module';
     SemencesModule,
     RebouclageModule,
     IdentificationModule,
+    LactationModule,
 
 
   ],
