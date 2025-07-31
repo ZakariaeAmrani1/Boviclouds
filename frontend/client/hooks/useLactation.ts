@@ -314,6 +314,7 @@ export const useIdentifications = () => {
     setError(null);
     try {
       const result = await LactationService.getIdentifications();
+      console.log(result);
       setIdentifications(result);
     } catch (err) {
       setError(
@@ -333,8 +334,12 @@ export const useIdentifications = () => {
 
   const getIdentificationName = useCallback(
     (identificationId: string): string => {
-      const identification = identifications.find((i) => i.id === identificationId);
-      return identification ? `${identification.nni} - ${identification.nom}` : identificationId;
+      const identification = identifications.find(
+        (i) => i.id === identificationId,
+      );
+      return identification
+        ? `${identification.nni} - ${identification.nom}`
+        : identificationId;
     },
     [identifications],
   );
@@ -383,7 +388,8 @@ export const useLactationSearch = () => {
       setLoading(true);
       setError(null);
       try {
-        const result = await LactationService.searchByLactationNumber(nLactation);
+        const result =
+          await LactationService.searchByLactationNumber(nLactation);
         return result;
       } catch (err) {
         setError(
@@ -404,7 +410,8 @@ export const useLactationSearch = () => {
       setLoading(true);
       setError(null);
       try {
-        const result = await LactationService.searchByControleurLaitier(controleurId);
+        const result =
+          await LactationService.searchByControleurLaitier(controleurId);
         return result;
       } catch (err) {
         setError(
@@ -423,7 +430,10 @@ export const useLactationSearch = () => {
       setLoading(true);
       setError(null);
       try {
-        const result = await LactationService.getByDateRange(startDate, endDate);
+        const result = await LactationService.getByDateRange(
+          startDate,
+          endDate,
+        );
         return result;
       } catch (err) {
         setError(
@@ -509,7 +519,9 @@ export const useLactationAnalytics = () => {
       return result;
     } catch (err) {
       setError(
-        err instanceof Error ? err.message : "Erreur lors du calcul des moyennes",
+        err instanceof Error
+          ? err.message
+          : "Erreur lors du calcul des moyennes",
       );
       return { avgMilkKg: 0, avgProteinPct: 0, avgMgPct: 0 };
     } finally {
@@ -526,7 +538,9 @@ export const useLactationAnalytics = () => {
         return result;
       } catch (err) {
         setError(
-          err instanceof Error ? err.message : "Erreur lors du calcul des statistiques mensuelles",
+          err instanceof Error
+            ? err.message
+            : "Erreur lors du calcul des statistiques mensuelles",
         );
         return {};
       } finally {
@@ -541,7 +555,10 @@ export const useLactationAnalytics = () => {
       setLoading(true);
       setError(null);
       try {
-        const result = await LactationService.getByMilkProductionRange(minKg, maxKg);
+        const result = await LactationService.getByMilkProductionRange(
+          minKg,
+          maxKg,
+        );
         return result;
       } catch (err) {
         setError(
@@ -570,25 +587,28 @@ export const useLactationValidation = () => {
   const [loading, setLoading] = useState(false);
 
   const validateMilkProduction = useCallback(
-    (milkKg: number, lactationNumber: number): { isValid: boolean; message?: string } => {
+    (
+      milkKg: number,
+      lactationNumber: number,
+    ): { isValid: boolean; message?: string } => {
       if (lactationNumber === 1 && milkKg > 60) {
         return {
           isValid: false,
-          message: "Production élevée pour une première lactation"
+          message: "Production élevée pour une première lactation",
         };
       }
-      
+
       if (milkKg < 5) {
         return {
           isValid: false,
-          message: "Production très faible, vérifiez les données"
+          message: "Production très faible, vérifiez les données",
         };
       }
 
       if (milkKg > 80) {
         return {
           isValid: false,
-          message: "Production très élevée, vérifiez les données"
+          message: "Production très élevée, vérifiez les données",
         };
       }
 
@@ -598,18 +618,21 @@ export const useLactationValidation = () => {
   );
 
   const validatePercentages = useCallback(
-    (proteinPct: number, mgPct: number): { isValid: boolean; message?: string } => {
+    (
+      proteinPct: number,
+      mgPct: number,
+    ): { isValid: boolean; message?: string } => {
       if (proteinPct < 2.5 || proteinPct > 5.0) {
         return {
           isValid: false,
-          message: "Pourcentage de protéine hors norme (2.5-5.0%)"
+          message: "Pourcentage de protéine hors norme (2.5-5.0%)",
         };
       }
 
       if (mgPct < 2.5 || mgPct > 6.0) {
         return {
           isValid: false,
-          message: "Pourcentage MG hors norme (2.5-6.0%)"
+          message: "Pourcentage MG hors norme (2.5-6.0%)",
         };
       }
 
@@ -619,13 +642,17 @@ export const useLactationValidation = () => {
   );
 
   const calculateMgConsistency = useCallback(
-    (milkKg: number, mgKg: number, mgPct: number): { isConsistent: boolean; calculatedPct: number } => {
+    (
+      milkKg: number,
+      mgKg: number,
+      mgPct: number,
+    ): { isConsistent: boolean; calculatedPct: number } => {
       if (milkKg <= 0) return { isConsistent: false, calculatedPct: 0 };
-      
+
       const calculatedPct = (mgKg / milkKg) * 100;
       const tolerance = 0.5; // 0.5% tolerance
       const isConsistent = Math.abs(calculatedPct - mgPct) <= tolerance;
-      
+
       return { isConsistent, calculatedPct };
     },
     [],
