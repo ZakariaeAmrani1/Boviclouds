@@ -3,98 +3,44 @@ import { CreateLactationDto } from './dto/create-lactation.dto';
 import { UpdateLactationDto } from './dto/update-lactation.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { Lactation } from './schemas/lactation.schema';
-import { Model, Types } from 'mongoose';
-import { LactationQueryDto } from './dto/lactation-quey.dto';
-import { UserRole } from 'src/users/schemas/users/user.role';
+import { Model } from 'mongoose';
 
-export class LactationNotFountiondException extends HttpException {
+export class LactationNotFoundException extends HttpException {
   constructor(id: string) {
     super(`Lactation with ID (${id}) not found`, HttpStatus.NOT_FOUND);
   }
 }
+
 @Injectable()
 export class LactationService {
   constructor(
-    @InjectModel(Lactation.name)
-    private readonly lactationModel: Model<Lactation>,
+    @InjectModel(Lactation.name) private readonly lactationModel: Model<Lactation>,
   ) {}
 
-  async findAll(
-    query: LactationQueryDto,
-    user:any
-  ): Promise<{
-    lacations: Lactation[];
-    total: number;
-    page: number;
-    limit: number;
-    totalPages: number;
-  }> {
-    const {
-      nni,
-      n_lactation,
-      date_min,
-      date_max,
-      page = 1,
-      limit = 10,
-    } = query;
-    const filter: any = {};
-    if (nni) filter.nni = new RegExp(nni, 'i');
-    if (n_lactation !== undefined) filter.n_lactation = n_lactation;
-    if (date_min || date_max) {
-      filter.date_velage = {};
-      if (date_min) filter.date_velage.$gte = new Date(date_min);
-      if (date_max) filter.date_velage.$lte = new Date(date_max);
-    }
-    if (user?.role?.includes(UserRole.CONTROLEUR_LAITIER)) {
-      filter.controleur_laitier_id = user.userId;
-    }
-    const skip = (page - 1) * limit;
-    const [lactations, total] = await Promise.all([
-      this.lactationModel.find(filter).skip(skip).limit(limit).exec(),
-      this.lactationModel.countDocuments(filter).exec(),
-    ]);
-    return {
-      lacations: lactations,
-      total,
-      page,
-      limit,
-      totalPages: Math.ceil(total / limit),
-    };
+  async findAll() {
+    return await this.lactationModel.find().lean();
   }
 
-  async create(user:any,createLactationDto: CreateLactationDto) {
-    if (!user?.role?.some(role => role.includes(UserRole.CONTROLEUR_LAITIER)) ||
-        !user?.role?.some(role => role.includes(UserRole.ADMIN)))
-      throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
-    return await this.lactationModel.create(createLactationDto);
+  async create(createLactationDto: CreateLactationDto) {
+    const lactation = new this.lactationModel(createLactationDto);
+    return await lactation.save();
   }
 
-  async findOne(id: string): Promise<Lactation | null> {
-    if (!Types.ObjectId.isValid(id))
-      throw new LactationNotFountiondException(id);
-    const lactation = await this.lactationModel.findById(id).exec();
-    if (!lactation) throw new LactationNotFountiondException(id);
+  async findOne(id: string) {
+    const lactation = await this.lactationModel.findById(id);
+    if (!lactation) throw new LactationNotFoundException(id);
     return lactation;
   }
 
-  async update(
-    id: string,
-    updateLactationDto: UpdateLactationDto,
-  ): Promise<Lactation> {
-    if (!Types.ObjectId.isValid(id))
-      throw new LactationNotFountiondException(id);
-    const lactation = await this.lactationModel
-      .findByIdAndUpdate(id, updateLactationDto, { new: true })
-      .exec();
-    if (!lactation) throw new LactationNotFountiondException(id);
+  async update(id: string, updateLactationDto: UpdateLactationDto) {
+    const lactation = await this.lactationModel.findByIdAndUpdate(id, updateLactationDto, { new: true });
+    if (!lactation) throw new LactationNotFoundException(id);
     return lactation;
   }
 
-  async remove(id: string): Promise<Lactation> {
-    if (!Types.ObjectId.isValid(id))
-      throw new LactationNotFountiondException(id);
-    const lactation = await this.lactationModel.findByIdAndDelete(id).exec();
-    if (!lactation) throw new LactationNotFountiondException(id);
+  async remove(id: string) {
+    const lactation = await this.lactationModel.findByIdAndDelete(id);
+    if (!lactation) throw new LactationNotFoundException(id);
     return lactation;
   }
 }

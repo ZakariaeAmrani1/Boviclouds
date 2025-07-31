@@ -10,6 +10,7 @@ import { AuthProvider } from "./contexts/AuthContext";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Layout from "./components/Layout";
 import Login from "./pages/Login";
+import ChangePassword from "./pages/ChangePassword";
 import Dashboard from "./pages/Dashboard";
 import Rebouclage from "./pages/Rebouclage";
 import Utilisateurs from "./pages/Utilisateurs";
@@ -18,6 +19,7 @@ import Traitement from "./pages/Traitement";
 import Identification from "./pages/Identification";
 import Insemination from "./pages/Insemination";
 import Semences from "./pages/Semences";
+import Lactations from "./pages/Lactations";
 import Exploitations from "./pages/Exploitations";
 import EditProfile from "./pages/EditProfile";
 import NotFound from "./pages/NotFound";
@@ -78,6 +80,7 @@ const App = () => (
         <BrowserRouter>
           <Routes>
             <Route path="/login" element={<Login />} />
+            <Route path="/changePassword" element={<ChangePassword />} />
             <Route
               path="/"
               element={
@@ -92,6 +95,7 @@ const App = () => (
               <Route path="identification" element={<Identification />} />
               <Route path="insemination" element={<Insemination />} />
               <Route path="semences" element={<Semences />} />
+              <Route path="lactations" element={<Lactations />} />
               <Route path="exploitations" element={<Exploitations />} />
               <Route path="utilisateurs" element={<Utilisateurs />} />
               <Route path="cctv" element={<CCTV />} />
