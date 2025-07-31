@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Types, HydratedDocument } from 'mongoose';
+import { Types, HydratedDocument, Query } from 'mongoose';
 import { UserRole } from 'src/users/schemas/users/user.role';
 import { User } from 'src/users/schemas/users/user.schema';
 
@@ -56,3 +56,10 @@ export class Insemination {
 }
 
 export const InseminationSchema = SchemaFactory.createForClass(Insemination);
+
+InseminationSchema.pre(/^find/,function(this: Query<any, Insemination>,next){
+  this.populate('semence_id')
+      .populate('inseminateur_id')
+      .populate('responsable_local_id')
+  next();
+});
