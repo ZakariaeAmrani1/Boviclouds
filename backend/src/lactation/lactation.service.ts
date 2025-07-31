@@ -20,7 +20,10 @@ export class LactationService {
   ) {}
 
   async findAll(): Promise<Lactation[]> {
-    return this.lactationModel.find().exec();
+    return this.lactationModel
+    .find()
+    .lean()
+    .exec();
   }
 
   async create(user: any, createLactationDto: CreateLactationDto) {
