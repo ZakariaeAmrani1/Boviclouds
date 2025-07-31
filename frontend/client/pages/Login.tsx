@@ -15,6 +15,7 @@ const Login = () => {
   const [showForgotPassword, setShowForgotPassword] = useState(false);
   const [forgotPasswordEmail, setForgotPasswordEmail] = useState("");
   const [forgotPasswordSent, setForgotPasswordSent] = useState(false);
+  const [forgotPasswordEmailError, setForgotPasswordEmailError] = useState("");
   const [showRegistration, setShowRegistration] = useState(false);
   const [accountRequestSent, setAccountRequestSent] = useState(false);
   const navigate = useNavigate();
@@ -124,19 +125,33 @@ const Login = () => {
   };
 
   const handleForgotPassword = async () => {
-    if (!forgotPasswordEmail || !validateEmail(forgotPasswordEmail)) {
+    const emailValidationError = validateEmail(forgotPasswordEmail);
+    if (emailValidationError) {
+      setForgotPasswordEmailError(emailValidationError);
       return;
     }
 
+    // Clear any previous errors
+    setForgotPasswordEmailError("");
+
+    // Simulate API call
     setTimeout(() => {
       setForgotPasswordSent(true);
     }, 1000);
+  };
+
+  const handleForgotPasswordEmailChange = (value: string) => {
+    setForgotPasswordEmail(value);
+    if (forgotPasswordEmailError) {
+      setForgotPasswordEmailError(validateEmail(value));
+    }
   };
 
   const resetForgotPasswordModal = () => {
     setShowForgotPassword(false);
     setForgotPasswordEmail("");
     setForgotPasswordSent(false);
+    setForgotPasswordEmailError("");
   };
 
   return (
@@ -413,34 +428,46 @@ const Login = () => {
           <div className="bg-white rounded-xl shadow-xl max-w-md w-full p-6 transform animate-slideUp">
             <div className="text-center">
               <h3 className="text-xl font-poppins font-semibold text-gray-900 mb-2">
-                Reset Password
+                Réinitialiser le mot de passe
               </h3>
               {!forgotPasswordSent ? (
                 <>
                   <p className="text-gray-600 font-inter text-sm mb-4">
-                    Enter your email address and we'll send you a link to reset
-                    your password.
+                    Saisissez votre adresse e-mail et nous vous enverrons un lien pour réinitialiser
+                    votre mot de passe.
                   </p>
                   <input
                     type="email"
-                    placeholder="Enter your email"
+                    placeholder="Saisissez votre e-mail"
                     value={forgotPasswordEmail}
-                    onChange={(e) => setForgotPasswordEmail(e.target.value)}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg font-inter text-sm focus:outline-none focus:border-boviclouds-primary mb-4"
+                    onChange={(e) => handleForgotPasswordEmailChange(e.target.value)}
+                    className={`w-full px-4 py-3 border rounded-lg font-inter text-sm focus:outline-none transition-colors ${
+                      forgotPasswordEmailError
+                        ? "border-red-300 focus:border-red-500"
+                        : "border-gray-300 focus:border-boviclouds-primary"
+                    } ${forgotPasswordEmailError ? "mb-2" : "mb-4"}`}
                   />
+                  {forgotPasswordEmailError && (
+                    <p className="text-red-600 text-sm mb-4 flex items-center gap-1">
+                      <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                      </svg>
+                      {forgotPasswordEmailError}
+                    </p>
+                  )}
                   <div className="flex gap-3">
                     <button
                       onClick={resetForgotPasswordModal}
                       className="flex-1 px-4 py-2 text-gray-600 border border-gray-300 rounded-lg font-inter text-sm hover:bg-gray-50 transition-colors"
                     >
-                      Cancel
+                      Annuler
                     </button>
                     <button
                       onClick={handleForgotPassword}
-                      disabled={!forgotPasswordEmail}
+                      disabled={!forgotPasswordEmail || !!forgotPasswordEmailError}
                       className="flex-1 px-4 py-2 bg-boviclouds-primary text-white rounded-lg font-inter text-sm hover:bg-boviclouds-primary/90 transition-colors disabled:opacity-50"
                     >
-                      Send Reset Link
+                      Envoyer le lien
                     </button>
                   </div>
                 </>
@@ -461,14 +488,21 @@ const Login = () => {
                       />
                     </svg>
                   </div>
+                  <h4 className="text-lg font-semibold text-gray-900 mb-2">
+                    E-mail envoyé avec succès !
+                  </h4>
                   <p className="text-gray-600 font-inter text-sm mb-4">
-                    Reset link sent to <strong>{forgotPasswordEmail}</strong>
+                    Un lien de réinitialisation a été envoyé à <strong>{forgotPasswordEmail}</strong>.
+                    Vérifiez votre boîte de réception et suivez les instructions pour créer un nouveau mot de passe.
+                  </p>
+                  <p className="text-gray-500 font-inter text-xs mb-4">
+                    Si vous ne recevez pas l'e-mail dans les prochaines minutes, vérifiez votre dossier spam.
                   </p>
                   <button
                     onClick={resetForgotPasswordModal}
                     className="w-full px-4 py-2 bg-boviclouds-primary text-white rounded-lg font-inter text-sm hover:bg-boviclouds-primary/90 transition-colors"
                   >
-                    Close
+                    Fermer
                   </button>
                 </>
               )}
