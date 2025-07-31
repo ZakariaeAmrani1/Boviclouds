@@ -257,7 +257,7 @@ const Lactations: React.FC = () => {
                   <SelectValue placeholder="Sélectionner un sujet" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Tous les sujets</SelectItem>
+                  <SelectItem value="all">Tous les sujets</SelectItem>
                   {identifications.map((identification) => (
                     <SelectItem key={identification.id} value={identification.id}>
                       {identification.nni} - {identification.nom}
