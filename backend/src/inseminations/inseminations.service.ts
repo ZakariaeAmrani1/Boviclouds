@@ -8,7 +8,7 @@ import { CreateInseminationDto } from './dto/create-insemination.dto';
 import { UpdateInseminationDto } from './dto/update-insemination.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { Insemination } from './schemas/insemination.schema';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import * as csv from 'csv-parser';
 import * as XLSX from 'xlsx';
 import type { File as MulterFile } from 'multer';
