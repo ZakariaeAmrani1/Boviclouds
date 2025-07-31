@@ -1,5 +1,5 @@
 import {
-    Body,
+  Body,
   Controller,
   Delete,
   Get,
@@ -32,7 +32,6 @@ export class IdentificationController {
     @Query('nni') nni?: string,
     @Query('date_naissance') date_naissance?: string,
     @Query('race') race?: string,
-    
   ) {
     const buffer = await this.identificationService.export(format, {
       nni,
@@ -50,18 +49,17 @@ export class IdentificationController {
     res.setHeader('Content-Disposition', `attachment; filename=${filename}`);
     return res.send(buffer);
   }
-    @Post()
-    @UseGuards(AuthGuard('jwt'), RolesGuard)
-    @Roles(UserRole.IDENTIFICATEUR)
-    async create(@Body() createDto: CreateIdentificationDto, @Req() req: any) {
+  @Post()
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Roles(UserRole.IDENTIFICATEUR)
+  async create(@Body() createDto: CreateIdentificationDto, @Req() req: any) {
     const body = {
       ...createDto,
       createdBy: req.user?.sub, // Assuming you want to track who created the identification
     };
     return this.identificationService.create(body);
-    }
+  }
   @Get()
-  @Roles(UserRole.IDENTIFICATEUR) // à adapter selon ton rôle
   async findAll(@Query() query: any) {
     return this.identificationService.findAll(query);
   }
@@ -80,10 +78,9 @@ export class IdentificationController {
     });
   }
   @Delete(':id')
-    @UseGuards(JwtAuthGuard, RolesGuard)
-    @Roles(UserRole.IDENTIFICATEUR)
-    async deleteIdentification(@Param('id') id: string) {
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.IDENTIFICATEUR)
+  async deleteIdentification(@Param('id') id: string) {
     return this.identificationService.delete(id);
-    }
-
+  }
 }

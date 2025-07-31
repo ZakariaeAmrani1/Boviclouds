@@ -24,11 +24,13 @@ export class LactationService {
     filters: LactationFilters = {},
     pagination: PaginationParams = { page: 1, limit: 10 },
   ): Promise<PaginatedResponse<LactationRecord>> {
+    const token = localStorage.getItem("access_token");
     const params = new URLSearchParams();
 
     // Add pagination params
     params.append("page", pagination.page.toString());
     params.append("limit", pagination.limit.toString());
+    params.append("token", token);
 
     // Add filter params
     Object.entries(filters).forEach(([key, value]) => {
@@ -81,9 +83,7 @@ export class LactationService {
   /**
    * Create a new lactation record
    */
-  static async create(
-    input: CreateLactationInput,
-  ): Promise<LactationRecord> {
+  static async create(input: CreateLactationInput): Promise<LactationRecord> {
     const response = await fetch(API_BASE_URL, {
       method: "POST",
       headers: {
@@ -239,8 +239,10 @@ export class LactationService {
         result.message || "Erreur lors de la récupération des utilisateurs",
       );
     }
-
-    return result.data;
+    const data = result.data.filter(
+      (user) => user.role === "CONTROLEUR_LAITIER",
+    );
+    return data;
   }
 
   /**
@@ -248,13 +250,9 @@ export class LactationService {
    */
   static async getIdentifications(): Promise<Identification[]> {
     const token = localStorage.getItem("access_token");
-    const response = await fetch("/api/identification", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ token }),
-    });
+    const params = new URLSearchParams();
+    params.append("token", token);
+    const response = await fetch(`/api/identifications?${params.toString()}`);
 
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
@@ -305,7 +303,9 @@ export class LactationService {
       return [];
     }
 
-    const filters: LactationFilters = { controleur_laitier_id: controleurId.trim() };
+    const filters: LactationFilters = {
+      controleur_laitier_id: controleurId.trim(),
+    };
     const result = await this.getAll(filters, { page: 1, limit: 10 });
     return result.data;
   }
@@ -317,9 +317,9 @@ export class LactationService {
     startDate: string,
     endDate: string,
   ): Promise<LactationRecord[]> {
-    const filters: LactationFilters = { 
+    const filters: LactationFilters = {
       date_min: startDate,
-      date_max: endDate 
+      date_max: endDate,
     };
     const result = await this.getAll(filters, { page: 1, limit: 1000 });
     return result.data;
@@ -382,9 +382,9 @@ export class LactationService {
     minKg: number,
     maxKg: number,
   ): Promise<LactationRecord[]> {
-    const filters: LactationFilters = { 
+    const filters: LactationFilters = {
       lait_kg_min: minKg,
-      lait_kg_max: maxKg 
+      lait_kg_max: maxKg,
     };
     const result = await this.getAll(filters, { page: 1, limit: 100 });
     return result.data;
@@ -396,9 +396,7 @@ export class LactationService {
   static async getTopProducers(limit: number = 10): Promise<LactationRecord[]> {
     // This would ideally be handled by the backend with sorting
     const result = await this.getAll({}, { page: 1, limit: 1000 });
-    return result.data
-      .sort((a, b) => b.lait_kg - a.lait_kg)
-      .slice(0, limit);
+    return result.data.sort((a, b) => b.lait_kg - a.lait_kg).slice(0, limit);
   }
 
   /**
@@ -422,7 +420,7 @@ export class LactationService {
         protein: acc.protein + record.pct_proteine,
         mg: acc.mg + record.pct_mg,
       }),
-      { milk: 0, protein: 0, mg: 0 }
+      { milk: 0, protein: 0, mg: 0 },
     );
 
     return {

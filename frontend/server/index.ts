@@ -46,6 +46,7 @@ import {
   updateIdentification,
   deleteIdentification,
   getIdentificationStats,
+  getIdentificationsforLactation,
 } from "./routes/identification";
 import {
   handleGetInseminations,
@@ -153,6 +154,7 @@ export function createServer() {
   app.get("/api/identification/stats", getIdentificationStats);
   app.get("/api/identification/:id", getIdentification);
   app.get("/api/identification", getIdentifications);
+  app.get("/api/identifications", getIdentificationsforLactation);
   app.post("/api/identification", createIdentification);
   app.put("/api/identification/:id", updateIdentification);
   app.delete("/api/identification/:id", deleteIdentification);
