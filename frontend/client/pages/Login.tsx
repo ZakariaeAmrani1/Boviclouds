@@ -125,10 +125,16 @@ const Login = () => {
   };
 
   const handleForgotPassword = async () => {
-    if (!forgotPasswordEmail || !validateEmail(forgotPasswordEmail)) {
+    const emailValidationError = validateEmail(forgotPasswordEmail);
+    if (emailValidationError) {
+      setForgotPasswordEmailError(emailValidationError);
       return;
     }
 
+    // Clear any previous errors
+    setForgotPasswordEmailError("");
+
+    // Simulate API call
     setTimeout(() => {
       setForgotPasswordSent(true);
     }, 1000);
