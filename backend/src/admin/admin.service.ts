@@ -45,13 +45,18 @@ export class AdminService {
     );
   }
 
+<<<<<<< HEAD
   async createUserAccount(dto: CreateAccForUserDto,req:Request): Promise<User> {
     const userExists = await this.userModel.findOne({ email: dto.email, CIN:dto.CIN });
     if (userExists) throw new ConflictException('User with this email or CIN already exists');
+=======
+  async createUserAccount(dto: CreateAccForUserDto): Promise<User> {
+>>>>>>> main
     const newUser = new this.userModel({
       ...dto,
       role: [dto.role],
     });
+<<<<<<< HEAD
     const password = crypto.randomBytes(16).toString('hex');
     const emailValToken = newUser.CreateEmailValiationToken();
     await newUser.save({validateBeforeSave: false});
@@ -69,6 +74,9 @@ export class AdminService {
           );
     }
     newUser.password = password;
+=======
+
+>>>>>>> main
     return await newUser.save();
   }
 }

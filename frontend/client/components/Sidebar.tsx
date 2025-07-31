@@ -22,6 +22,7 @@ import {
   Camera,
   Stethoscope,
   FileSearch,
+  FlaskConical,
 } from "lucide-react";
 
 interface SidebarProps {
@@ -45,7 +46,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, onToggle }) => {
     },
     {
       icon: Activity,
-      label: "Production",
+      label: "Rebouclage",
       path: "/rebouclage",
       badge: "12",
     },
@@ -59,6 +60,12 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, onToggle }) => {
       icon: Zap,
       label: "Insémination",
       path: "/insemination",
+      badge: null,
+    },
+    {
+      icon: FlaskConical,
+      label: "Semences",
+      path: "/semences",
       badge: null,
     },
     {
@@ -126,14 +133,12 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, onToggle }) => {
         {/* Mobile Logo Section with Close Button */}
         <div className="p-4 border-b border-gray-100 flex-shrink-0">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-emerald-500 to-emerald-600 flex items-center justify-center">
-                <span className="text-white font-bold text-sm">B</span>
-              </div>
-              <div>
-                <h1 className="brand-title">Boviclouds</h1>
-                <p className="brand-subtitle">Farm Management</p>
-              </div>
+            <div className="flex items-center justify-center gap-3">
+              <img
+                src="https://cdn.builder.io/api/v1/image/assets%2F9c3f5518114a4d9c95471253796f59d3%2F53555526c6924d53896a8aecabe47366?format=webp&width=800"
+                alt="Boviclouds"
+                className="h-6 object-contain"
+              />
             </div>
             <button
               onClick={onClose}
@@ -234,19 +239,19 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, onToggle }) => {
         <div
           className={`p-4 border-b border-gray-100 flex-shrink-0 ${isOpen ? "" : "px-2"}`}
         >
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-emerald-500 to-emerald-600 flex items-center justify-center flex-shrink-0">
-              <span className="text-white font-bold text-sm">B</span>
-            </div>
-            {isOpen && (
-              <div className="min-w-0">
-                <h1 className="text-lg font-bold text-gray-900 truncate">
-                  Boviclouds
-                </h1>
-                <p className="text-xs text-gray-500 truncate">
-                  Farm Management
-                </p>
-              </div>
+          <div className="flex items-center justify-center gap-3">
+            {isOpen ? (
+              <img
+                src="https://cdn.builder.io/api/v1/image/assets%2F9c3f5518114a4d9c95471253796f59d3%2F53555526c6924d53896a8aecabe47366?format=webp&width=800"
+                alt="Boviclouds"
+                className="h-6 object-contain"
+              />
+            ) : (
+              <img
+                src="https://cdn.builder.io/api/v1/image/assets%2F9c3f5518114a4d9c95471253796f59d3%2Ffe4202f79e8c4d15ac712d298e235f41?format=webp&width=800"
+                alt="Boviclouds Logo"
+                className="w-8 h-8 object-contain flex-shrink-0 mx-auto"
+              />
             )}
           </div>
         </div>

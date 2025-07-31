@@ -70,10 +70,7 @@ interface FormData {
   ancienNNI: string;
   nouveauNNI: string;
   dateRebouclage: string;
-  creePar: string;
-  statut: RebouclageStatus;
-  notes: string;
-  codeExploitation: string;
+  indentificateur_id: string;
 }
 
 const Rebouclage: React.FC = () => {
@@ -101,10 +98,7 @@ const Rebouclage: React.FC = () => {
     ancienNNI: "",
     nouveauNNI: "",
     dateRebouclage: "",
-    creePar: "ZAKARIAE AMRANI",
-    statut: RebouclageStatus.EN_ATTENTE,
-    notes: "",
-    codeExploitation: "",
+    indentificateur_id: "",
   });
 
   const [validationErrors, setValidationErrors] = useState<ValidationError[]>(
@@ -181,10 +175,7 @@ const Rebouclage: React.FC = () => {
       ancienNNI: "",
       nouveauNNI: "",
       dateRebouclage: "",
-      creePar: "ZAKARIAE AMRANI",
-      statut: RebouclageStatus.EN_ATTENTE,
-      notes: "",
-      codeExploitation: "",
+      indentificateur_id: "",
     });
   };
 
@@ -202,10 +193,7 @@ const Rebouclage: React.FC = () => {
         ancienNNI: fullRecord.ancienNNI,
         nouveauNNI: fullRecord.nouveauNNI,
         dateRebouclage: fullRecord.dateRebouclage,
-        creePar: fullRecord.creePar,
-        statut: fullRecord.statut,
-        notes: fullRecord.notes || "",
-        codeExploitation: fullRecord.codeExploitation || "",
+        indentificateur_id: fullRecord.identificateur_id,
       });
       setModalMode("edit");
       setSelectedRecord(fullRecord);
@@ -220,10 +208,7 @@ const Rebouclage: React.FC = () => {
         ancienNNI: fullRecord.ancienNNI,
         nouveauNNI: fullRecord.nouveauNNI,
         dateRebouclage: fullRecord.dateRebouclage,
-        creePar: fullRecord.creePar,
-        statut: fullRecord.statut,
-        notes: fullRecord.notes || "",
-        codeExploitation: fullRecord.codeExploitation || "",
+        indentificateur_id: fullRecord.identificateur_id,
       });
       setModalMode("view");
       setSelectedRecord(fullRecord);
@@ -245,10 +230,7 @@ const Rebouclage: React.FC = () => {
           ancienNNI: formData.ancienNNI.trim(),
           nouveauNNI: formData.nouveauNNI.trim(),
           dateRebouclage: formData.dateRebouclage || undefined,
-          creePar: formData.creePar.trim(),
-          statut: formData.statut,
-          notes: formData.notes.trim() || undefined,
-          codeExploitation: formData.codeExploitation.trim() || undefined,
+          identificateur_id: formData.indentificateur_id.trim(),
         };
 
         const validation = validateCreateInput(input);
@@ -276,9 +258,7 @@ const Rebouclage: React.FC = () => {
           ancienNNI: formData.ancienNNI.trim(),
           nouveauNNI: formData.nouveauNNI.trim(),
           dateRebouclage: formData.dateRebouclage || undefined,
-          statut: formData.statut,
-          notes: formData.notes.trim() || undefined,
-          codeExploitation: formData.codeExploitation.trim() || undefined,
+          identificateur_id: formData.indentificateur_id.trim(),
         };
 
         const validation = validateUpdateInput(input);
@@ -533,13 +513,13 @@ const Rebouclage: React.FC = () => {
                       {formatDate(record.dateRebouclage)}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {record.creePar}
+                      {record.CréePar}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span
-                        className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full border ${getStatusColor(record.statut)}`}
+                        className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full border bg-green-100 text-green-800 border-green-200`}
                       >
-                        {record.statut}
+                        Effectué
                       </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
@@ -763,41 +743,6 @@ const Rebouclage: React.FC = () => {
                     </p>
                   )}
                 </div>
-
-                {/* Code d'exploitation */}
-                <div className="space-y-2">
-                  <Label
-                    htmlFor="codeExploitation"
-                    className="text-sm font-normal text-black"
-                  >
-                    Code d'exploitation
-                  </Label>
-                  <Input
-                    id="codeExploitation"
-                    value={formData.codeExploitation}
-                    onChange={(e) => {
-                      handleFormChange(
-                        "codeExploitation",
-                        e.target.value.toUpperCase(),
-                      );
-                      setValidationErrors((prev) =>
-                        prev.filter((err) => err.field !== "codeExploitation"),
-                      );
-                    }}
-                    className={`h-10 sm:h-12 px-3 sm:px-4 text-sm rounded-xl ${
-                      getFieldError(validationErrors, "codeExploitation")
-                        ? "border-red-500 focus:border-red-500"
-                        : "border-boviclouds-gray-100"
-                    }`}
-                    placeholder="Ex: EXP001"
-                    disabled={modalMode === "view"}
-                  />
-                  {getFieldError(validationErrors, "codeExploitation") && (
-                    <p className="text-sm text-red-600">
-                      {getFieldError(validationErrors, "codeExploitation")}
-                    </p>
-                  )}
-                </div>
               </div>
 
               {/* Right Column */}
@@ -836,98 +781,6 @@ const Rebouclage: React.FC = () => {
                     </p>
                   )}
                 </div>
-
-                {/* Créé par */}
-                <div className="space-y-2">
-                  <Label
-                    htmlFor="creePar"
-                    className="text-sm font-normal text-black"
-                  >
-                    Créé par
-                  </Label>
-                  <Input
-                    id="creePar"
-                    value={formData.creePar}
-                    onChange={(e) =>
-                      handleFormChange("creePar", e.target.value)
-                    }
-                    className="h-10 sm:h-12 px-3 sm:px-4 text-sm border-boviclouds-gray-100 rounded-xl"
-                    placeholder="Nom de l'utilisateur"
-                    disabled={modalMode === "view" || modalMode === "edit"}
-                  />
-                </div>
-
-                {/* Statut */}
-                <div className="space-y-2">
-                  <Label
-                    htmlFor="statut"
-                    className="text-sm font-normal text-black"
-                  >
-                    Statut
-                  </Label>
-                  {modalMode === "view" ? (
-                    <div
-                      className={`inline-flex px-3 py-2 text-sm font-semibold rounded-full border ${getStatusColor(formData.statut)}`}
-                    >
-                      {formData.statut}
-                    </div>
-                  ) : (
-                    <Select
-                      value={formData.statut}
-                      onValueChange={(value) =>
-                        handleFormChange("statut", value as RebouclageStatus)
-                      }
-                    >
-                      <SelectTrigger className="h-10 sm:h-12 text-sm">
-                        <SelectValue placeholder="Sélectionner un statut" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value={RebouclageStatus.EN_ATTENTE}>
-                          En attente
-                        </SelectItem>
-                        <SelectItem value={RebouclageStatus.ACTIF}>
-                          Actif
-                        </SelectItem>
-                        <SelectItem value={RebouclageStatus.ANNULE}>
-                          Annulé
-                        </SelectItem>
-                      </SelectContent>
-                    </Select>
-                  )}
-                </div>
-              </div>
-            </div>
-
-            {/* Notes section */}
-            <div className="space-y-2">
-              <Label htmlFor="notes" className="text-sm font-normal text-black">
-                Notes
-              </Label>
-              <Textarea
-                id="notes"
-                value={formData.notes}
-                onChange={(e) => {
-                  handleFormChange("notes", e.target.value);
-                  setValidationErrors((prev) =>
-                    prev.filter((err) => err.field !== "notes"),
-                  );
-                }}
-                className={`min-h-[80px] px-3 py-2 text-sm rounded-xl ${
-                  getFieldError(validationErrors, "notes")
-                    ? "border-red-500 focus:border-red-500"
-                    : "border-boviclouds-gray-100"
-                }`}
-                placeholder="Ajoutez des notes sur ce rebouclage..."
-                disabled={modalMode === "view"}
-                maxLength={500}
-              />
-              <div className="flex justify-between items-center text-xs text-gray-500">
-                <span>{formData.notes.length}/500 caractères</span>
-                {getFieldError(validationErrors, "notes") && (
-                  <span className="text-red-600">
-                    {getFieldError(validationErrors, "notes")}
-                  </span>
-                )}
               </div>
             </div>
 
