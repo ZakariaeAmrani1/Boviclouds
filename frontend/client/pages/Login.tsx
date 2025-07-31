@@ -488,8 +488,15 @@ const Login = () => {
                       />
                     </svg>
                   </div>
+                  <h4 className="text-lg font-semibold text-gray-900 mb-2">
+                    E-mail envoyé avec succès !
+                  </h4>
                   <p className="text-gray-600 font-inter text-sm mb-4">
-                    Lien de réinitialisation envoyé à <strong>{forgotPasswordEmail}</strong>
+                    Un lien de réinitialisation a été envoyé à <strong>{forgotPasswordEmail}</strong>.
+                    Vérifiez votre boîte de réception et suivez les instructions pour créer un nouveau mot de passe.
+                  </p>
+                  <p className="text-gray-500 font-inter text-xs mb-4">
+                    Si vous ne recevez pas l'e-mail dans les prochaines minutes, vérifiez votre dossier spam.
                   </p>
                   <button
                     onClick={resetForgotPasswordModal}
