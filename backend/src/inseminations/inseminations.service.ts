@@ -3,7 +3,6 @@ import {
   HttpException,
   HttpStatus,
   Injectable,
-  
 } from '@nestjs/common';
 import { CreateInseminationDto } from './dto/create-insemination.dto';
 import { UpdateInseminationDto } from './dto/update-insemination.dto';
@@ -42,6 +41,7 @@ export class InseminationsService {
   }
 
   async findOne(id: string): Promise<Insemination | null> {
+    if (!Types.ObjectId.isValid(id)) throw new InseminationNotFoundException(id);
     const insemination = await this.inseminationModel.findById(id);
     if (!insemination) throw new InseminationNotFoundException(id);
     return insemination;
@@ -51,6 +51,7 @@ export class InseminationsService {
     id: string,
     updateInseminationDto: UpdateInseminationDto,
   ): Promise<Insemination> {
+    if (!Types.ObjectId.isValid(id)) throw new InseminationNotFoundException(id);
     const insemination = await this.inseminationModel.findByIdAndUpdate(
       id,
       updateInseminationDto,
@@ -61,6 +62,8 @@ export class InseminationsService {
   }
 
   async remove(id: string): Promise<Insemination> {
+    if (!Types.ObjectId.isValid(id))
+          throw new InseminationNotFoundException(id);
     const insemination = await this.inseminationModel.findByIdAndDelete(id);
     if (!insemination) throw new InseminationNotFoundException(id);
     return insemination;
@@ -71,8 +74,8 @@ export class InseminationsService {
 
     const requiredFields = [
       'nni',
-      'date_dissemination',
       'semence_id',
+      'date_dissemination',
       'inseminateur_id',
       'responsable_local_id',
     ];
@@ -86,7 +89,7 @@ export class InseminationsService {
       return new Promise((resolve, reject) => {
         bufferStream
           .pipe(csv())
-          .on('data', (row) => {
+          .on('data', (row: Record<string, any>) => {
             if (this.hasEmptyFields(row, requiredFields)) {
               reject(
                 new BadRequestException(
@@ -127,8 +130,6 @@ export class InseminationsService {
   }
 
   private hasEmptyFields(row: Record<string, any>, required: string[]) {
-    return required.some(
-      (field) => !row[field] || row[field].toString().trim() === '',
-    );
-  }
+  return required.some(field => !row[field] || row[field].toString().trim() === '');
+}
 }

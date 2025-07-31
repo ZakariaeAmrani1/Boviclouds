@@ -2,9 +2,9 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, HttpStatus, HttpCode
 import { InseminationsService } from './inseminations.service';
 import { CreateInseminationDto } from './dto/create-insemination.dto';
 import { UpdateInseminationDto } from './dto/update-insemination.dto';
-import { FileInterceptor } from '@nestjs/platform-express';
 import { multerMemoryStorage } from 'multer-config';
-import type { File as MulterFile } from 'multer';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { File as MulterFile } from 'multer';
 
 
 @Controller('api/v1/inseminations')
@@ -43,5 +43,11 @@ export class InseminationsController {
   @UseInterceptors(FileInterceptor('file',multerMemoryStorage))
   async importInseminations(@UploadedFile() file: MulterFile) {
     return await this.inseminationsService.importInseminations(file);
+  }
+
+  @Post('import-inseminations')
+  @UseInterceptors(FileInterceptor('file', multerMemoryStorage))
+  async importInseminations(@UploadedFile() file: MulterFile) {
+    await this.inseminationsService.importInseminations(file)
   }
 }
