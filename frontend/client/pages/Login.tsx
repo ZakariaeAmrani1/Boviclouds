@@ -464,7 +464,7 @@ const Login = () => {
                     </button>
                     <button
                       onClick={handleForgotPassword}
-                      disabled={!forgotPasswordEmail}
+                      disabled={!forgotPasswordEmail || !!forgotPasswordEmailError}
                       className="flex-1 px-4 py-2 bg-boviclouds-primary text-white rounded-lg font-inter text-sm hover:bg-boviclouds-primary/90 transition-colors disabled:opacity-50"
                     >
                       Envoyer le lien
