@@ -15,6 +15,7 @@ const Login = () => {
   const [showForgotPassword, setShowForgotPassword] = useState(false);
   const [forgotPasswordEmail, setForgotPasswordEmail] = useState("");
   const [forgotPasswordSent, setForgotPasswordSent] = useState(false);
+  const [forgotPasswordEmailError, setForgotPasswordEmailError] = useState("");
   const [showRegistration, setShowRegistration] = useState(false);
   const [accountRequestSent, setAccountRequestSent] = useState(false);
   const navigate = useNavigate();
