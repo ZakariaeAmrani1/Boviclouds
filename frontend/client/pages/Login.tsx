@@ -140,6 +140,13 @@ const Login = () => {
     }, 1000);
   };
 
+  const handleForgotPasswordEmailChange = (value: string) => {
+    setForgotPasswordEmail(value);
+    if (forgotPasswordEmailError) {
+      setForgotPasswordEmailError(validateEmail(value));
+    }
+  };
+
   const resetForgotPasswordModal = () => {
     setShowForgotPassword(false);
     setForgotPasswordEmail("");
