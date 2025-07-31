@@ -44,10 +44,4 @@ export class InseminationsController {
   async importInseminations(@UploadedFile() file: MulterFile) {
     return await this.inseminationsService.importInseminations(file);
   }
-
-  @Post('import-inseminations')
-  @UseInterceptors(FileInterceptor('file', multerMemoryStorage))
-  async importInseminations(@UploadedFile() file: MulterFile) {
-    await this.inseminationsService.importInseminations(file)
-  }
 }
