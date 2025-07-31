@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Welcome to Boviclouds - Your Account Details</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+            background-color: #f8f8f8;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 30px;
+            background-color: #ffffff;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08);
+        }
+
+        h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+
+        p {
+            margin-bottom: 15px;
+        }
+
+        .button {
+            display: inline-block;
+            background-color: #0bad19;
+            color: white;
+            padding: 12px 25px;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+            text-align: center;
+            transition: background-color 0.3s ease;
+        }
+
+        .button:hover {
+            background-color: #087a11;
+        }
+
+        .info-text {
+            font-size: 0.95em;
+            color: #555;
+            margin-top: 25px;
+            border-top: 1px solid #eee;
+            padding-top: 20px;
+        }
+
+        .footer {
+            margin-top: 30px;
+            font-size: 0.85em;
+            color: #777;
+            text-align: center;
+        }
+
+        .credentials {
+            background-color: #e9f5ee;
+            /* Light green background for credentials */
+            border: 1px solid #b2e0bd;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+
+        .credentials p {
+            margin: 5px 0;
+            word-break: break-all;
+            /* Ensures long emails/passwords don't break layout */
+        }
+
+        /* Responsive adjustments */
+        @media screen and (max-width: 600px) {
+            .container {
+                margin: 10px;
+                padding: 20px;
+            }
+
+            .button {
+                display: block;
+                width: 100%;
+                box-sizing: border-box;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h2>Welcome to Boviclouds, {{firstName}}!</h2>
+        <p>Thank you for creating an account with **Boviclouds!** We are excited to have you on board.</p>
+        <p>Here are your account details:</p>
+
+        <div class="credentials">
+            <p><strong>Email:</strong> {{email}}</p>
+            <p><strong>Temporary Password:</strong> {{password}}</p>
+        </div>
+
+        <p>To finalize your account setup and ensure the security of your account, please confirm your email address by
+            clicking the button below:</p>
+        <p style="text-align: center; margin: 30px 0;">
+            <a href="{{url}}" class="button">Confirm My Email Address</a>
+        </p>
+        <p class="info-text">
+            This confirmation link is valid for **10 minutes**. If it expires, you can request a new one from the login
+            page.
+        </p>
+        <p class="info-text">
+            For security reasons, we strongly recommend that you **change your password immediately** after your first
+            login.
+        </p>
+        <p class="info-text">
+            If you did not create an account with Boviclouds, please ignore this email. Your account will not be
+            activated.
+        </p>
+        <p class="footer">
+            Best regards,<br>The Boviclouds Team
+        </p>
+    </div>
+</body>
+
+</html>
