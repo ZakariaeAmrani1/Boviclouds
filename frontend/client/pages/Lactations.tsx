@@ -296,7 +296,7 @@ const Lactations: React.FC = () => {
                   <SelectValue placeholder="Sélectionner un contrôleur" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Tous les contrôleurs</SelectItem>
+                  <SelectItem value="all">Tous les contrôleurs</SelectItem>
                   {users.map((user) => (
                     <SelectItem key={user.id} value={user.id}>
                       {user.prenom} {user.nom}
