@@ -9,10 +9,7 @@ import {
   Building,
   Eye,
   Calendar,
-  Camera,
-  Upload,
-  X,
-  ImageIcon,
+  Images,
 } from "lucide-react";
 import {
   Dialog,
@@ -37,6 +34,7 @@ import { Separator } from "../ui/separator";
 import { Badge } from "../ui/badge";
 import { useToast } from "../../hooks/use-toast";
 import { useIdentification } from "../../hooks/useIdentification";
+import MultiImageUpload, { ImageData } from "../ui/multi-image-upload";
 import {
   CreateIdentificationInput,
   Race,
@@ -62,7 +60,7 @@ interface FormData {
   sujet_race: Race | "";
   sujet_sexe: Sexe | "";
   sujet_type: TypeAnimal | "";
-  muzzle_image: File | null;
+  images: ImageData[];
 
   // Mother info
   mere_nni: string;
@@ -104,24 +102,30 @@ const steps = [
   },
   {
     id: 2,
+    title: "Photos de l'animal",
+    description: "Images d'identification",
+    icon: Images,
+  },
+  {
+    id: 3,
     title: "Lignée maternelle",
     description: "Mère et grand-père maternel",
     icon: Users,
   },
   {
-    id: 3,
+    id: 4,
     title: "Lignée paternelle",
     description: "Père et grands-parents paternels",
     icon: Users,
   },
   {
-    id: 4,
+    id: 5,
     title: "Informations complémentaires",
     description: "Éleveur, exploitation et responsable",
     icon: Building,
   },
   {
-    id: 5,
+    id: 6,
     title: "Vérification",
     description: "Validation des données",
     icon: Eye,
@@ -137,18 +141,13 @@ const AddIdentificationModal: React.FC<AddIdentificationModalProps> = ({
   const { loading, error, createRecord } = useIdentification();
 
   const [currentStep, setCurrentStep] = useState(1);
-  const [imagePreview, setImagePreview] = useState<string | null>(null);
-  const [isCapturing, setIsCapturing] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const canvasRef = useRef<HTMLCanvasElement>(null);
   const [formData, setFormData] = useState<FormData>({
     sujet_nni: "",
     sujet_date_naissance: "",
     sujet_race: "",
     sujet_sexe: "",
     sujet_type: "",
-    muzzle_image: null,
+    images: [],
     mere_nni: "",
     mere_date_naissance: "",
     mere_race: "",
@@ -174,7 +173,7 @@ const AddIdentificationModal: React.FC<AddIdentificationModalProps> = ({
   >({});
   const [completedSteps, setCompletedSteps] = useState<Set<number>>(new Set());
 
-  const handleFormChange = (field: keyof FormData, value: string | File | null) => {
+  const handleFormChange = (field: keyof FormData, value: string | ImageData[]) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
     // Clear validation error for this field
     if (validationErrors[field]) {
@@ -186,82 +185,8 @@ const AddIdentificationModal: React.FC<AddIdentificationModalProps> = ({
     }
   };
 
-  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file && file.type.startsWith('image/')) {
-      handleFormChange('muzzle_image', file);
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        setImagePreview(e.target?.result as string);
-      };
-      reader.readAsDataURL(file);
-    } else {
-      toast({
-        title: "Format invalide",
-        description: "Veuillez sélectionner un fichier image valide.",
-        variant: "destructive",
-      });
-    }
-  };
-
-  const startCapture = async () => {
-    try {
-      setIsCapturing(true);
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: 'environment' } // Use back camera on mobile
-      });
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream;
-        await videoRef.current.play();
-      }
-    } catch (error) {
-      toast({
-        title: "Erreur caméra",
-        description: "Impossible d'accéder à la caméra.",
-        variant: "destructive",
-      });
-      setIsCapturing(false);
-    }
-  };
-
-  const capturePhoto = () => {
-    if (videoRef.current && canvasRef.current) {
-      const video = videoRef.current;
-      const canvas = canvasRef.current;
-      const context = canvas.getContext('2d');
-
-      if (context) {
-        canvas.width = video.videoWidth;
-        canvas.height = video.videoHeight;
-        context.drawImage(video, 0, 0);
-
-        canvas.toBlob((blob) => {
-          if (blob) {
-            const file = new File([blob], 'muzzle-capture.jpg', { type: 'image/jpeg' });
-            handleFormChange('muzzle_image', file);
-            setImagePreview(canvas.toDataURL());
-            stopCapture();
-          }
-        }, 'image/jpeg', 0.8);
-      }
-    }
-  };
-
-  const stopCapture = () => {
-    if (videoRef.current?.srcObject) {
-      const stream = videoRef.current.srcObject as MediaStream;
-      stream.getTracks().forEach(track => track.stop());
-      videoRef.current.srcObject = null;
-    }
-    setIsCapturing(false);
-  };
-
-  const removeImage = () => {
-    handleFormChange('muzzle_image', null);
-    setImagePreview(null);
-    if (fileInputRef.current) {
-      fileInputRef.current.value = '';
-    }
+  const handleImagesChange = (images: ImageData[]) => {
+    handleFormChange('images', images);
   };
 
   const resetForm = () => {
@@ -271,7 +196,7 @@ const AddIdentificationModal: React.FC<AddIdentificationModalProps> = ({
       sujet_race: "",
       sujet_sexe: "",
       sujet_type: "",
-      muzzle_image: null,
+      images: [],
       mere_nni: "",
       mere_date_naissance: "",
       mere_race: "",
@@ -294,12 +219,6 @@ const AddIdentificationModal: React.FC<AddIdentificationModalProps> = ({
     setValidationErrors({});
     setCurrentStep(1);
     setCompletedSteps(new Set());
-    setImagePreview(null);
-    setIsCapturing(false);
-    stopCapture();
-    if (fileInputRef.current) {
-      fileInputRef.current.value = '';
-    }
   };
 
   const validateCurrentStep = (): boolean => {
@@ -319,6 +238,10 @@ const AddIdentificationModal: React.FC<AddIdentificationModalProps> = ({
           return true;
         }
         case 2: {
+          // Image step - no validation required, images are optional
+          return true;
+        }
+        case 3: {
           const mereData = {
             nni: formData.mere_nni.trim().toUpperCase(),
             date_naissance: formData.mere_date_naissance,
@@ -333,7 +256,7 @@ const AddIdentificationModal: React.FC<AddIdentificationModalProps> = ({
           QuickValidationSchemas.grandPereMaternel.parse(grandPereMData);
           return true;
         }
-        case 3: {
+        case 4: {
           const pereData = {
             nni: formData.pere_nni.trim().toUpperCase(),
             date_naissance: formData.pere_date_naissance,
@@ -354,7 +277,7 @@ const AddIdentificationModal: React.FC<AddIdentificationModalProps> = ({
           QuickValidationSchemas.grandMerePaternelle.parse(grandMerePData);
           return true;
         }
-        case 4: {
+        case 5: {
           const complemData = {
             eleveur_id: formData.eleveur_id.trim(),
             exploitation_id: formData.exploitation_id.trim(),
@@ -411,7 +334,7 @@ const AddIdentificationModal: React.FC<AddIdentificationModalProps> = ({
     const originalStep = currentStep;
     let allValid = true;
 
-    for (let step = 1; step <= 4; step++) {
+    for (let step = 1; step <= 5; step++) {
       setCurrentStep(step);
       if (!validateCurrentStep()) {
         allValid = false;
@@ -687,172 +610,39 @@ const AddIdentificationModal: React.FC<AddIdentificationModalProps> = ({
                     </Select>
                   </div>
                 </div>
+              </div>
+            )}
 
-                <Separator className="my-6" />
+            {/* Step 2: Image Upload */}
+            {currentStep === 2 && (
+              <div className="space-y-6 animate-fadeIn">
+                <div className="text-center mb-6">
+                  <Images className="w-12 h-12 mx-auto text-boviclouds-primary mb-2" />
+                  <h3 className="text-lg font-semibold text-gray-900">
+                    Photos de l'animal
+                  </h3>
+                  <p className="text-gray-600">
+                    Ajoutez des photos pour l'identification de l'animal (optionnel)
+                  </p>
+                </div>
 
-                {/* Muzzle Image Upload Section */}
-                <div className="space-y-4">
-                  <div className="text-center">
-                    <h3 className="text-base font-semibold text-gray-900 mb-2 flex items-center justify-center gap-2">
-                      <Camera className="w-5 h-5 text-boviclouds-primary" />
-                      Photo du museau
-                    </h3>
-                    <p className="text-sm text-gray-600">
-                      Prenez ou téléchargez une photo du museau de l'animal pour l'identification
-                    </p>
-                  </div>
+                <MultiImageUpload
+                  images={formData.images}
+                  onImagesChange={handleImagesChange}
+                  maxImages={5}
+                  maxFileSize={5}
+                  disabled={loading}
+                  className="w-full"
+                />
 
-                  <div className="border-2 border-dashed border-gray-300 rounded-xl p-6 bg-gray-50">
-                    {!imagePreview && !isCapturing && (
-                      <div className="text-center space-y-4">
-                        {/* Cow Face Placeholder */}
-                        <div className="mx-auto w-32 h-32 bg-gray-200 rounded-lg border-2 border-gray-300 flex items-center justify-center">
-                          <div className="text-center">
-                            <div className="text-6xl text-gray-400 mb-2">🐄</div>
-                            <p className="text-xs text-gray-500">Museau</p>
-                          </div>
-                        </div>
-
-                        <div className="space-y-2">
-                          <p className="text-sm text-gray-600">
-                            Positionnez le museau de l'animal dans le cadre
-                          </p>
-                          <div className="flex flex-col sm:flex-row gap-2 justify-center">
-                            <Button
-                              type="button"
-                              variant="outline"
-                              onClick={startCapture}
-                              className="flex items-center gap-2"
-                              disabled={loading}
-                            >
-                              <Camera className="w-4 h-4" />
-                              Prendre une photo
-                            </Button>
-                            <Button
-                              type="button"
-                              variant="outline"
-                              onClick={() => fileInputRef.current?.click()}
-                              className="flex items-center gap-2"
-                              disabled={loading}
-                            >
-                              <Upload className="w-4 h-4" />
-                              Télécharger
-                            </Button>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-
-                    {isCapturing && (
-                      <div className="text-center space-y-4">
-                        <div className="relative mx-auto max-w-md">
-                          <video
-                            ref={videoRef}
-                            autoPlay
-                            playsInline
-                            className="w-full h-64 object-cover rounded-lg border-2 border-boviclouds-primary"
-                          />
-                          {/* Overlay guide */}
-                          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                            <div className="w-48 h-48 border-2 border-white border-dashed rounded-full bg-black bg-opacity-20 flex items-center justify-center">
-                              <span className="text-white text-sm font-medium">Museau</span>
-                            </div>
-                          </div>
-                        </div>
-                        <div className="flex gap-2 justify-center">
-                          <Button
-                            type="button"
-                            onClick={capturePhoto}
-                            className="bg-boviclouds-primary hover:bg-boviclouds-green-dark flex items-center gap-2"
-                          >
-                            <Camera className="w-4 h-4" />
-                            Capturer
-                          </Button>
-                          <Button
-                            type="button"
-                            variant="outline"
-                            onClick={stopCapture}
-                            className="flex items-center gap-2"
-                          >
-                            <X className="w-4 h-4" />
-                            Annuler
-                          </Button>
-                        </div>
-                      </div>
-                    )}
-
-                    {imagePreview && !isCapturing && (
-                      <div className="text-center space-y-4">
-                        <div className="relative mx-auto max-w-md">
-                          <img
-                            src={imagePreview}
-                            alt="Museau de l'animal"
-                            className="w-full h-64 object-cover rounded-lg border-2 border-green-500"
-                          />
-                          <div className="absolute top-2 right-2">
-                            <Button
-                              type="button"
-                              variant="outline"
-                              size="sm"
-                              onClick={removeImage}
-                              className="bg-white hover:bg-gray-100 text-red-600 hover:text-red-700"
-                            >
-                              <X className="w-4 h-4" />
-                            </Button>
-                          </div>
-                        </div>
-                        <div className="flex items-center justify-center gap-2 text-green-600">
-                          <Check className="w-4 h-4" />
-                          <span className="text-sm font-medium">Photo capturée avec succès</span>
-                        </div>
-                        <div className="flex gap-2 justify-center">
-                          <Button
-                            type="button"
-                            variant="outline"
-                            onClick={startCapture}
-                            className="flex items-center gap-2"
-                            disabled={loading}
-                          >
-                            <Camera className="w-4 h-4" />
-                            Reprendre
-                          </Button>
-                          <Button
-                            type="button"
-                            variant="outline"
-                            onClick={() => fileInputRef.current?.click()}
-                            className="flex items-center gap-2"
-                            disabled={loading}
-                          >
-                            <Upload className="w-4 h-4" />
-                            Remplacer
-                          </Button>
-                        </div>
-                      </div>
-                    )}
-
-                    {/* Hidden file input */}
-                    <input
-                      ref={fileInputRef}
-                      type="file"
-                      accept="image/*"
-                      onChange={handleFileUpload}
-                      className="hidden"
-                    />
-
-                    {/* Hidden canvas for photo capture */}
-                    <canvas ref={canvasRef} className="hidden" />
-                  </div>
-
-                  <div className="text-xs text-gray-500 text-center">
-                    La photo du museau aide à l'identification unique de l'animal.
-                    Formats acceptés: JPG, PNG, WebP (max 5MB)
-                  </div>
+                <div className="text-xs text-gray-500 text-center bg-blue-50 p-3 rounded-lg">
+                  📝 <strong>Conseil:</strong> Prenez des photos claires du museau, des flancs et de la face de l'animal pour une meilleure identification.
                 </div>
               </div>
             )}
 
-            {/* Step 2: Maternal Line */}
-            {currentStep === 2 && (
+            {/* Step 3: Maternal Line */}
+            {currentStep === 3 && (
               <div className="space-y-8 animate-fadeIn">
                 {/* Mother */}
                 <div>
@@ -1007,8 +797,8 @@ const AddIdentificationModal: React.FC<AddIdentificationModalProps> = ({
               </div>
             )}
 
-            {/* Step 3: Paternal Line */}
-            {currentStep === 3 && (
+            {/* Step 4: Paternal Line */}
+            {currentStep === 4 && (
               <div className="space-y-8 animate-fadeIn">
                 {/* Father */}
                 <div>
@@ -1256,8 +1046,8 @@ const AddIdentificationModal: React.FC<AddIdentificationModalProps> = ({
               </div>
             )}
 
-            {/* Step 4: Complementary Information */}
-            {currentStep === 4 && (
+            {/* Step 5: Complementary Information */}
+            {currentStep === 5 && (
               <div className="space-y-6 animate-fadeIn">
                 <div className="text-center mb-6">
                   <Building className="w-12 h-12 mx-auto text-boviclouds-primary mb-2" />
@@ -1328,8 +1118,8 @@ const AddIdentificationModal: React.FC<AddIdentificationModalProps> = ({
               </div>
             )}
 
-            {/* Step 5: Review */}
-            {currentStep === 5 && (
+            {/* Step 6: Review */}
+            {currentStep === 6 && (
               <div className="space-y-6 animate-fadeIn">
                 <div className="text-center mb-6">
                   <Eye className="w-12 h-12 mx-auto text-boviclouds-primary mb-2" />
@@ -1365,6 +1155,12 @@ const AddIdentificationModal: React.FC<AddIdentificationModalProps> = ({
                         <span className="text-blue-700">Race:</span>
                         <span className="font-medium">
                           {formData.sujet_race}
+                        </span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-blue-700">Images:</span>
+                        <span className="font-medium">
+                          {formData.images.length} photo(s)
                         </span>
                       </div>
                     </div>

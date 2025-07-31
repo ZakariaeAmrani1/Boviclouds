@@ -6,37 +6,43 @@ import { multerMemoryStorage } from 'multer-config';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { File as MulterFile } from 'multer';
 
+
 @Controller('api/v1/inseminations')
 export class InseminationsController {
   constructor(private readonly inseminationsService: InseminationsService) {}
 
   @Post()
-  create(@Body() createInseminationDto: CreateInseminationDto) {
-    return this.inseminationsService.create(createInseminationDto);
+  async create(@Body() createInseminationDto: CreateInseminationDto) {
+    return await this.inseminationsService.create(createInseminationDto);
   }
 
   @Get()
-  findAll() {
-    return this.inseminationsService.findAll();
+  async findAll() {
+    return await this.inseminationsService.findAll();
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.inseminationsService.findOne(id);
+  async findOne(@Param('id') id: string) {
+    return await this.inseminationsService.findOne(id);
   }
 
   @Patch(':id')
-  update(
+  async update(
     @Param('id') id: string,
     @Body() updateInseminationDto: UpdateInseminationDto,
   ) {
-    return this.inseminationsService.update(id, updateInseminationDto);
+    return await this.inseminationsService.update(id, updateInseminationDto);
   }
 
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  remove(@Param('id') id: string) {
-    return this.inseminationsService.remove(id);
+  async remove(@Param('id') id: string) {
+    return await this.inseminationsService.remove(id);
+  }
+  @Post('import-inseminations')
+  @UseInterceptors(FileInterceptor('file',multerMemoryStorage))
+  async importInseminations(@UploadedFile() file: MulterFile) {
+    return await this.inseminationsService.importInseminations(file);
   }
 
   @Post('import-inseminations')
