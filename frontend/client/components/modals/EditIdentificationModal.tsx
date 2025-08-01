@@ -1024,7 +1024,7 @@ const EditIdentificationModal: React.FC<EditIdentificationModalProps> = ({
                       <h4 className="text-sm font-medium text-gray-700 mb-3">
                         Grand-père paternel
                       </h4>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-4">
                         <div className="space-y-2">
                           <Label
                             htmlFor="grand_pere_paternel_nni"
@@ -1043,28 +1043,6 @@ const EditIdentificationModal: React.FC<EditIdentificationModalProps> = ({
                             }
                             className="h-12 px-4 text-sm rounded-xl border-boviclouds-gray-100"
                             placeholder="Ex: FR1234567890"
-                            disabled={loading}
-                          />
-                        </div>
-
-                        <div className="space-y-2">
-                          <Label
-                            htmlFor="grand_pere_paternel_nom"
-                            className="text-sm font-normal text-black"
-                          >
-                            Nom *
-                          </Label>
-                          <Input
-                            id="grand_pere_paternel_nom"
-                            value={formData.grand_pere_paternel_nom}
-                            onChange={(e) =>
-                              handleFormChange(
-                                "grand_pere_paternel_nom",
-                                e.target.value,
-                              )
-                            }
-                            className="h-12 px-4 text-sm rounded-xl border-boviclouds-gray-100"
-                            placeholder="Nom du grand-père"
                             disabled={loading}
                           />
                         </div>
