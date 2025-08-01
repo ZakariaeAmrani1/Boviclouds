@@ -15,6 +15,7 @@ export enum UtilisateurRole {
   IDENTIFICATEUR = "Identificateur",
   ELEVEUR = "Éleveur",
   CONTROLEUR = "Contrôleur",
+  RESPONSABLE = "Résponsable Local",
   SUPPORT = "Non Définit",
 }
 
