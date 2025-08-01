@@ -1364,9 +1364,33 @@ export const getIdentification: RequestHandler = async (req, res) => {
 };
 
 // Create new identification
-export const createIdentification: RequestHandler = (req, res) => {
+export const createIdentification: RequestHandler = async (req, res) => {
   try {
-    const data: CreateIdentificationInput = req.body;
+    let data: CreateIdentificationInput & { token?: string };
+    let images: Express.Multer.File[] = [];
+
+    // Check if request contains FormData (with images)
+    if (req.is('multipart/form-data')) {
+      // Parse JSON data from the 'data' field
+      if (req.body.data) {
+        data = JSON.parse(req.body.data);
+      } else {
+        return res.status(400).json({
+          success: false,
+          message: "Données manquantes dans la requête FormData",
+        });
+      }
+
+      // Get uploaded images
+      if (req.files && Array.isArray(req.files)) {
+        images = req.files;
+      } else if (req.files && 'images' in req.files) {
+        images = req.files.images as Express.Multer.File[];
+      }
+    } else {
+      // Regular JSON request
+      data = req.body;
+    }
 
     // Basic validation
     if (!data.infos_sujet?.nni || !data.createdBy) {
@@ -1376,39 +1400,72 @@ export const createIdentification: RequestHandler = (req, res) => {
       });
     }
 
-    // Check if NNI already exists
-    const existingIdentification = identifications.find(
-      (i) => i.infos_sujet.nni === data.infos_sujet.nni,
-    );
-    if (existingIdentification) {
-      return res.status(400).json({
+    // Forward to the actual backend API
+    const apiUrl = process.env.SERVER_API_URL;
+    const { token } = data;
+
+    try {
+      let response;
+
+      if (images.length > 0) {
+        // Create FormData for the backend request
+        const FormData = require('form-data');
+        const formData = new FormData();
+
+        // Add JSON data
+        formData.append('data', JSON.stringify({
+          infos_sujet: data.infos_sujet,
+          infos_mere: data.infos_mere,
+          grand_pere_maternel: data.grand_pere_maternel,
+          pere: data.pere,
+          grand_pere_paternel: data.grand_pere_paternel,
+          grand_mere_paternelle: data.grand_mere_paternelle,
+          complem: data.complem,
+          createdBy: data.createdBy,
+        }));
+
+        // Add images
+        images.forEach((image, index) => {
+          formData.append('images', image.buffer, image.originalname);
+        });
+
+        response = await axios.post(`${apiUrl}identifications`, formData, {
+          headers: {
+            ...formData.getHeaders(),
+            Authorization: `Bearer ${token}`,
+          },
+        });
+      } else {
+        // Regular JSON request
+        response = await axios.post(`${apiUrl}identifications`, {
+          infos_sujet: data.infos_sujet,
+          infos_mere: data.infos_mere,
+          grand_pere_maternel: data.grand_pere_maternel,
+          pere: data.pere,
+          grand_pere_paternel: data.grand_pere_paternel,
+          grand_mere_paternelle: data.grand_mere_paternelle,
+          complem: data.complem,
+          createdBy: data.createdBy,
+        }, {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+        });
+      }
+
+      res.status(201).json({
+        success: true,
+        data: response.data,
+        message: "Identification créée avec succès",
+      });
+    } catch (apiError: any) {
+      console.error("Error calling backend API:", apiError.response?.data || apiError.message);
+      res.status(apiError.response?.status || 500).json({
         success: false,
-        message: "Un animal avec ce NNI existe déjà",
+        message: apiError.response?.data?.message || "Erreur lors de la création de l'identification",
       });
     }
-
-    const now = new Date().toISOString();
-    const newIdentification: IdentificationRecord = {
-      id: generateId(),
-      infos_sujet: data.infos_sujet,
-      infos_mere: data.infos_mere,
-      grand_pere_maternel: data.grand_pere_maternel,
-      pere: data.pere,
-      grand_pere_paternel: data.grand_pere_paternel,
-      grand_mere_paternelle: data.grand_mere_paternelle,
-      complem: data.complem,
-      createdBy: data.createdBy,
-      createdAt: now,
-      updatedAt: now,
-    };
-
-    identifications.unshift(newIdentification);
-
-    res.status(201).json({
-      success: true,
-      data: newIdentification,
-      message: "Identification créée avec succès",
-    });
   } catch (error) {
     console.error("Error creating identification:", error);
     res.status(500).json({
@@ -1419,68 +1476,101 @@ export const createIdentification: RequestHandler = (req, res) => {
 };
 
 // Update identification
-export const updateIdentification: RequestHandler = (req, res) => {
+export const updateIdentification: RequestHandler = async (req, res) => {
   try {
     const { id } = req.params;
-    const data: UpdateIdentificationInput = req.body;
+    let data: UpdateIdentificationInput & { token?: string };
+    let images: Express.Multer.File[] = [];
 
-    const identificationIndex = identifications.findIndex((i) => i.id === id);
-    if (identificationIndex === -1) {
-      return res.status(404).json({
-        success: false,
-        message: "Identification non trouvée",
-      });
-    }
-
-    const existingIdentification = identifications[identificationIndex];
-
-    // If updating NNI, check for duplicates
-    if (
-      data.infos_sujet?.nni &&
-      data.infos_sujet.nni !== existingIdentification.infos_sujet.nni
-    ) {
-      const duplicateIdentification = identifications.find(
-        (i) => i.infos_sujet.nni === data.infos_sujet.nni && i.id !== id,
-      );
-      if (duplicateIdentification) {
+    // Check if request contains FormData (with images)
+    if (req.is('multipart/form-data')) {
+      // Parse JSON data from the 'data' field
+      if (req.body.data) {
+        data = JSON.parse(req.body.data);
+      } else {
         return res.status(400).json({
           success: false,
-          message: "Un animal avec ce NNI existe déjà",
+          message: "Données manquantes dans la requête FormData",
         });
       }
+
+      // Get uploaded images
+      if (req.files && Array.isArray(req.files)) {
+        images = req.files;
+      } else if (req.files && 'images' in req.files) {
+        images = req.files.images as Express.Multer.File[];
+      }
+    } else {
+      // Regular JSON request
+      data = req.body;
     }
 
-    const updatedIdentification: IdentificationRecord = {
-      ...existingIdentification,
-      infos_sujet: {
-        ...existingIdentification.infos_sujet,
-        ...data.infos_sujet,
-      },
-      infos_mere: { ...existingIdentification.infos_mere, ...data.infos_mere },
-      grand_pere_maternel: {
-        ...existingIdentification.grand_pere_maternel,
-        ...data.grand_pere_maternel,
-      },
-      pere: { ...existingIdentification.pere, ...data.pere },
-      grand_pere_paternel: {
-        ...existingIdentification.grand_pere_paternel,
-        ...data.grand_pere_paternel,
-      },
-      grand_mere_paternelle: {
-        ...existingIdentification.grand_mere_paternelle,
-        ...data.grand_mere_paternelle,
-      },
-      complem: { ...existingIdentification.complem, ...data.complem },
-      updatedAt: new Date().toISOString(),
-    };
+    // Forward to the actual backend API
+    const apiUrl = process.env.SERVER_API_URL;
+    const { token } = data;
 
-    identifications[identificationIndex] = updatedIdentification;
+    try {
+      let response;
 
-    res.json({
-      success: true,
-      data: updatedIdentification,
-      message: "Identification mise à jour avec succès",
-    });
+      if (images.length > 0) {
+        // Create FormData for the backend request
+        const FormData = require('form-data');
+        const formData = new FormData();
+
+        // Add JSON data
+        const updateData: UpdateIdentificationInput = {};
+        if (data.infos_sujet) updateData.infos_sujet = data.infos_sujet;
+        if (data.infos_mere) updateData.infos_mere = data.infos_mere;
+        if (data.grand_pere_maternel) updateData.grand_pere_maternel = data.grand_pere_maternel;
+        if (data.pere) updateData.pere = data.pere;
+        if (data.grand_pere_paternel) updateData.grand_pere_paternel = data.grand_pere_paternel;
+        if (data.grand_mere_paternelle) updateData.grand_mere_paternelle = data.grand_mere_paternelle;
+        if (data.complem) updateData.complem = data.complem;
+
+        formData.append('data', JSON.stringify(updateData));
+
+        // Add images
+        images.forEach((image, index) => {
+          formData.append('images', image.buffer, image.originalname);
+        });
+
+        response = await axios.put(`${apiUrl}identifications/${id}`, formData, {
+          headers: {
+            ...formData.getHeaders(),
+            Authorization: `Bearer ${token}`,
+          },
+        });
+      } else {
+        // Regular JSON request
+        const updateData: UpdateIdentificationInput = {};
+        if (data.infos_sujet) updateData.infos_sujet = data.infos_sujet;
+        if (data.infos_mere) updateData.infos_mere = data.infos_mere;
+        if (data.grand_pere_maternel) updateData.grand_pere_maternel = data.grand_pere_maternel;
+        if (data.pere) updateData.pere = data.pere;
+        if (data.grand_pere_paternel) updateData.grand_pere_paternel = data.grand_pere_paternel;
+        if (data.grand_mere_paternelle) updateData.grand_mere_paternelle = data.grand_mere_paternelle;
+        if (data.complem) updateData.complem = data.complem;
+
+        response = await axios.put(`${apiUrl}identifications/${id}`, updateData, {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+        });
+      }
+
+      res.json({
+        success: true,
+        data: response.data,
+        message: "Identification mise à jour avec succès",
+      });
+    } catch (apiError: any) {
+      console.error("Error calling backend API:", apiError.response?.data || apiError.message);
+      res.status(apiError.response?.status || 500).json({
+        success: false,
+        message: apiError.response?.data?.message || "Erreur lors de la mise à jour de l'identification",
+      });
+    }
   } catch (error) {
     console.error("Error updating identification:", error);
     res.status(500).json({
