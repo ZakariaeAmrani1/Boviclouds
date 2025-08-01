@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import RegistrationForm from "../components/RegistrationForm";
 import { useToast } from "../hooks/use-toast";
+import axios from "axios";
 
 const Login = () => {
   const [email, setEmail] = useState("jhondoe@gmail.com");
@@ -95,7 +96,9 @@ const Login = () => {
         setError("Email ou mot de passe invalide. Veuillez réessayer.");
       }
     } catch (err) {
-      setError("Une erreur s'est produite lors de la connexion. Veuillez réessayer.");
+      setError(
+        "Une erreur s'est produite lors de la connexion. Veuillez réessayer.",
+      );
     }
   };
 
@@ -125,6 +128,7 @@ const Login = () => {
   };
 
   const handleForgotPassword = async () => {
+    const apiUrl = import.meta.env.VITE_API_URL;
     const emailValidationError = validateEmail(forgotPasswordEmail);
     if (emailValidationError) {
       setForgotPasswordEmailError(emailValidationError);
@@ -134,10 +138,10 @@ const Login = () => {
     // Clear any previous errors
     setForgotPasswordEmailError("");
 
-    // Simulate API call
-    setTimeout(() => {
-      setForgotPasswordSent(true);
-    }, 1000);
+    const res = await axios.post(`${apiUrl}users/forgot-password`, {
+      email: forgotPasswordEmail,
+    });
+    setForgotPasswordSent(true);
   };
 
   const handleForgotPasswordEmailChange = (value: string) => {
@@ -165,7 +169,9 @@ const Login = () => {
         {/* Left Panel - Login/Registration Form */}
         <div
           className={`flex-1 p-8 flex flex-col relative ${
-            showRegistration ? "overflow-y-auto justify-start pt-6" : "overflow-hidden justify-center"
+            showRegistration
+              ? "overflow-y-auto justify-start pt-6"
+              : "overflow-hidden justify-center"
           }`}
         >
           {/* Logo */}
@@ -433,14 +439,16 @@ const Login = () => {
               {!forgotPasswordSent ? (
                 <>
                   <p className="text-gray-600 font-inter text-sm mb-4">
-                    Saisissez votre adresse e-mail et nous vous enverrons un lien pour réinitialiser
-                    votre mot de passe.
+                    Saisissez votre adresse e-mail et nous vous enverrons un
+                    lien pour réinitialiser votre mot de passe.
                   </p>
                   <input
                     type="email"
                     placeholder="Saisissez votre e-mail"
                     value={forgotPasswordEmail}
-                    onChange={(e) => handleForgotPasswordEmailChange(e.target.value)}
+                    onChange={(e) =>
+                      handleForgotPasswordEmailChange(e.target.value)
+                    }
                     className={`w-full px-4 py-3 border rounded-lg font-inter text-sm focus:outline-none transition-colors ${
                       forgotPasswordEmailError
                         ? "border-red-300 focus:border-red-500"
@@ -449,8 +457,16 @@ const Login = () => {
                   />
                   {forgotPasswordEmailError && (
                     <p className="text-red-600 text-sm mb-4 flex items-center gap-1">
-                      <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                        <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                      <svg
+                        className="w-4 h-4"
+                        fill="currentColor"
+                        viewBox="0 0 20 20"
+                      >
+                        <path
+                          fillRule="evenodd"
+                          d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                          clipRule="evenodd"
+                        />
                       </svg>
                       {forgotPasswordEmailError}
                     </p>
@@ -464,7 +480,9 @@ const Login = () => {
                     </button>
                     <button
                       onClick={handleForgotPassword}
-                      disabled={!forgotPasswordEmail || !!forgotPasswordEmailError}
+                      disabled={
+                        !forgotPasswordEmail || !!forgotPasswordEmailError
+                      }
                       className="flex-1 px-4 py-2 bg-boviclouds-primary text-white rounded-lg font-inter text-sm hover:bg-boviclouds-primary/90 transition-colors disabled:opacity-50"
                     >
                       Envoyer le lien
@@ -492,11 +510,14 @@ const Login = () => {
                     E-mail envoyé avec succès !
                   </h4>
                   <p className="text-gray-600 font-inter text-sm mb-4">
-                    Un lien de réinitialisation a été envoyé à <strong>{forgotPasswordEmail}</strong>.
-                    Vérifiez votre boîte de réception et suivez les instructions pour créer un nouveau mot de passe.
+                    Un lien de réinitialisation a été envoyé à{" "}
+                    <strong>{forgotPasswordEmail}</strong>. Vérifiez votre boîte
+                    de réception et suivez les instructions pour créer un
+                    nouveau mot de passe.
                   </p>
                   <p className="text-gray-500 font-inter text-xs mb-4">
-                    Si vous ne recevez pas l'e-mail dans les prochaines minutes, vérifiez votre dossier spam.
+                    Si vous ne recevez pas l'e-mail dans les prochaines minutes,
+                    vérifiez votre dossier spam.
                   </p>
                   <button
                     onClick={resetForgotPasswordModal}
