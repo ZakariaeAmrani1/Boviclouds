@@ -1,5 +1,5 @@
-import React from "react";
-import { X, Calendar, User, Building, MapPin } from "lucide-react";
+import React, { useState } from "react";
+import { X, Calendar, User, Building, MapPin, Images, Eye, ChevronLeft, ChevronRight } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -97,6 +97,144 @@ const ViewIdentificationModal: React.FC<ViewIdentificationModalProps> = ({
     </div>
   );
 
+  // Image gallery component
+  const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(null);
+  const [isImageModalOpen, setIsImageModalOpen] = useState(false);
+
+  const openImageModal = (index: number) => {
+    setSelectedImageIndex(index);
+    setIsImageModalOpen(true);
+  };
+
+  const closeImageModal = () => {
+    setIsImageModalOpen(false);
+    setSelectedImageIndex(null);
+  };
+
+  const nextImage = () => {
+    if (identification.images && selectedImageIndex !== null) {
+      setSelectedImageIndex((selectedImageIndex + 1) % identification.images.length);
+    }
+  };
+
+  const prevImage = () => {
+    if (identification.images && selectedImageIndex !== null) {
+      setSelectedImageIndex(
+        selectedImageIndex === 0 ? identification.images.length - 1 : selectedImageIndex - 1
+      );
+    }
+  };
+
+  const ImageGallery: React.FC = () => {
+    if (!identification.images || identification.images.length === 0) {
+      return null;
+    }
+
+    return (
+      <>
+        <InfoCard
+          title="Photos de l'animal"
+          icon={<Images className="w-4 h-4" />}
+        >
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+            {identification.images.map((imageUrl, index) => (
+              <div
+                key={index}
+                className="relative aspect-square rounded-lg overflow-hidden border-2 border-gray-200 bg-gray-50 cursor-pointer hover:border-boviclouds-primary transition-colors group"
+                onClick={() => openImageModal(index)}
+              >
+                <img
+                  src={imageUrl}
+                  alt={`Photo ${index + 1} de ${identification.infos_sujet.nni}`}
+                  className="w-full h-full object-cover"
+                  onError={(e) => {
+                    const target = e.target as HTMLImageElement;
+                    target.src = '/placeholder.svg';
+                  }}
+                />
+
+                {/* Overlay with view icon */}
+                <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-50 transition-all duration-200 flex items-center justify-center">
+                  <Eye className="w-6 h-6 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
+                </div>
+
+                {/* Image number badge */}
+                <div className="absolute top-2 right-2 bg-black bg-opacity-75 text-white text-xs px-2 py-1 rounded">
+                  {index + 1}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="flex items-center justify-between text-sm text-gray-500 pt-2">
+            <span>{identification.images.length} photo(s)</span>
+            <span>Cliquez sur une image pour l'agrandir</span>
+          </div>
+        </InfoCard>
+
+        <Separator />
+      </>
+    );
+  };
+
+  // Full-screen image modal
+  const ImageModal: React.FC = () => {
+    if (!isImageModalOpen || selectedImageIndex === null || !identification.images) {
+      return null;
+    }
+
+    return (
+      <div className="fixed inset-0 z-50 bg-black bg-opacity-90 flex items-center justify-center">
+        <div className="relative max-w-4xl max-h-[90vh] w-full h-full flex items-center justify-center p-4">
+          {/* Close button */}
+          <button
+            onClick={closeImageModal}
+            className="absolute top-4 right-4 z-10 p-2 rounded-full bg-black bg-opacity-50 text-white hover:bg-opacity-75 transition-all"
+          >
+            <X className="w-6 h-6" />
+          </button>
+
+          {/* Navigation arrows */}
+          {identification.images.length > 1 && (
+            <>
+              <button
+                onClick={prevImage}
+                className="absolute left-4 top-1/2 transform -translate-y-1/2 z-10 p-2 rounded-full bg-black bg-opacity-50 text-white hover:bg-opacity-75 transition-all"
+              >
+                <ChevronLeft className="w-6 h-6" />
+              </button>
+
+              <button
+                onClick={nextImage}
+                className="absolute right-4 top-1/2 transform -translate-y-1/2 z-10 p-2 rounded-full bg-black bg-opacity-50 text-white hover:bg-opacity-75 transition-all"
+              >
+                <ChevronRight className="w-6 h-6" />
+              </button>
+            </>
+          )}
+
+          {/* Image */}
+          <img
+            src={identification.images[selectedImageIndex]}
+            alt={`Photo ${selectedImageIndex + 1} de ${identification.infos_sujet.nni}`}
+            className="max-w-full max-h-full object-contain"
+            onError={(e) => {
+              const target = e.target as HTMLImageElement;
+              target.src = '/placeholder.svg';
+            }}
+          />
+
+          {/* Image counter */}
+          {identification.images.length > 1 && (
+            <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-black bg-opacity-75 text-white px-3 py-1 rounded-full text-sm">
+              {selectedImageIndex + 1} / {identification.images.length}
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  };
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogPortal>
@@ -144,6 +282,9 @@ const ViewIdentificationModal: React.FC<ViewIdentificationModalProps> = ({
             </InfoCard>
 
             <Separator />
+
+            {/* Image Gallery */}
+            <ImageGallery />
 
             {/* Genealogy Tree */}
             <div>
@@ -307,6 +448,9 @@ const ViewIdentificationModal: React.FC<ViewIdentificationModalProps> = ({
           </DialogFooter>
         </DialogContent>
       </DialogPortal>
+
+      {/* Full-screen image modal */}
+      <ImageModal />
     </Dialog>
   );
 };

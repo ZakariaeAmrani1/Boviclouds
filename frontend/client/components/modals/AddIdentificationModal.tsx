@@ -386,7 +386,7 @@ const AddIdentificationModal: React.FC<AddIdentificationModalProps> = ({
         createdBy: "ZAKARIAE AMRANI",
       };
 
-      const result = await createRecord(input);
+      const result = await createRecord(input, formData.images);
       if (result) {
         toast({
           title: "Succès",
