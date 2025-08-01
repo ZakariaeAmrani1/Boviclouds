@@ -1,4 +1,12 @@
-import { BadRequestException, HttpException, HttpStatus, Injectable } from '@nestjs/common';
+
+import {
+  BadRequestException,
+  HttpException,
+  HttpStatus,
+  Injectable,
+  InternalServerErrorException,
+} from '@nestjs/common';
+
 import { InjectModel } from '@nestjs/mongoose';
 import { User, UserMethods } from './schemas/users/user.schema';
 import { Model, Types } from 'mongoose';
@@ -19,9 +27,9 @@ export class UserNotFoundException extends HttpException {
 }
 @Injectable()
 export class UsersService {
-
   constructor(
-    @InjectModel(User.name) private readonly userModel: Model<User,{}, UserMethods>,
+    @InjectModel(User.name)
+    private readonly userModel: Model<User, {}, UserMethods>,
     private readonly emailService: EmailService,
   ) {}
 
@@ -39,26 +47,24 @@ export class UsersService {
   }
   async findByEmail(email: string): Promise<User | null> {
     const user = await this.userModel.findOne({ email }).lean();
-    if (!user) throw new UserNotFoundException(`User with email:${email} not found!`);
+    if (!user)
+      throw new UserNotFoundException(`User with email:${email} not found!`);
     return user;
   }
   async findById(id: string): Promise<User> {
     if (!Types.ObjectId.isValid(id)) {
-        throw new UserNotFoundException(`User with id "${id}" not found`);
+      throw new UserNotFoundException(`User with id "${id}" not found`);
     }
     const user = await this.userModel.findById(id);
     if (!user) throw new UserNotFoundException(`User with id:${id} not found!`);
-    return user
+    return user;
   }
   async requestAccount(dto: CreateUserDto): Promise<User> {
     const user = new this.userModel(dto);
     return await user.save();
   }
 
-  async updateUser(
-    id: string,
-    updateUserDto: UpdateUserDto,
-  ): Promise<User> {
+  async updateUser(id: string, updateUserDto: UpdateUserDto): Promise<User> {
     if (!Types.ObjectId.isValid(id)) {
       throw new UserNotFoundException(`User with id "${id}" not found`);
     }
@@ -66,6 +72,7 @@ export class UsersService {
       new: true,
       runValidators: true,
     });
+    console.log(user);
     if (!user) throw new UserNotFoundException(`User with id:${id} not found!`);
     return user;
   }
@@ -76,35 +83,37 @@ export class UsersService {
     }
     const user = await this.userModel.findByIdAndDelete(id);
     if (!user) throw new UserNotFoundException(`User with id:${id} not found!`);
-    if(user && user.role.includes(UserRole.ADMIN)) 
+    if (user && user.role.includes(UserRole.ADMIN))
       throw new BadRequestException('Cannot delete an admin user.');
     return user;
   }
 
-  async forgotPassword(email: string,req:Request): Promise<{message: string}> {
+  async forgotPassword(
+    email: string,
+    req: Request,
+  ): Promise<{ message: string }> {
     const user = await this.userModel.findOne({ email });
-    if (!user) throw new UserNotFoundException(`User with email:${email} not found!`);
+    if (!user)
+      throw new UserNotFoundException(`User with email:${email} not found!`);
     const resetToken = user.createPasswordResetToken();
-    await user.save();
-    const confirmEmailLink = `${req.protocol}://${req.get('host')}/api/v1/users/reset-password/${resetToken}`;
+    await user.save({ validateBeforeSave: false });
+    const frontUrl = process.env.FRONT_URL;
+    // const confirmEmailLink = `${req.protocol}://${req.get('host')}/api/v1/users/reset-password/${resetToken}`;
+    const confirmEmailLink = `${frontUrl}changePassword?token=${resetToken}`;
     try {
-          await this.emailService.sendPasswordReset(
-            user,
-            confirmEmailLink,
-          );
-          return {message:'Password reset link sent to your email.'}
+      await this.emailService.sendPasswordReset(user, confirmEmailLink);
+      return { message: 'Password reset link sent to your email.' };
     } catch (error) {
-          console.error(
-            'Failed to send password reset link!',
-            error,
-          );
-    }finally{
+      console.error('Failed to send password reset link!', error);
+    } finally {
+      user.passwordResetToken = undefined;
+      user.passwordResetTokenExpires = undefined;
       await user.save({ validateBeforeSave: false });
     }
     return { message: 'Password reset link sent to your email.' };
   }
   async resetPassword(token: string, dto: UpdatePwdDto): Promise<User> {
-    if(dto.password !== dto.confirmPassword) 
+    if (dto.password !== dto.confirmPassword)
       throw new BadRequestException('Passwords do not match.');
     const tokenHash = crypto
         .createHash('sha256')
@@ -114,7 +123,10 @@ export class UsersService {
       passwordResetToken: tokenHash,
       passwordResetTokenExpires: { $gt: Date.now() },
     });
-    if (!user) throw new UserNotFoundException('Invalid or expired password reset token.');
+    if (!user)
+      throw new UserNotFoundException(
+        'Invalid or expired password reset token.',
+      );
 
     user.password = dto.password;
     user.passwordResetToken = undefined;
@@ -142,4 +154,3 @@ export class UsersService {
     return user;
   }
 }
-
