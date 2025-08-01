@@ -387,8 +387,6 @@ const EditIdentificationModal: React.FC<EditIdentificationModalProps> = ({
     const hasGrandPereMaternalChanges =
       formData.grand_pere_maternel_nni !==
         originalData.grand_pere_maternel_nni ||
-      formData.grand_pere_maternel_nom !==
-        originalData.grand_pere_maternel_nom ||
       formData.grand_pere_maternel_date_naissance !==
         originalData.grand_pere_maternel_date_naissance ||
       formData.grand_pere_maternel_race !==
@@ -397,7 +395,6 @@ const EditIdentificationModal: React.FC<EditIdentificationModalProps> = ({
     if (hasGrandPereMaternalChanges) {
       input.grand_pere_maternel = {
         nni: formData.grand_pere_maternel_nni.trim().toUpperCase(),
-        nom: formData.grand_pere_maternel_nom.trim(),
         date_naissance: formData.grand_pere_maternel_date_naissance,
         race: formData.grand_pere_maternel_race as Race,
       };
@@ -406,14 +403,12 @@ const EditIdentificationModal: React.FC<EditIdentificationModalProps> = ({
     // Check father changes
     const hasFatherChanges =
       formData.pere_nni !== originalData.pere_nni ||
-      formData.pere_nom !== originalData.pere_nom ||
       formData.pere_date_naissance !== originalData.pere_date_naissance ||
       formData.pere_race !== originalData.pere_race;
 
     if (hasFatherChanges) {
       input.pere = {
         nni: formData.pere_nni.trim().toUpperCase(),
-        nom: formData.pere_nom.trim(),
         date_naissance: formData.pere_date_naissance,
         race: formData.pere_race as Race,
       };
@@ -423,8 +418,6 @@ const EditIdentificationModal: React.FC<EditIdentificationModalProps> = ({
     const hasGrandPerePaternalChanges =
       formData.grand_pere_paternel_nni !==
         originalData.grand_pere_paternel_nni ||
-      formData.grand_pere_paternel_nom !==
-        originalData.grand_pere_paternel_nom ||
       formData.grand_pere_paternel_date_naissance !==
         originalData.grand_pere_paternel_date_naissance ||
       formData.grand_pere_paternel_race !==
@@ -433,7 +426,6 @@ const EditIdentificationModal: React.FC<EditIdentificationModalProps> = ({
     if (hasGrandPerePaternalChanges) {
       input.grand_pere_paternel = {
         nni: formData.grand_pere_paternel_nni.trim().toUpperCase(),
-        nom: formData.grand_pere_paternel_nom.trim(),
         date_naissance: formData.grand_pere_paternel_date_naissance,
         race: formData.grand_pere_paternel_race as Race,
       };
@@ -504,7 +496,7 @@ const EditIdentificationModal: React.FC<EditIdentificationModalProps> = ({
         return;
       }
 
-      const result = await updateRecord(identification.id, changes);
+      const result = await updateRecord(identification.id, changes, formData.images);
       if (result) {
         toast({
           title: "Succès",
@@ -951,7 +943,7 @@ const EditIdentificationModal: React.FC<EditIdentificationModalProps> = ({
                     <User className="w-5 h-5" />
                     Informations du père
                   </h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div className="space-y-2">
                       <Label
                         htmlFor="pere_nni"
@@ -967,25 +959,6 @@ const EditIdentificationModal: React.FC<EditIdentificationModalProps> = ({
                         }
                         className="h-12 px-4 text-sm rounded-xl border-boviclouds-gray-100"
                         placeholder="Ex: FR1234567890"
-                        disabled={loading}
-                      />
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label
-                        htmlFor="pere_nom"
-                        className="text-sm font-normal text-black"
-                      >
-                        Nom *
-                      </Label>
-                      <Input
-                        id="pere_nom"
-                        value={formData.pere_nom}
-                        onChange={(e) =>
-                          handleFormChange("pere_nom", e.target.value)
-                        }
-                        className="h-12 px-4 text-sm rounded-xl border-boviclouds-gray-100"
-                        placeholder="Nom du père"
                         disabled={loading}
                       />
                     </div>
@@ -1051,7 +1024,7 @@ const EditIdentificationModal: React.FC<EditIdentificationModalProps> = ({
                       <h4 className="text-sm font-medium text-gray-700 mb-3">
                         Grand-père paternel
                       </h4>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-4">
                         <div className="space-y-2">
                           <Label
                             htmlFor="grand_pere_paternel_nni"
@@ -1070,28 +1043,6 @@ const EditIdentificationModal: React.FC<EditIdentificationModalProps> = ({
                             }
                             className="h-12 px-4 text-sm rounded-xl border-boviclouds-gray-100"
                             placeholder="Ex: FR1234567890"
-                            disabled={loading}
-                          />
-                        </div>
-
-                        <div className="space-y-2">
-                          <Label
-                            htmlFor="grand_pere_paternel_nom"
-                            className="text-sm font-normal text-black"
-                          >
-                            Nom *
-                          </Label>
-                          <Input
-                            id="grand_pere_paternel_nom"
-                            value={formData.grand_pere_paternel_nom}
-                            onChange={(e) =>
-                              handleFormChange(
-                                "grand_pere_paternel_nom",
-                                e.target.value,
-                              )
-                            }
-                            className="h-12 px-4 text-sm rounded-xl border-boviclouds-gray-100"
-                            placeholder="Nom du grand-père"
                             disabled={loading}
                           />
                         </div>
@@ -1153,7 +1104,7 @@ const EditIdentificationModal: React.FC<EditIdentificationModalProps> = ({
                       <h4 className="text-sm font-medium text-gray-700 mb-3">
                         Grand-mère paternelle
                       </h4>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-4">
                         <div className="space-y-2">
                           <Label
                             htmlFor="grand_mere_paternelle_nni"
@@ -1203,7 +1154,7 @@ const EditIdentificationModal: React.FC<EditIdentificationModalProps> = ({
                           </div>
                         </div>
 
-                        <div className="space-y-2 md:col-span-2">
+                        <div className="space-y-2">
                           <Label
                             htmlFor="grand_mere_paternelle_race"
                             className="text-sm font-normal text-black"
