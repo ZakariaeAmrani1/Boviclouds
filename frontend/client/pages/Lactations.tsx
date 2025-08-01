@@ -52,11 +52,13 @@ const Lactations: React.FC = () => {
   // Modal states
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalMode, setModalMode] = useState<ModalMode>("create");
-  const [selectedRecord, setSelectedRecord] =
-    useState<LactationRecord | null>(null);
+  const [selectedRecord, setSelectedRecord] = useState<LactationRecord | null>(
+    null,
+  );
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-  const [recordToDelete, setRecordToDelete] =
-    useState<LactationRecord | null>(null);
+  const [recordToDelete, setRecordToDelete] = useState<LactationRecord | null>(
+    null,
+  );
 
   // Search form state
   const [searchForm, setSearchForm] = useState({
@@ -106,11 +108,24 @@ const Lactations: React.FC = () => {
   const handleSearch = () => {
     // Convert empty strings and "all" values to undefined for filtering
     const cleanFilters: LactationFilters = {
-      sujet_id: searchForm.sujet_id && searchForm.sujet_id !== "all" ? searchForm.sujet_id : undefined,
-      n_lactation: searchForm.n_lactation ? parseInt(searchForm.n_lactation) : undefined,
-      lait_kg_min: searchForm.lait_kg_min ? parseFloat(searchForm.lait_kg_min) : undefined,
-      lait_kg_max: searchForm.lait_kg_max ? parseFloat(searchForm.lait_kg_max) : undefined,
-      controleur_laitier_id: searchForm.controleur_laitier_id && searchForm.controleur_laitier_id !== "all" ? searchForm.controleur_laitier_id : undefined,
+      sujet_id:
+        searchForm.sujet_id && searchForm.sujet_id !== "all"
+          ? searchForm.sujet_id
+          : undefined,
+      n_lactation: searchForm.n_lactation
+        ? parseInt(searchForm.n_lactation)
+        : undefined,
+      lait_kg_min: searchForm.lait_kg_min
+        ? parseFloat(searchForm.lait_kg_min)
+        : undefined,
+      lait_kg_max: searchForm.lait_kg_max
+        ? parseFloat(searchForm.lait_kg_max)
+        : undefined,
+      controleur_laitier_id:
+        searchForm.controleur_laitier_id &&
+        searchForm.controleur_laitier_id !== "all"
+          ? searchForm.controleur_laitier_id
+          : undefined,
       date_min: searchForm.date_min || undefined,
       date_max: searchForm.date_max || undefined,
     };
@@ -251,7 +266,9 @@ const Lactations: React.FC = () => {
               </Label>
               <Select
                 value={searchForm.sujet_id}
-                onValueChange={(value) => handleSearchInputChange("sujet_id", value)}
+                onValueChange={(value) =>
+                  handleSearchInputChange("sujet_id", value)
+                }
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Sélectionner un sujet" />
@@ -259,7 +276,10 @@ const Lactations: React.FC = () => {
                 <SelectContent>
                   <SelectItem value="all">Tous les sujets</SelectItem>
                   {identifications.map((identification) => (
-                    <SelectItem key={identification.id} value={identification.id}>
+                    <SelectItem
+                      key={identification.id}
+                      value={identification.id}
+                    >
                       {identification.nni} - {identification.nom}
                     </SelectItem>
                   ))}
@@ -277,7 +297,9 @@ const Lactations: React.FC = () => {
                 min="1"
                 max="20"
                 value={searchForm.n_lactation || ""}
-                onChange={(e) => handleSearchInputChange("n_lactation", e.target.value)}
+                onChange={(e) =>
+                  handleSearchInputChange("n_lactation", e.target.value)
+                }
                 className="w-full"
                 placeholder="1, 2, 3..."
               />
@@ -290,7 +312,9 @@ const Lactations: React.FC = () => {
               </Label>
               <Select
                 value={searchForm.controleur_laitier_id}
-                onValueChange={(value) => handleSearchInputChange("controleur_laitier_id", value)}
+                onValueChange={(value) =>
+                  handleSearchInputChange("controleur_laitier_id", value)
+                }
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Sélectionner un contrôleur" />
@@ -315,7 +339,9 @@ const Lactations: React.FC = () => {
                 min="0"
                 step="0.1"
                 value={searchForm.lait_kg_min || ""}
-                onChange={(e) => handleSearchInputChange("lait_kg_min", e.target.value)}
+                onChange={(e) =>
+                  handleSearchInputChange("lait_kg_min", e.target.value)
+                }
                 className="w-full"
                 placeholder="0"
               />
@@ -330,7 +356,9 @@ const Lactations: React.FC = () => {
                 min="0"
                 step="0.1"
                 value={searchForm.lait_kg_max || ""}
-                onChange={(e) => handleSearchInputChange("lait_kg_max", e.target.value)}
+                onChange={(e) =>
+                  handleSearchInputChange("lait_kg_max", e.target.value)
+                }
                 className="w-full"
                 placeholder="100"
               />
@@ -344,7 +372,9 @@ const Lactations: React.FC = () => {
               <Input
                 type="date"
                 value={searchForm.date_min || ""}
-                onChange={(e) => handleSearchInputChange("date_min", e.target.value)}
+                onChange={(e) =>
+                  handleSearchInputChange("date_min", e.target.value)
+                }
                 className="w-full"
               />
             </div>
@@ -357,7 +387,9 @@ const Lactations: React.FC = () => {
               <Input
                 type="date"
                 value={searchForm.date_max || ""}
-                onChange={(e) => handleSearchInputChange("date_max", e.target.value)}
+                onChange={(e) =>
+                  handleSearchInputChange("date_max", e.target.value)
+                }
                 className="w-full"
               />
             </div>
@@ -458,10 +490,10 @@ const Lactations: React.FC = () => {
                       {formatDate(record.date_velage)}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      <Badge 
+                      <Badge
                         className={`${
-                          record.n_lactation === 1 
-                            ? "bg-blue-100 text-blue-800 border-blue-200" 
+                          record.n_lactation === 1
+                            ? "bg-blue-100 text-blue-800 border-blue-200"
                             : "bg-green-100 text-green-800 border-green-200"
                         }`}
                       >
@@ -469,13 +501,13 @@ const Lactations: React.FC = () => {
                       </Badge>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      <Badge 
+                      <Badge
                         className={`${
-                          record.lait_kg > 50 
-                            ? "bg-green-100 text-green-800 border-green-200" 
+                          record.lait_kg > 50
+                            ? "bg-green-100 text-green-800 border-green-200"
                             : record.lait_kg < 20
-                            ? "bg-yellow-100 text-yellow-800 border-yellow-200"
-                            : "bg-blue-100 text-blue-800 border-blue-200"
+                              ? "bg-yellow-100 text-yellow-800 border-yellow-200"
+                              : "bg-blue-100 text-blue-800 border-blue-200"
                         }`}
                       >
                         {record.lait_kg} kg
