@@ -1,7 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document, Types } from 'mongoose';
+import { Types, HydratedDocument } from 'mongoose';
 
-export type IdentificationDocument = Identification & Document;
+export type IdentificationDocument = HydratedDocument<Identification>;
 
 @Schema({ timestamps: true })
 export class Identification {
@@ -12,6 +12,13 @@ export class Identification {
       race: String,
       sexe: String,
       type: String,
+      photos: {
+        type: [String],
+        validate: [
+          (val: string[]) => val.length <= 5,
+          'Maximum 5 photos allowed',
+        ],
+      },
     },
   })
   infos_sujet: {
@@ -20,6 +27,7 @@ export class Identification {
     race: string;
     sexe: string;
     type: string;
+    photos?: string[];
   };
 
   @Prop({
