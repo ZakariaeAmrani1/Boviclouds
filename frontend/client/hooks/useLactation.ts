@@ -314,7 +314,6 @@ export const useIdentifications = () => {
     setError(null);
     try {
       const result = await LactationService.getIdentifications();
-      console.log(result);
       setIdentifications(result);
     } catch (err) {
       setError(
