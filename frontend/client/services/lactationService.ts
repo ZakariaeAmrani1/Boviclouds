@@ -84,6 +84,8 @@ export class LactationService {
    * Create a new lactation record
    */
   static async create(input: CreateLactationInput): Promise<LactationRecord> {
+    const token = localStorage.getItem("access_token");
+    input.token = token;
     const response = await fetch(API_BASE_URL, {
       method: "POST",
       headers: {
@@ -117,12 +119,17 @@ export class LactationService {
     id: string,
     input: UpdateLactationInput,
   ): Promise<LactationRecord> {
+    const token = localStorage.getItem("access_token");
+    const data = {
+      input: input,
+      token: token,
+    };
     const response = await fetch(`${API_BASE_URL}/${id}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(input),
+      body: JSON.stringify(data),
     });
 
     if (!response.ok) {
@@ -147,7 +154,10 @@ export class LactationService {
    * Delete a lactation record
    */
   static async delete(id: string): Promise<void> {
-    const response = await fetch(`${API_BASE_URL}/${id}`, {
+    const params = new URLSearchParams();
+    const token = localStorage.getItem("access_token");
+    params.append("token", token);
+    const response = await fetch(`${API_BASE_URL}/${id}?${params.toString()}`, {
       method: "DELETE",
     });
 

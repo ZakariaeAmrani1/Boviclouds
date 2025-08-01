@@ -2,12 +2,13 @@ import React, { useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { Eye, EyeOff, Lock, CheckCircle, AlertCircle } from "lucide-react";
 import { useToast } from "../hooks/use-toast";
+import axios from "axios";
 
 const ChangePassword: React.FC = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { toast } = useToast();
-  
+
   // Get token from URL parameters
   const token = searchParams.get("token");
   const email = searchParams.get("email");
@@ -16,7 +17,7 @@ const ChangePassword: React.FC = () => {
     password: "",
     confirmPassword: "",
   });
-  
+
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -39,17 +40,19 @@ const ChangePassword: React.FC = () => {
       errors.push("Le mot de passe doit contenir au moins un chiffre");
     }
     if (!/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
-      errors.push("Le mot de passe doit contenir au moins un caractère spécial");
+      errors.push(
+        "Le mot de passe doit contenir au moins un caractère spécial",
+      );
     }
     return errors;
   };
 
   const handleInputChange = (field: string, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
-    
+    setFormData((prev) => ({ ...prev, [field]: value }));
+
     // Clear errors when user starts typing
     if (errors[field]) {
-      setErrors(prev => {
+      setErrors((prev) => {
         const newErrors = { ...prev };
         delete newErrors[field];
         return newErrors;
@@ -60,52 +63,60 @@ const ChangePassword: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrors({});
-    
+
     // Validate passwords
     const passwordErrors = validatePassword(formData.password);
     if (passwordErrors.length > 0) {
       setErrors({ password: passwordErrors[0] });
       return;
     }
-    
+
     if (formData.password !== formData.confirmPassword) {
       setErrors({ confirmPassword: "Les mots de passe ne correspondent pas" });
       return;
     }
-    
+    console.log(token);
     if (!token) {
       toast({
         title: "Erreur",
-        description: "Token manquant. Veuillez utiliser le lien envoyé par e-mail.",
+        description:
+          "Token manquant. Veuillez utiliser le lien envoyé par e-mail.",
         variant: "destructive",
       });
       return;
     }
 
     setIsLoading(true);
-    
+
     try {
-      // TODO: Make API call to change password
-      // const response = await changePassword(token, formData.password);
-      
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
+      const apiUrl = import.meta.env.VITE_API_URL;
+
+      try {
+        const response = await axios.post(
+          `${apiUrl}users/reset-password/${token}`,
+          {
+            password: formData.password,
+            confirmPassword: formData.confirmPassword,
+          },
+        );
+      } catch (error) {
+        console.error(error);
+      }
       setPasswordChanged(true);
       toast({
         title: "Succès",
         description: "Votre mot de passe a été modifié avec succès.",
       });
-      
+
       // Redirect to login after 3 seconds
       setTimeout(() => {
         navigate("/login");
       }, 3000);
-      
     } catch (error) {
       toast({
         title: "Erreur",
-        description: "Une erreur est survenue lors de la modification du mot de passe.",
+        description:
+          "Une erreur est survenue lors de la modification du mot de passe.",
         variant: "destructive",
       });
     } finally {
@@ -117,13 +128,16 @@ const ChangePassword: React.FC = () => {
   const getPasswordStrength = (password: string) => {
     const validationErrors = validatePassword(password);
     const strength = 5 - validationErrors.length;
-    
+
     if (strength <= 1) return { level: "weak", color: "red", text: "Faible" };
-    if (strength <= 3) return { level: "medium", color: "yellow", text: "Moyen" };
+    if (strength <= 3)
+      return { level: "medium", color: "yellow", text: "Moyen" };
     return { level: "strong", color: "green", text: "Fort" };
   };
 
-  const passwordStrength = formData.password ? getPasswordStrength(formData.password) : null;
+  const passwordStrength = formData.password
+    ? getPasswordStrength(formData.password)
+    : null;
 
   if (passwordChanged) {
     return (
@@ -137,13 +151,19 @@ const ChangePassword: React.FC = () => {
               Mot de passe modifié
             </h1>
             <p className="text-gray-600 font-inter mb-6">
-              Votre mot de passe a été modifié avec succès. Vous allez être redirigé vers la page de connexion.
+              Votre mot de passe a été modifié avec succès. Vous allez être
+              redirigé vers la page de connexion.
             </p>
             <div className="animate-pulse">
               <div className="w-full bg-gray-200 rounded-full h-2">
-                <div className="bg-boviclouds-primary h-2 rounded-full animate-pulse" style={{ width: "100%" }}></div>
+                <div
+                  className="bg-boviclouds-primary h-2 rounded-full animate-pulse"
+                  style={{ width: "100%" }}
+                ></div>
               </div>
-              <p className="text-sm text-gray-500 mt-2">Redirection en cours...</p>
+              <p className="text-sm text-gray-500 mt-2">
+                Redirection en cours...
+              </p>
             </div>
           </div>
         </div>
@@ -173,7 +193,10 @@ const ChangePassword: React.FC = () => {
           )}
         </div>
 
-        <form onSubmit={handleSubmit} className="bg-white rounded-2xl shadow-xl p-8 space-y-6">
+        <form
+          onSubmit={handleSubmit}
+          className="bg-white rounded-2xl shadow-xl p-8 space-y-6"
+        >
           {/* New Password Field */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -198,7 +221,11 @@ const ChangePassword: React.FC = () => {
                 onClick={() => setShowPassword(!showPassword)}
                 className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
               >
-                {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                {showPassword ? (
+                  <EyeOff className="w-5 h-5" />
+                ) : (
+                  <Eye className="w-5 h-5" />
+                )}
               </button>
             </div>
             {errors.password && (
@@ -211,8 +238,12 @@ const ChangePassword: React.FC = () => {
             {formData.password && passwordStrength && (
               <div className="mt-2">
                 <div className="flex items-center gap-2 mb-1">
-                  <span className="text-xs text-gray-600">Force du mot de passe :</span>
-                  <span className={`text-xs font-medium text-${passwordStrength.color}-600`}>
+                  <span className="text-xs text-gray-600">
+                    Force du mot de passe :
+                  </span>
+                  <span
+                    className={`text-xs font-medium text-${passwordStrength.color}-600`}
+                  >
                     {passwordStrength.text}
                   </span>
                 </div>
@@ -220,8 +251,12 @@ const ChangePassword: React.FC = () => {
                   <div
                     className={`h-1 rounded-full bg-${passwordStrength.color}-500 transition-all duration-300`}
                     style={{
-                      width: passwordStrength.level === "weak" ? "33%" : 
-                             passwordStrength.level === "medium" ? "66%" : "100%"
+                      width:
+                        passwordStrength.level === "weak"
+                          ? "33%"
+                          : passwordStrength.level === "medium"
+                            ? "66%"
+                            : "100%",
                     }}
                   ></div>
                 </div>
@@ -239,7 +274,9 @@ const ChangePassword: React.FC = () => {
               <input
                 type={showConfirmPassword ? "text" : "password"}
                 value={formData.confirmPassword}
-                onChange={(e) => handleInputChange("confirmPassword", e.target.value)}
+                onChange={(e) =>
+                  handleInputChange("confirmPassword", e.target.value)
+                }
                 className={`w-full pl-11 pr-11 py-3 border rounded-lg font-inter text-sm focus:outline-none focus:ring-2 transition-colors ${
                   errors.confirmPassword
                     ? "border-red-300 focus:ring-red-500"
@@ -253,7 +290,11 @@ const ChangePassword: React.FC = () => {
                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                 className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
               >
-                {showConfirmPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                {showConfirmPassword ? (
+                  <EyeOff className="w-5 h-5" />
+                ) : (
+                  <Eye className="w-5 h-5" />
+                )}
               </button>
             </div>
             {errors.confirmPassword && (
@@ -286,24 +327,44 @@ const ChangePassword: React.FC = () => {
               Exigences du mot de passe :
             </h4>
             <ul className="text-xs text-gray-600 space-y-1">
-              <li className={`flex items-center gap-2 ${formData.password.length >= 8 ? 'text-green-600' : ''}`}>
-                <div className={`w-2 h-2 rounded-full ${formData.password.length >= 8 ? 'bg-green-500' : 'bg-gray-300'}`}></div>
+              <li
+                className={`flex items-center gap-2 ${formData.password.length >= 8 ? "text-green-600" : ""}`}
+              >
+                <div
+                  className={`w-2 h-2 rounded-full ${formData.password.length >= 8 ? "bg-green-500" : "bg-gray-300"}`}
+                ></div>
                 Au moins 8 caractères
               </li>
-              <li className={`flex items-center gap-2 ${/[A-Z]/.test(formData.password) ? 'text-green-600' : ''}`}>
-                <div className={`w-2 h-2 rounded-full ${/[A-Z]/.test(formData.password) ? 'bg-green-500' : 'bg-gray-300'}`}></div>
+              <li
+                className={`flex items-center gap-2 ${/[A-Z]/.test(formData.password) ? "text-green-600" : ""}`}
+              >
+                <div
+                  className={`w-2 h-2 rounded-full ${/[A-Z]/.test(formData.password) ? "bg-green-500" : "bg-gray-300"}`}
+                ></div>
                 Une lettre majuscule
               </li>
-              <li className={`flex items-center gap-2 ${/[a-z]/.test(formData.password) ? 'text-green-600' : ''}`}>
-                <div className={`w-2 h-2 rounded-full ${/[a-z]/.test(formData.password) ? 'bg-green-500' : 'bg-gray-300'}`}></div>
+              <li
+                className={`flex items-center gap-2 ${/[a-z]/.test(formData.password) ? "text-green-600" : ""}`}
+              >
+                <div
+                  className={`w-2 h-2 rounded-full ${/[a-z]/.test(formData.password) ? "bg-green-500" : "bg-gray-300"}`}
+                ></div>
                 Une lettre minuscule
               </li>
-              <li className={`flex items-center gap-2 ${/[0-9]/.test(formData.password) ? 'text-green-600' : ''}`}>
-                <div className={`w-2 h-2 rounded-full ${/[0-9]/.test(formData.password) ? 'bg-green-500' : 'bg-gray-300'}`}></div>
+              <li
+                className={`flex items-center gap-2 ${/[0-9]/.test(formData.password) ? "text-green-600" : ""}`}
+              >
+                <div
+                  className={`w-2 h-2 rounded-full ${/[0-9]/.test(formData.password) ? "bg-green-500" : "bg-gray-300"}`}
+                ></div>
                 Un chiffre
               </li>
-              <li className={`flex items-center gap-2 ${/[!@#$%^&*(),.?":{}|<>]/.test(formData.password) ? 'text-green-600' : ''}`}>
-                <div className={`w-2 h-2 rounded-full ${/[!@#$%^&*(),.?":{}|<>]/.test(formData.password) ? 'bg-green-500' : 'bg-gray-300'}`}></div>
+              <li
+                className={`flex items-center gap-2 ${/[!@#$%^&*(),.?":{}|<>]/.test(formData.password) ? "text-green-600" : ""}`}
+              >
+                <div
+                  className={`w-2 h-2 rounded-full ${/[!@#$%^&*(),.?":{}|<>]/.test(formData.password) ? "bg-green-500" : "bg-gray-300"}`}
+                ></div>
                 Un caractère spécial
               </li>
             </ul>
@@ -312,7 +373,9 @@ const ChangePassword: React.FC = () => {
           {/* Submit Button */}
           <button
             type="submit"
-            disabled={isLoading || !formData.password || !formData.confirmPassword}
+            disabled={
+              isLoading || !formData.password || !formData.confirmPassword
+            }
             className="w-full bg-boviclouds-primary text-white py-3 rounded-lg font-inter font-medium text-sm hover:bg-boviclouds-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
           >
             {isLoading ? (
