@@ -106,9 +106,7 @@ export class UsersService {
     } catch (error) {
       console.error('Failed to send password reset link!', error);
     } finally {
-      user.passwordResetToken = undefined;
-      user.passwordResetTokenExpires = undefined;
-      await user.save({ validateBeforeSave: false });
+      await user.save();
     }
     return { message: 'Password reset link sent to your email.' };
   }
