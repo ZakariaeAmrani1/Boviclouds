@@ -1,3 +1,4 @@
+
 import {
   BadRequestException,
   HttpException,
@@ -5,6 +6,7 @@ import {
   Injectable,
   InternalServerErrorException,
 } from '@nestjs/common';
+
 import { InjectModel } from '@nestjs/mongoose';
 import { User, UserMethods } from './schemas/users/user.schema';
 import { Model, Types } from 'mongoose';
@@ -15,6 +17,7 @@ import { Request } from 'express';
 import { EmailService } from 'src/utils/services/emails/email.service';
 import { UpdatePwdDto } from './dtos/update-pwd.dto';
 import { UserRole } from './schemas/users/user.role';
+import { ChangePwdDto } from './dtos/change-pwd.dto';
 
 export class UserNotFoundException extends HttpException {
   constructor(message: string) {
@@ -124,6 +127,24 @@ export class UsersService {
     user.passwordResetToken = undefined;
     user.passwordResetTokenExpires = undefined;
 
+    await user.save();
+    return user;
+  }
+
+  async updatePassword(
+    id: string,
+    changePwdDto: ChangePwdDto,
+  ): Promise<User> {
+    if (!Types.ObjectId.isValid(id)) {
+      throw new UserNotFoundException(`User with id "${id}" not found`);
+    }
+    const user = await this.userModel.findById(id).select("+passwordHash");
+    if (!user) throw new UserNotFoundException(`User with id:${id} not found!`);
+    if (!(await user.correctPassword(changePwdDto.currentPassword)))
+      throw new BadRequestException('Current password is incorrect.');
+    if (changePwdDto.password !== changePwdDto.confirmPassword)
+      throw new BadRequestException('Passwords do not match.');
+    user.password = changePwdDto.password;
     await user.save();
     return user;
   }
