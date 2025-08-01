@@ -9,6 +9,7 @@ import {
   IdentificationStats,
 } from "@shared/identification";
 import { IdentificationService } from "../services/identificationService";
+import { ImageData } from "../components/ui/multi-image-upload";
 
 // Hook for managing identification list with filters and pagination
 export const useIdentificationList = (
@@ -91,11 +92,12 @@ export const useIdentification = () => {
 
   const createRecord = async (
     input: CreateIdentificationInput,
+    images?: ImageData[],
   ): Promise<IdentificationRecord | null> => {
     setLoading(true);
     setError(null);
     try {
-      const result = await IdentificationService.create(input);
+      const result = await IdentificationService.create(input, images);
       return result;
     } catch (err) {
       setError(
@@ -110,11 +112,12 @@ export const useIdentification = () => {
   const updateRecord = async (
     id: string,
     input: UpdateIdentificationInput,
+    images?: ImageData[],
   ): Promise<IdentificationRecord | null> => {
     setLoading(true);
     setError(null);
     try {
-      const result = await IdentificationService.update(id, input);
+      const result = await IdentificationService.update(id, input, images);
       return result;
     } catch (err) {
       setError(
