@@ -25,6 +25,7 @@ export interface CreateLactationInput {
   pct_proteine: number;
   pct_mg: number;
   controleur_laitier_id: string;
+  token?: string;
 }
 
 // Input for updating an existing lactation record
@@ -37,6 +38,7 @@ export interface UpdateLactationInput {
   pct_proteine?: number;
   pct_mg?: number;
   controleur_laitier_id?: string;
+  token?: string;
 }
 
 // Search/filter parameters
@@ -128,23 +130,48 @@ export interface IdentificationsListResponse {
 export const CreateLactationSchema = z.object({
   sujet_id: z.string().min(1, "Le sujet est requis"),
   date_velage: z.string().min(1, "La date de vêlage est requise"),
-  n_lactation: z.number().min(1, "Le numéro de lactation doit être supérieur à 0"),
+  n_lactation: z
+    .number()
+    .min(1, "Le numéro de lactation doit être supérieur à 0"),
   lait_kg: z.number().min(0, "La quantité de lait ne peut pas être négative"),
   kg_mg: z.number().min(0, "Le kg MG ne peut pas être négatif"),
-  pct_proteine: z.number().min(0).max(100, "Le pourcentage de protéine doit être entre 0 et 100"),
-  pct_mg: z.number().min(0).max(100, "Le pourcentage MG doit être entre 0 et 100"),
+  pct_proteine: z
+    .number()
+    .min(0)
+    .max(100, "Le pourcentage de protéine doit être entre 0 et 100"),
+  pct_mg: z
+    .number()
+    .min(0)
+    .max(100, "Le pourcentage MG doit être entre 0 et 100"),
   controleur_laitier_id: z.string().min(1, "Le contrôleur laitier est requis"),
 });
 
 export const UpdateLactationSchema = z.object({
   sujet_id: z.string().min(1, "Le sujet est requis").optional(),
   date_velage: z.string().min(1, "La date de vêlage est requise").optional(),
-  n_lactation: z.number().min(1, "Le numéro de lactation doit être supérieur à 0").optional(),
-  lait_kg: z.number().min(0, "La quantité de lait ne peut pas être négative").optional(),
+  n_lactation: z
+    .number()
+    .min(1, "Le numéro de lactation doit être supérieur à 0")
+    .optional(),
+  lait_kg: z
+    .number()
+    .min(0, "La quantité de lait ne peut pas être négative")
+    .optional(),
   kg_mg: z.number().min(0, "Le kg MG ne peut pas être négatif").optional(),
-  pct_proteine: z.number().min(0).max(100, "Le pourcentage de protéine doit être entre 0 et 100").optional(),
-  pct_mg: z.number().min(0).max(100, "Le pourcentage MG doit être entre 0 et 100").optional(),
-  controleur_laitier_id: z.string().min(1, "Le contrôleur laitier est requis").optional(),
+  pct_proteine: z
+    .number()
+    .min(0)
+    .max(100, "Le pourcentage de protéine doit être entre 0 et 100")
+    .optional(),
+  pct_mg: z
+    .number()
+    .min(0)
+    .max(100, "Le pourcentage MG doit être entre 0 et 100")
+    .optional(),
+  controleur_laitier_id: z
+    .string()
+    .min(1, "Le contrôleur laitier est requis")
+    .optional(),
 });
 
 export const LactationFiltersSchema = z.object({
