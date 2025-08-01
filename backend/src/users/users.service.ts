@@ -18,6 +18,7 @@ import { EmailService } from 'src/utils/services/emails/email.service';
 import { UpdatePwdDto } from './dtos/update-pwd.dto';
 import { UserRole } from './schemas/users/user.role';
 import { ChangePwdDto } from './dtos/change-pwd.dto';
+import * as crypto from "crypto";
 
 export class UserNotFoundException extends HttpException {
   constructor(message: string) {
@@ -114,8 +115,12 @@ export class UsersService {
   async resetPassword(token: string, dto: UpdatePwdDto): Promise<User> {
     if (dto.password !== dto.confirmPassword)
       throw new BadRequestException('Passwords do not match.');
+    const tokenHash = crypto
+        .createHash('sha256')
+        .update(token)
+        .digest('hex');
     const user = await this.userModel.findOne({
-      passwordResetToken: token,
+      passwordResetToken: tokenHash,
       passwordResetTokenExpires: { $gt: Date.now() },
     });
     if (!user)
