@@ -89,6 +89,7 @@ export interface IdentificationRecord {
   grand_pere_paternel: GrandPerePaternal;
   grand_mere_paternelle: GrandMerePaternelle;
   complem: Complem;
+  images?: string[]; // Array of image URLs
   createdBy: string;
   createdAt: string;
   updatedAt: string;

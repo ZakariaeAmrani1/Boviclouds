@@ -1,5 +1,6 @@
 import express from "express";
 import cors from "cors";
+import multer from "multer";
 import { handleDemo } from "./routes/demo";
 import dotenv from "dotenv";
 import {
@@ -90,6 +91,24 @@ import {
   exportExploitations,
 } from "./routes/exploitation";
 
+// Configure multer for file uploads
+const storage = multer.memoryStorage();
+const upload = multer({
+  storage: storage,
+  limits: {
+    fileSize: 5 * 1024 * 1024, // 5MB limit
+    files: 5, // Maximum 5 files
+  },
+  fileFilter: (req, file, cb) => {
+    // Only allow image files
+    if (file.mimetype.startsWith('image/')) {
+      cb(null, true);
+    } else {
+      cb(new Error('Only image files are allowed'), false);
+    }
+  },
+});
+
 export function createServer() {
   const app = express();
   dotenv.config();
@@ -155,8 +174,8 @@ export function createServer() {
   app.get("/api/identification/:id", getIdentification);
   app.get("/api/identification", getIdentifications);
   app.get("/api/identifications", getIdentificationsforLactation);
-  app.post("/api/identification", createIdentification);
-  app.put("/api/identification/:id", updateIdentification);
+  app.post("/api/identification", upload.array('images', 5), createIdentification);
+  app.put("/api/identification/:id", upload.array('images', 5), updateIdentification);
   app.delete("/api/identification/:id", deleteIdentification);
 
   // Insemination API routes
