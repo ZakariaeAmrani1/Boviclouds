@@ -430,6 +430,8 @@ const Utilisateurs: React.FC = () => {
         return "bg-orange-100 text-orange-800 border-orange-200";
       case UtilisateurRole.SUPPORT:
         return "bg-indigo-100 text-indigo-800 border-indigo-200";
+      case UtilisateurRole.RESPONSABLE:
+        return "bg-indigo-100 text-indigo-800 border-purple-200";
       default:
         return "bg-gray-100 text-gray-800 border-gray-200";
     }
@@ -538,6 +540,9 @@ const Utilisateurs: React.FC = () => {
                   <SelectItem value={UtilisateurRole.ADMINISTRATEUR}>
                     Administrateur
                   </SelectItem>
+                  <SelectItem value={UtilisateurRole.RESPONSABLE}>
+                    Résponsable Local
+                  </SelectItem>
                   <SelectItem value={UtilisateurRole.INSEMINATEUR}>
                     Inseminateur
                   </SelectItem>
@@ -551,7 +556,7 @@ const Utilisateurs: React.FC = () => {
                     Contrôleur
                   </SelectItem>
                   <SelectItem value={UtilisateurRole.SUPPORT}>
-                    Support
+                    Non Définit
                   </SelectItem>
                 </SelectContent>
               </Select>
@@ -1039,6 +1044,9 @@ const Utilisateurs: React.FC = () => {
                         <SelectItem value={UtilisateurRole.ADMINISTRATEUR}>
                           Administrateur
                         </SelectItem>
+                        <SelectItem value={UtilisateurRole.RESPONSABLE}>
+                          Résponsable Local
+                        </SelectItem>
                         <SelectItem value={UtilisateurRole.INSEMINATEUR}>
                           Inseminateur
                         </SelectItem>
@@ -1051,6 +1059,7 @@ const Utilisateurs: React.FC = () => {
                         <SelectItem value={UtilisateurRole.CONTROLEUR}>
                           Contrôleur
                         </SelectItem>
+
                         <SelectItem value={UtilisateurRole.SUPPORT}>
                           Non Définit
                         </SelectItem>

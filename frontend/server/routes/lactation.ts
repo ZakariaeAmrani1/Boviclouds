@@ -204,18 +204,26 @@ export const handleCreateLactation: RequestHandler = async (req, res) => {
       });
     }
 
-    // TODO: Backend API call would be like this:
-    // const apiUrl = process.env.SERVER_API_URL;
-    // const response = await axios.post(`${apiUrl}lactations`, {
-    //   sujet_id: input.sujet_id,
-    //   date_velage: input.date_velage,
-    //   n_lactation: input.n_lactation,
-    //   lait_kg: input.lait_kg,
-    //   kg_mg: input.kg_mg,
-    //   pct_proteine: input.pct_proteine,
-    //   pct_mg: input.pct_mg,
-    //   controleur_laitier_id: input.controleur_laitier_id,
-    // });
+    const apiUrl = process.env.SERVER_API_URL;
+    const response = await axios.post(
+      `${apiUrl}lactations`,
+      {
+        sujet_id: input.sujet_id,
+        date_velage: input.date_velage,
+        n_lactation: input.n_lactation,
+        lait_kg: input.lait_kg,
+        kg_mg: input.kg_mg,
+        pct_proteine: input.pct_proteine,
+        pct_mg: input.pct_mg,
+        controleur_laitier_id: input.controleur_laitier_id,
+      },
+
+      {
+        headers: {
+          Authorization: `Bearer ${input.token}`,
+        },
+      },
+    );
 
     // Create new record
     const newRecord: LactationRecord = {
@@ -246,7 +254,7 @@ export const handleCreateLactation: RequestHandler = async (req, res) => {
 export const handleUpdateLactation: RequestHandler = async (req, res) => {
   try {
     const { id } = req.params;
-    const input: UpdateLactationInput = req.body;
+    const input = req.body;
 
     const recordIndex = lactationRecords.findIndex((r) => r.id === id);
 
@@ -256,6 +264,18 @@ export const handleUpdateLactation: RequestHandler = async (req, res) => {
         message: "Lactation non trouvée",
       });
     }
+
+    const apiUrl = process.env.SERVER_API_URL;
+    const response = await axios.patch(
+      `${apiUrl}lactations/${id}`,
+      input.input,
+
+      {
+        headers: {
+          Authorization: `Bearer ${input.token}`,
+        },
+      },
+    );
 
     // TODO: Backend API call would be like this:
     // const apiUrl = process.env.SERVER_API_URL;
@@ -296,6 +316,14 @@ export const handleDeleteLactation: RequestHandler = async (req, res) => {
         message: "Lactation non trouvée",
       });
     }
+
+    const { token } = req.query;
+    const apiUrl = process.env.SERVER_API_URL;
+    const data = await axios.delete(`${apiUrl}lactations/${id}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
 
     // TODO: Backend API call would be like this:
     // const apiUrl = process.env.SERVER_API_URL;
