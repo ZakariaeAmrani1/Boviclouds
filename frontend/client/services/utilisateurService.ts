@@ -137,9 +137,11 @@ export class UtilisateurService {
                   ? UtilisateurRole.CONTROLEUR
                   : user.role[0] === "IDENTIFICATEUR"
                     ? UtilisateurRole.IDENTIFICATEUR
-                    : user.role[0] === "ADMIN"
-                      ? UtilisateurRole.ADMINISTRATEUR
-                      : UtilisateurRole.SUPPORT,
+                    : user.role[0] === "RESPONSABLE_LOCAL"
+                      ? UtilisateurRole.RESPONSABLE
+                      : user.role[0] === "ADMIN"
+                        ? UtilisateurRole.ADMINISTRATEUR
+                        : UtilisateurRole.SUPPORT,
           statut:
             user.statut === "APPROVED"
               ? UtilisateurStatus.ACTIF
@@ -214,7 +216,9 @@ export class UtilisateurService {
                   ? "IDENTIFICATEUR"
                   : input.role === UtilisateurRole.CONTROLEUR
                     ? "CONTROLEUR_LAITIER"
-                    : "ADMIN",
+                    : input.role === UtilisateurRole.RESPONSABLE
+                      ? "RESPONSABLE_LOCAL"
+                      : "ADMIN",
 
           status:
             input.statut === UtilisateurStatus.ACTIF
@@ -305,7 +309,9 @@ export class UtilisateurService {
                   ? "IDENTIFICATEUR"
                   : input.role === UtilisateurRole.CONTROLEUR
                     ? "CONTROLEUR_LAITIER"
-                    : "ADMIN",
+                    : input.role === UtilisateurRole.RESPONSABLE
+                      ? "RESPONSABLE_LOCAL"
+                      : "ADMIN",
           ],
           statut:
             input.statut === UtilisateurStatus.ACTIF
@@ -394,6 +400,7 @@ export class UtilisateurService {
       [UtilisateurRole.IDENTIFICATEUR]: 0,
       [UtilisateurRole.ELEVEUR]: 0,
       [UtilisateurRole.CONTROLEUR]: 0,
+      [UtilisateurRole.RESPONSABLE]: 0,
       [UtilisateurRole.SUPPORT]: 0,
     };
 
