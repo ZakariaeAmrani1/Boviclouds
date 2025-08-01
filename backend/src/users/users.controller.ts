@@ -2,20 +2,24 @@ import { Body, Controller, Delete, Get, Param, Patch,Post, Req, UseGuards } from
 import { UsersService } from './users.service';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { CreateUserDto } from 'src/auth/dto/users/register.dto';
-import { UpdateUserDto } from './dtos/update-user.dto';
 import { CurrentUser } from 'src/auth/decorators/active-user.decorator';
 import { UpdatePwdDto } from './dtos/update-pwd.dto';
+import { ChangePwdDto } from './dtos/change-pwd.dto';
 
-  @UseGuards(JwtAuthGuard)
-  @Controller('api/v1/users')
-  export class UsersController {
+@UseGuards(JwtAuthGuard)
+@Controller('api/v1/users')
+export class UsersController {
     constructor(private readonly usersService: UsersService) {}
 
     @Get('me')
     async getCurrentUser(@CurrentUser() user) {
       return this.getUser(user.userId);
     }
-
+    
+    @Patch('change-password')
+    async changePassword(@CurrentUser() user, @Body() changePwdDto: ChangePwdDto) {
+      return this.usersService.updatePassword(user.userId, changePwdDto);
+    }
 
     @Get()
     async getAllUsers() {
