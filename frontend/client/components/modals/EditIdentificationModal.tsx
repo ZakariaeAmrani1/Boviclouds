@@ -387,8 +387,6 @@ const EditIdentificationModal: React.FC<EditIdentificationModalProps> = ({
     const hasGrandPereMaternalChanges =
       formData.grand_pere_maternel_nni !==
         originalData.grand_pere_maternel_nni ||
-      formData.grand_pere_maternel_nom !==
-        originalData.grand_pere_maternel_nom ||
       formData.grand_pere_maternel_date_naissance !==
         originalData.grand_pere_maternel_date_naissance ||
       formData.grand_pere_maternel_race !==
@@ -397,7 +395,6 @@ const EditIdentificationModal: React.FC<EditIdentificationModalProps> = ({
     if (hasGrandPereMaternalChanges) {
       input.grand_pere_maternel = {
         nni: formData.grand_pere_maternel_nni.trim().toUpperCase(),
-        nom: formData.grand_pere_maternel_nom.trim(),
         date_naissance: formData.grand_pere_maternel_date_naissance,
         race: formData.grand_pere_maternel_race as Race,
       };
@@ -406,14 +403,12 @@ const EditIdentificationModal: React.FC<EditIdentificationModalProps> = ({
     // Check father changes
     const hasFatherChanges =
       formData.pere_nni !== originalData.pere_nni ||
-      formData.pere_nom !== originalData.pere_nom ||
       formData.pere_date_naissance !== originalData.pere_date_naissance ||
       formData.pere_race !== originalData.pere_race;
 
     if (hasFatherChanges) {
       input.pere = {
         nni: formData.pere_nni.trim().toUpperCase(),
-        nom: formData.pere_nom.trim(),
         date_naissance: formData.pere_date_naissance,
         race: formData.pere_race as Race,
       };
@@ -423,8 +418,6 @@ const EditIdentificationModal: React.FC<EditIdentificationModalProps> = ({
     const hasGrandPerePaternalChanges =
       formData.grand_pere_paternel_nni !==
         originalData.grand_pere_paternel_nni ||
-      formData.grand_pere_paternel_nom !==
-        originalData.grand_pere_paternel_nom ||
       formData.grand_pere_paternel_date_naissance !==
         originalData.grand_pere_paternel_date_naissance ||
       formData.grand_pere_paternel_race !==
@@ -433,7 +426,6 @@ const EditIdentificationModal: React.FC<EditIdentificationModalProps> = ({
     if (hasGrandPerePaternalChanges) {
       input.grand_pere_paternel = {
         nni: formData.grand_pere_paternel_nni.trim().toUpperCase(),
-        nom: formData.grand_pere_paternel_nom.trim(),
         date_naissance: formData.grand_pere_paternel_date_naissance,
         race: formData.grand_pere_paternel_race as Race,
       };
@@ -504,7 +496,7 @@ const EditIdentificationModal: React.FC<EditIdentificationModalProps> = ({
         return;
       }
 
-      const result = await updateRecord(identification.id, changes);
+      const result = await updateRecord(identification.id, changes, formData.images);
       if (result) {
         toast({
           title: "Succès",
