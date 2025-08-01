@@ -1104,7 +1104,7 @@ const EditIdentificationModal: React.FC<EditIdentificationModalProps> = ({
                       <h4 className="text-sm font-medium text-gray-700 mb-3">
                         Grand-mère paternelle
                       </h4>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-4">
                         <div className="space-y-2">
                           <Label
                             htmlFor="grand_mere_paternelle_nni"
@@ -1154,7 +1154,7 @@ const EditIdentificationModal: React.FC<EditIdentificationModalProps> = ({
                           </div>
                         </div>
 
-                        <div className="space-y-2 md:col-span-2">
+                        <div className="space-y-2">
                           <Label
                             htmlFor="grand_mere_paternelle_race"
                             className="text-sm font-normal text-black"
