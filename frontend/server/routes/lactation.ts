@@ -95,7 +95,7 @@ export const handleGetLactations: RequestHandler = async (req, res) => {
     });
     lactationRecords = response.data.map((data: any) => ({
       id: data._id,
-      sujet_id: data.sujet_id,
+      sujet_id: data.sujet_id._id,
       date_velage: data.date_velage,
       n_lactation: data.n_lactation,
       lait_kg: data.lait_kg,
