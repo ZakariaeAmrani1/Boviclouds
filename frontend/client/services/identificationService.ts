@@ -9,6 +9,7 @@ import {
   IdentificationResponse,
   IdentificationListResponse,
 } from "@shared/identification";
+import { ImageData } from "../components/ui/multi-image-upload";
 
 const API_BASE_URL = "/api/identification";
 
@@ -80,13 +81,52 @@ export class IdentificationService {
    */
   static async create(
     input: CreateIdentificationInput,
+    images?: ImageData[],
   ): Promise<IdentificationRecord> {
+    const token = localStorage.getItem("access_token");
+
+    // If images are provided, use FormData
+    if (images && images.length > 0) {
+      const formData = new FormData();
+
+      // Add JSON data as a field
+      formData.append("data", JSON.stringify({ ...input, token }));
+
+      // Add images
+      images.forEach((imageData, index) => {
+        formData.append(`images`, imageData.file);
+      });
+
+      const response = await fetch(API_BASE_URL, {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!response.ok) {
+        const errorResult = await response.json();
+        throw new Error(
+          errorResult.message || `HTTP error! status: ${response.status}`,
+        );
+      }
+
+      const result: IdentificationResponse = await response.json();
+
+      if (!result.success || !result.data) {
+        throw new Error(
+          result.message || "Erreur lors de la création de l'identification",
+        );
+      }
+
+      return result.data;
+    }
+
+    // If no images, use regular JSON
     const response = await fetch(API_BASE_URL, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(input),
+      body: JSON.stringify({ ...input, token }),
     });
 
     if (!response.ok) {
@@ -113,13 +153,52 @@ export class IdentificationService {
   static async update(
     id: string,
     input: UpdateIdentificationInput,
+    images?: ImageData[],
   ): Promise<IdentificationRecord> {
+    const token = localStorage.getItem("access_token");
+
+    // If images are provided, use FormData
+    if (images && images.length > 0) {
+      const formData = new FormData();
+
+      // Add JSON data as a field
+      formData.append("data", JSON.stringify({ ...input, token }));
+
+      // Add images
+      images.forEach((imageData, index) => {
+        formData.append(`images`, imageData.file);
+      });
+
+      const response = await fetch(`${API_BASE_URL}/${id}`, {
+        method: "PUT",
+        body: formData,
+      });
+
+      if (!response.ok) {
+        const errorResult = await response.json();
+        throw new Error(
+          errorResult.message || `HTTP error! status: ${response.status}`,
+        );
+      }
+
+      const result: IdentificationResponse = await response.json();
+
+      if (!result.success || !result.data) {
+        throw new Error(
+          result.message || "Erreur lors de la mise à jour de l'identification",
+        );
+      }
+
+      return result.data;
+    }
+
+    // If no images, use regular JSON
     const response = await fetch(`${API_BASE_URL}/${id}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(input),
+      body: JSON.stringify({ ...input, token }),
     });
 
     if (!response.ok) {
