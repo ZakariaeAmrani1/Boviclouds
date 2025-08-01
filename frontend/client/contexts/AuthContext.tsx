@@ -96,7 +96,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const register = async (data: any): Promise<Boolean> => {
     setIsLoading(true);
-
+    console.log(data);
     try {
       const res = await axios.post(`${apiUrl}auth/register`, {
         CIN: data.cin,
@@ -105,6 +105,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         prenom_ar: data.prenomArabe,
         nom_lat: data.nomFamille,
         prenom_lat: data.prenom,
+        telephone: data.telephone,
         civilite: data.civilite,
         adresse: data.adresse,
         region: data.region,

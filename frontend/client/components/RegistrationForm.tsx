@@ -18,6 +18,7 @@ interface RegistrationFormData {
   nomArabe: string;
   prenomArabe: string;
   civilite: string;
+  telephone: string;
 
   // Step 2: Address Information
   adresse: string;
@@ -48,6 +49,7 @@ const RegistrationForm: React.FC<RegistrationFormProps> = ({
     nomFamille: "",
     nomArabe: "",
     prenomArabe: "",
+    telephone: "",
     civilite: "",
     adresse: "",
     region: "",
@@ -331,6 +333,12 @@ const RegistrationForm: React.FC<RegistrationFormProps> = ({
                 true,
               )}
               {renderSelectField("civilite", "Civilité", civiliteOptions)}
+              {renderFormField(
+                "telephone",
+                "Numéro de télephone",
+                "text",
+                "Numéro de télephone",
+              )}
             </div>
           );
         case 2:
