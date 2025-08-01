@@ -20,6 +20,7 @@ export class IdentificationService {
     filters: IdentificationFilters = {},
     pagination: PaginationParams = { page: 1, limit: 10 },
   ): Promise<PaginatedResponse<IdentificationRecord>> {
+    const token = localStorage.getItem("access_token");
     const params = new URLSearchParams();
 
     // Add pagination params
@@ -32,7 +33,7 @@ export class IdentificationService {
         params.append(key, value.toString());
       }
     });
-
+    params.append("token", token);
     const response = await fetch(`${API_BASE_URL}?${params.toString()}`);
 
     if (!response.ok) {
