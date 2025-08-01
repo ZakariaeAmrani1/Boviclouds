@@ -4,24 +4,32 @@ import {
   IsOptional,
   IsMongoId,
   ValidateNested,
+  ArrayMaxSize,
+  IsArray,
 } from 'class-validator';
 import { Type } from 'class-transformer';
 
-class InfosSujetDto {
+export class InfosSujetDto {
   @IsString()
   nni: string;
 
-  @IsDateString()
-  date_naissance: string;
+  @IsOptional()
+  date_naissance: Date;
 
-  @IsString()
+  @IsOptional()
   race: string;
 
-  @IsString()
+  @IsOptional()
   sexe: string;
 
-  @IsString()
+  @IsOptional()
   type: string;
+
+  @IsOptional()
+  @IsArray()
+  @ArrayMaxSize(5)
+  @IsString({ each: true })
+  photos?: string[];
 }
 
 class InfosMereDto {

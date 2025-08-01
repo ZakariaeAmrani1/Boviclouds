@@ -1,19 +1,29 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import {
   Identification,
-  IdentificationDocument,
 } from './schemas/identification.schema';
 import * as ExcelJS from 'exceljs';
 import { Parser } from 'json2csv';
 import { CreateIdentificationDto } from './dto/create-identification.dto';
 
+export class IndentificationNotFoundException extends NotFoundException {
+  constructor(id: string) {
+    super(`Identification with ID ${id} not found`);
+  }
+}
+
+export class IdentificationAlreadyExistsException extends ConflictException {
+  constructor(nni: string) { 
+    super(`Identification with NNI ${nni} already exists`);
+  }
+}
 @Injectable()
 export class IdentificationService {
   constructor(
     @InjectModel(Identification.name)
-    private readonly identificationModel: Model<IdentificationDocument>,
+    private readonly identificationModel: Model<Identification>,
   ) {}
 
   async findAll(query: any): Promise<Identification[]> {
@@ -34,7 +44,9 @@ export class IdentificationService {
 
     return this.identificationModel.find(query).lean();
   }
-  async create(createDto: CreateIdentificationDto): Promise<Identification> {
+  async create(createDto: CreateIdentificationDto,): Promise<Identification> {
+    const existing = await this.identificationModel.findOne({nni: createDto.infos_sujet.nni});
+    if (existing) throw new IdentificationAlreadyExistsException(createDto.infos_sujet.nni);
     const created = new this.identificationModel(createDto);
     return await created.save();
   }
@@ -77,15 +89,30 @@ export class IdentificationService {
       }
       worksheet.addRow(row);
     });
-
     const buffer = await workbook.xlsx.writeBuffer();
     return buffer;
   }
-  async delete(id: string): Promise<any> {
+
+  async findById(id: string): Promise<Identification> {
+    if (!Types.ObjectId.isValid(id)) throw new IndentificationNotFoundException(id);
+    const identification = await this.identificationModel.findById(id).exec();
+    if (!identification) throw new IndentificationNotFoundException(id);
+    return identification;
+  }
+
+  async update(id: string, updateDto: Partial<CreateIdentificationDto>): Promise<Identification> {
+    if (!Types.ObjectId.isValid(id)) throw new IndentificationNotFoundException(id);
+    const updated = await this.identificationModel.findByIdAndUpdate(id, updateDto, { new: true }).exec();
+    if (!updated) throw new IndentificationNotFoundException(id);
+    return updated;
+  }
+
+  async delete(id: string): Promise<Identification> {
+    if(!Types.ObjectId.isValid(id)) throw new IndentificationNotFoundException(id);
     const result = await this.identificationModel.findByIdAndDelete(id);
     if (!result) {
-      throw new NotFoundException(`Identification with ID ${id} not found`);
+      throw new IndentificationNotFoundException(id);
     }
-    return { message: 'Identification supprimée avec succès' };
+    return result;
   }
 }
