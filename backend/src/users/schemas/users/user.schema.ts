@@ -120,7 +120,7 @@ UserSchema.methods.CreateEmailValiationToken = function ():string {
 
 UserSchema.methods.createPasswordResetToken = function (): string {
   const passwordResetToken = crypto.randomBytes(32).toString('hex');
-  this.emailValToken = crypto
+  this.passwordResetToken = crypto
     .createHash('sha256')
     .update(passwordResetToken)
     .digest('hex');

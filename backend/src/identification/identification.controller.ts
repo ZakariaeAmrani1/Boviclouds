@@ -14,13 +14,12 @@ import { IdentificationService } from './identification.service';
 import { Roles } from '../auth/roles.decorator';
 import { RolesGuard } from '../auth/roles.guard';
 import { Response } from 'express';
-import { AuthGuard } from '@nestjs/passport';
 import { UserRole } from 'src/users/schemas/users/user.role';
 import { CreateIdentificationDto } from './dto/create-identification.dto';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 
 @Controller('api/v1/identifications')
-@UseGuards(AuthGuard('jwt'), RolesGuard)
+@UseGuards(JwtAuthGuard, RolesGuard)
 export class IdentificationController {
   constructor(private readonly identificationService: IdentificationService) {}
 
@@ -50,12 +49,10 @@ export class IdentificationController {
     return res.send(buffer);
   }
   @Post()
-  @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles(UserRole.IDENTIFICATEUR)
   async create(@Body() createDto: CreateIdentificationDto, @Req() req: any) {
     const body = {
       ...createDto,
-      createdBy: req.user?.sub, // Assuming you want to track who created the identification
+      createdBy: req.user?.sub, 
     };
     return this.identificationService.create(body);
   }
