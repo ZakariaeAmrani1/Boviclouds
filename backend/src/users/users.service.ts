@@ -10,6 +10,7 @@ import { EmailService } from 'src/utils/services/emails/email.service';
 import { UpdatePwdDto } from './dtos/update-pwd.dto';
 import { UserRole } from './schemas/users/user.role';
 import { ChangePwdDto } from './dtos/change-pwd.dto';
+import * as crypto from "crypto";
 
 export class UserNotFoundException extends HttpException {
   constructor(message: string) {
@@ -65,7 +66,6 @@ export class UsersService {
       new: true,
       runValidators: true,
     });
-    console.log(user)
     if (!user) throw new UserNotFoundException(`User with id:${id} not found!`);
     return user;
   }
@@ -85,7 +85,7 @@ export class UsersService {
     const user = await this.userModel.findOne({ email });
     if (!user) throw new UserNotFoundException(`User with email:${email} not found!`);
     const resetToken = user.createPasswordResetToken();
-    await user.save({ validateBeforeSave: false });
+    await user.save();
     const confirmEmailLink = `${req.protocol}://${req.get('host')}/api/v1/users/reset-password/${resetToken}`;
     try {
           await this.emailService.sendPasswordReset(
@@ -99,8 +99,6 @@ export class UsersService {
             error,
           );
     }finally{
-      user.passwordResetToken = undefined;
-      user.passwordResetTokenExpires = undefined;
       await user.save({ validateBeforeSave: false });
     }
     return { message: 'Password reset link sent to your email.' };
@@ -108,8 +106,12 @@ export class UsersService {
   async resetPassword(token: string, dto: UpdatePwdDto): Promise<User> {
     if(dto.password !== dto.confirmPassword) 
       throw new BadRequestException('Passwords do not match.');
+    const tokenHash = crypto
+        .createHash('sha256')
+        .update(token)
+        .digest('hex');
     const user = await this.userModel.findOne({
-      passwordResetToken: token,
+      passwordResetToken: tokenHash,
       passwordResetTokenExpires: { $gt: Date.now() },
     });
     if (!user) throw new UserNotFoundException('Invalid or expired password reset token.');
