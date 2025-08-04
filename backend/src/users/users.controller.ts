@@ -15,9 +15,12 @@ import { CreateUserDto } from 'src/auth/dto/users/register.dto';
 import { CurrentUser } from 'src/auth/decorators/active-user.decorator';
 import { UpdatePwdDto } from './dtos/update-pwd.dto';
 import { ChangePwdDto } from './dtos/change-pwd.dto';
+import { RolesGuard } from 'src/auth/roles.guard';
+import { Roles } from 'src/auth/roles.decorator';
+import { UserRole } from './schemas/users/user.role';
 
-// @UseGuards(JwtAuthGuard)
 @Controller('api/v1/users')
+@UseGuards(JwtAuthGuard, RolesGuard)
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
@@ -33,12 +36,12 @@ export class UsersController {
   ) {
     return this.usersService.updatePassword(user.userId, changePwdDto);
   }
-
+  @Roles(UserRole.ADMIN)
   @Get()
   async getAllUsers() {
     return this.usersService.findAll();
   }
-
+  @Roles(UserRole.ADMIN)
   @Get(':id')
   async getUser(@Param('id') id: string) {
     return this.usersService.findById(id);
@@ -49,7 +52,7 @@ export class UsersController {
     console.log('Update User DTO:', updateUserDto);
     return await this.usersService.updateUser(id, updateUserDto);
   }
-
+  @Roles(UserRole.ADMIN)
   @Delete(':id')
   async deleteUser(@Param('id') id: string) {
     return this.usersService.deleteUser(id);
