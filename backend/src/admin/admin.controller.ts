@@ -18,11 +18,12 @@ import { CreateAccForUserDto } from './dtos/create-acc-for-user.dto';
 import { Request } from 'express';
 
 @Controller('api/v1/admin')
+@UseGuards(JwtAuthGuard, RolesGuard)
+@Roles(UserRole.ADMIN)
 export class AdminController {
   constructor(private readonly adminService: AdminService) {}
 
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(UserRole.ADMIN)
+  
   @Patch('validate/:id')
   async requestAccountValidation(
     @Param('id') userId: string,
@@ -40,8 +41,7 @@ export class AdminController {
     };
   }
 
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(UserRole.ADMIN)
+
   @Patch('reject/:id')
   async rejectAccountRequest(@Param('id') userId: string) {
     const result = await this.adminService.rejectRequest(userId);
@@ -50,14 +50,12 @@ export class AdminController {
       user: result,
     };
   }
-  
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(UserRole.ADMIN)
+
   @Post('create-account-for-user')
   async createAccountForUser(
     @Body() dto: CreateAccForUserDto,
     @Req() req: Request,
   ) {
-    return await this.adminService.createUserAccount(dto,req);
+    return await this.adminService.createUserAccount(dto, req);
   }
 }

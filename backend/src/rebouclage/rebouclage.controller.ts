@@ -8,11 +8,11 @@ import { RebouclageService } from './rebouclage.service';
 import { UserRole } from 'src/users/schemas/users/user.role';
 import { CreateRebouclageDto } from './dto/create-rebouclage.dto';
 
-@Roles(UserRole.IDENTIFICATEUR)
-
 
 
 @Controller('api/v1/rebouclages')
+@UseGuards(JwtAuthGuard, RolesGuard)
+@Roles(UserRole.IDENTIFICATEUR, UserRole.ADMIN)
 export class RebouclageController {
   constructor(private readonly rebouclageService: RebouclageService) {}
 
@@ -37,8 +37,6 @@ export class RebouclageController {
     return this.rebouclageService.delete(id);
   }
   @Get('export')
-    @Roles(UserRole.IDENTIFICATEUR)
-    @UseGuards(JwtAuthGuard, RolesGuard)
     async export(@Query('format') format: 'csv' | 'excel', @Res() res: Response) {
     const data = await this.rebouclageService.exportRebouclages(format);
     if (format === 'csv') {
@@ -51,8 +49,6 @@ export class RebouclageController {
     return res.send(data);
     }
     @Get()
-    @Roles(UserRole.IDENTIFICATEUR)
-    @UseGuards(JwtAuthGuard, RolesGuard)
     async findAll(
     @Query('ancien_nni') ancien_nni: string,
     @Query('nouveau_nni') nouveau_nni: string,
