@@ -20,11 +20,11 @@ import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 
 @Controller('api/v1/identifications')
 @UseGuards(JwtAuthGuard, RolesGuard)
+@Roles(UserRole.IDENTIFICATEUR, UserRole.ADMIN)
 export class IdentificationController {
   constructor(private readonly identificationService: IdentificationService) {}
 
   @Get('export')
-  @Roles(UserRole.IDENTIFICATEUR)
   async exportData(
     @Res() res: Response,
     @Query('format') format: 'csv' | 'excel',
@@ -52,7 +52,7 @@ export class IdentificationController {
   async create(@Body() createDto: CreateIdentificationDto, @Req() req: any) {
     const body = {
       ...createDto,
-      createdBy: req.user?.sub, 
+      createdBy: req.user?.sub,
     };
     return this.identificationService.create(body);
   }
@@ -62,7 +62,6 @@ export class IdentificationController {
   }
 
   @Get('filter')
-  @Roles(UserRole.IDENTIFICATEUR)
   async filter(
     @Query('nni') nni?: string,
     @Query('date_naissance') date_naissance?: string,
@@ -75,8 +74,6 @@ export class IdentificationController {
     });
   }
   @Delete(':id')
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(UserRole.IDENTIFICATEUR)
   async deleteIdentification(@Param('id') id: string) {
     return this.identificationService.delete(id);
   }
