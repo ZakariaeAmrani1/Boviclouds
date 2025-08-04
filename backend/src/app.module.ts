@@ -14,6 +14,7 @@ import { ExploitationsModule } from './exploitations/exploitations.module';
 import { RebouclageModule } from './rebouclage/rebouclage.module';
 import { IdentificationModule } from './identification/identification.module';
 import { LactationModule } from './lactation/lactation.module';
+import { RacesModule } from './races/races.module';
 
 
 @Module({
@@ -42,6 +43,7 @@ import { LactationModule } from './lactation/lactation.module';
     RebouclageModule,
     IdentificationModule,
     LactationModule,
+    RacesModule,
 
 
   ],
