@@ -1,9 +1,5 @@
-import { Request } from 'express';
-
-export interface RequestWithUser extends Request {
-  user: {
+export type ReqCurrentUser = {
     userId: string;
     email: string;
-   
-  };
+    role: string[];
 }
