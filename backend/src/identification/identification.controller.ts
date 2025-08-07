@@ -2,8 +2,11 @@ import {
   Body,
   Controller,
   Delete,
+  FileTypeValidator,
   Get,
+  MaxFileSizeValidator,
   Param,
+  ParseFilePipe,
   Post,
   Query,
   Res,
@@ -21,7 +24,7 @@ import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { CurrentUser } from 'src/auth/decorators/active-user.decorator';
 import {File as MulterFile} from 'multer';
 import { FilesInterceptor } from '@nestjs/platform-express';
-import { IdentificationMulterConfig } from 'multer-config';
+import { PhotosRequiredValidator } from 'src/common/validators/photo-required-validator';
 
 @Controller('api/v1/identifications')
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -54,11 +57,22 @@ export class IdentificationController {
     return res.send(buffer);
   }
   @Post()
-  @UseInterceptors(FilesInterceptor('photos', 5, IdentificationMulterConfig))
+  @UseInterceptors(FilesInterceptor('photos', 5))
   async create(
     @Body() body: any,
     @CurrentUser() user: any,
-    @UploadedFiles() photos: MulterFile[],
+    @UploadedFiles(
+      new ParseFilePipe({
+        validators: [
+          new PhotosRequiredValidator({}),
+          new MaxFileSizeValidator({
+            maxSize: 5 * 1024 * 1024,
+          }),
+          new FileTypeValidator({
+            fileType: /(jpg|jpeg|png)$/i, })
+        ],
+      })
+    ) photos: MulterFile[],
   ) {
     const data: CreateIdentificationDto = {
       ...body,
@@ -71,7 +85,7 @@ export class IdentificationController {
       complem: JSON.parse(body.complem),
       createdBy: user?.userId,
     };
-
+    console.log(data,photos)
     return this.identificationService.create(data, photos);
   }
 
