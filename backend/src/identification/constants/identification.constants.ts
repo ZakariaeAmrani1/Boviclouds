@@ -1,0 +1,1 @@
+export const IDENTIFICATION_BUCKET = 'boviclouds-cows-imgs';
