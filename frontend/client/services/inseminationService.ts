@@ -22,11 +22,14 @@ export class InseminationService {
     filters: InseminationFilters = {},
     pagination: PaginationParams = { page: 1, limit: 10 },
   ): Promise<PaginatedResponse<InseminationRecord>> {
+    const token = localStorage.getItem("access_token");
     const params = new URLSearchParams();
 
     // Add pagination params
     params.append("page", pagination.page.toString());
     params.append("limit", pagination.limit.toString());
+
+    params.append("token", token);
 
     // Add filter params
     Object.entries(filters).forEach(([key, value]) => {
@@ -82,6 +85,8 @@ export class InseminationService {
   static async create(
     input: CreateInseminationInput,
   ): Promise<InseminationRecord> {
+    const token = localStorage.getItem("access_token");
+    input.token = token;
     const response = await fetch(API_BASE_URL, {
       method: "POST",
       headers: {
@@ -115,12 +120,17 @@ export class InseminationService {
     id: string,
     input: UpdateInseminationInput,
   ): Promise<InseminationRecord> {
+    const token = localStorage.getItem("access_token");
+    const data = {
+      input: input,
+      token: token,
+    };
     const response = await fetch(`${API_BASE_URL}/${id}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(input),
+      body: JSON.stringify(data),
     });
 
     if (!response.ok) {
@@ -145,7 +155,10 @@ export class InseminationService {
    * Delete an insemination record
    */
   static async delete(id: string): Promise<void> {
-    const response = await fetch(`${API_BASE_URL}/${id}`, {
+    const params = new URLSearchParams();
+    const token = localStorage.getItem("access_token");
+    params.append("token", token);
+    const response = await fetch(`${API_BASE_URL}/${id}?${params.toString()}`, {
       method: "DELETE",
     });
 
