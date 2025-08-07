@@ -13,19 +13,18 @@ export class InfosSujetDto {
   @IsString()
   nni: string;
 
-  @IsOptional()
+  @IsDateString()
   date_naissance: Date;
 
-  @IsOptional()
+  @IsString()
   race: string;
 
-  @IsOptional()
+  @IsString()
   sexe: string;
 
-  @IsOptional()
+  @IsString()
   type: string;
 
-  @IsOptional()
   @IsArray()
   @ArrayMaxSize(5)
   @IsString({ each: true })
@@ -59,17 +58,22 @@ class AncetreDto {
 }
 
 class ComplementDto {
+
+  @IsString()
   @IsMongoId()
   eleveur_id: string;
 
+  @IsString()
   @IsMongoId()
   exploitation_id: string;
 
+  @IsString()
   @IsMongoId()
   responsable_local_id: string;
 }
 
 export class CreateIdentificationDto {
+
   @ValidateNested()
   @Type(() => InfosSujetDto)
   infos_sujet: InfosSujetDto;
@@ -97,4 +101,8 @@ export class CreateIdentificationDto {
   @ValidateNested()
   @Type(() => ComplementDto)
   complem: ComplementDto;
+
+  @IsString()
+  @IsMongoId()
+  createdBy: string;
 }

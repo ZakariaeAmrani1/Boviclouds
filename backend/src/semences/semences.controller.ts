@@ -1,9 +1,15 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
 import { SemencesService } from './semences.service';
 import { CreateSemenceDto } from './dto/create-semence.dto';
 import { UpdateSemenceDto } from './dto/update-semence.dto';
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { UserRole } from 'src/users/schemas/users/user.role';
+import { RolesGuard } from 'src/auth/roles.guard';
+import { Roles } from 'src/auth/roles.decorator';
 
 @Controller('api/v1/semences')
+@UseGuards(JwtAuthGuard, RolesGuard)
+@Roles(UserRole.RESPONSABLE_LOCAL, UserRole.ADMIN)
 export class SemencesController {
   constructor(private readonly semencesService: SemencesService) {}
 

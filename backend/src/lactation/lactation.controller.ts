@@ -13,8 +13,13 @@ import { CreateLactationDto } from './dto/create-lactation.dto';
 import { UpdateLactationDto } from './dto/update-lactation.dto';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { CurrentUser } from 'src/auth/decorators/active-user.decorator';
+import { Roles } from 'src/auth/roles.decorator';
+import { RolesGuard } from 'src/auth/roles.guard';
+import { UserRole } from 'src/users/schemas/users/user.role';
 
 @Controller('api/v1/lactations')
+@UseGuards(JwtAuthGuard, RolesGuard)
+@Roles(UserRole.CONTROLEUR_LAITIER, UserRole.ADMIN)
 export class LactationController {
   constructor(private readonly lactationService: LactationService) {}
 
