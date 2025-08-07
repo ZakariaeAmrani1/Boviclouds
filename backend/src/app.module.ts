@@ -14,6 +14,8 @@ import { ExploitationsModule } from './exploitations/exploitations.module';
 import { RebouclageModule } from './rebouclage/rebouclage.module';
 import { IdentificationModule } from './identification/identification.module';
 import { LactationModule } from './lactation/lactation.module';
+import { RacesModule } from './races/races.module';
+import { StatsModule } from './stats/stats.module';
 
 
 @Module({
@@ -34,16 +36,14 @@ import { LactationModule } from './lactation/lactation.module';
     AuthModule,
     AdminModule,
     InseminationsModule,
-
     SemencesModule,
-
     ExploitationsModule,
     SemencesModule,
     RebouclageModule,
     IdentificationModule,
     LactationModule,
-
-
+    RacesModule,
+    StatsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
