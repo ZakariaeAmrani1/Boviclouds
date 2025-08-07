@@ -22,8 +22,8 @@ export const useExploitations = () => {
       const response = await ExploitationService.getAll({}, { page: 1, limit: 100 });
       const options: Option[] = response.data.map((exploitation: ExploitationRecord) => ({
         value: exploitation.id,
-        label: exploitation.nom,
-        sublabel: `${exploitation.localisation} - ${exploitation.type_exploitation}`,
+        label: exploitation.nom_ferme,
+        sublabel: `${exploitation.region}, ${exploitation.province} - ${exploitation.numero_exploitation}`,
       }));
       setExploitations(options);
     } catch (err) {
