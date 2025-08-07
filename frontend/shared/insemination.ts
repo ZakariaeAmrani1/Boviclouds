@@ -21,6 +21,7 @@ export interface CreateInseminationInput {
   inseminateur_id: string;
   responsable_local_id: string;
   createdBy: string;
+  token?: string;
 }
 
 // Input for updating an existing insemination record
@@ -30,6 +31,7 @@ export interface UpdateInseminationInput {
   semence_id?: string;
   inseminateur_id?: string;
   responsable_local_id?: string;
+  token?: string;
 }
 
 // Search/filter parameters
@@ -111,10 +113,16 @@ export const CreateInseminationSchema = z.object({
 
 export const UpdateInseminationSchema = z.object({
   nni: z.string().min(1, "Le NNI est requis").optional(),
-  date_dissemination: z.string().min(1, "La date de dissémination est requise").optional(),
+  date_dissemination: z
+    .string()
+    .min(1, "La date de dissémination est requise")
+    .optional(),
   semence_id: z.string().min(1, "L'ID de la semence est requis").optional(),
   inseminateur_id: z.string().min(1, "L'inséminateur est requis").optional(),
-  responsable_local_id: z.string().min(1, "Le responsable local est requis").optional(),
+  responsable_local_id: z
+    .string()
+    .min(1, "Le responsable local est requis")
+    .optional(),
 });
 
 export const InseminationFiltersSchema = z.object({
