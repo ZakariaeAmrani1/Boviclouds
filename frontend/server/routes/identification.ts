@@ -12,6 +12,7 @@ import {
   TypeAnimal,
 } from "../../shared/identification";
 import axios from "axios";
+import FormData from "form-data";
 
 // Mock database - in a real app, this would be a proper database
 let identifications: IdentificationRecord[] = [];
