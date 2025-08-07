@@ -19,6 +19,7 @@ export interface CreateSemenceInput {
   race_taureau: string;
   num_taureau: string;
   createdBy: string;
+  token?: string;
 }
 
 // Input for updating an existing semence record

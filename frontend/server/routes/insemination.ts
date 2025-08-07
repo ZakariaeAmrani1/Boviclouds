@@ -136,8 +136,13 @@ const paginate = <T>(
 export const handleGetInseminations: RequestHandler = async (req, res) => {
   inseminationRecords = [];
   const apiUrl = process.env.SERVER_API_URL;
+  const { token } = req.query;
   try {
-    const response = await axios.get(`${apiUrl}inseminations`);
+    const response = await axios.get(`${apiUrl}inseminations`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
 
     response.data.map((data) => {
       inseminationRecords.push({
@@ -256,13 +261,22 @@ export const handleCreateInsemination: RequestHandler = async (req, res) => {
     }
 
     const apiUrl = process.env.SERVER_API_URL;
-    const response = await axios.post(`${apiUrl}inseminations`, {
-      nni: input.nni,
-      date_dissemination: `${input.date_dissemination}T10:00:00Z`,
-      semence_id: input.semence_id,
-      inseminateur_id: input.inseminateur_id,
-      responsable_local_id: input.responsable_local_id,
-    });
+    const response = await axios.post(
+      `${apiUrl}inseminations`,
+      {
+        nni: input.nni,
+        date_dissemination: `${input.date_dissemination}T10:00:00Z`,
+        semence_id: input.semence_id,
+        inseminateur_id: input.inseminateur_id,
+        responsable_local_id: input.responsable_local_id,
+      },
+
+      {
+        headers: {
+          Authorization: `Bearer ${input.token}`,
+        },
+      },
+    );
     // Create new record
     const newRecord: InseminationRecord = {
       id: nextId.toString(),
@@ -292,7 +306,7 @@ export const handleCreateInsemination: RequestHandler = async (req, res) => {
 export const handleUpdateInsemination: RequestHandler = async (req, res) => {
   try {
     const { id } = req.params;
-    const input: UpdateInseminationInput = req.body;
+    const input = req.body;
 
     const recordIndex = inseminationRecords.findIndex((r) => r.id === id);
 
@@ -331,13 +345,15 @@ export const handleUpdateInsemination: RequestHandler = async (req, res) => {
     };
 
     const apiUrl = process.env.SERVER_API_URL;
-    const response = await axios.patch(`${apiUrl}inseminations/${id}`, {
-      nni: updatedRecord.nni,
-      date_dissemination: updatedRecord.date_dissemination,
-      semence_id: updatedRecord.semence_id,
-      inseminateur_id: updatedRecord.inseminateur_id,
-      responsable_local_id: updatedRecord.responsable_local_id,
-    });
+    const response = await axios.patch(
+      `${apiUrl}inseminations/${id}`,
+      input.input,
+      {
+        headers: {
+          Authorization: `Bearer ${input.token}`,
+        },
+      },
+    );
 
     inseminationRecords[recordIndex] = updatedRecord;
 
@@ -359,6 +375,7 @@ export const handleUpdateInsemination: RequestHandler = async (req, res) => {
 export const handleDeleteInsemination: RequestHandler = async (req, res) => {
   try {
     const { id } = req.params;
+    const { token } = req.query;
     const recordIndex = inseminationRecords.findIndex((r) => r.id === id);
     if (recordIndex === -1) {
       return res.status(404).json({
@@ -368,7 +385,11 @@ export const handleDeleteInsemination: RequestHandler = async (req, res) => {
     }
 
     const apiUrl = process.env.SERVER_API_URL;
-    const response = await axios.delete(`${apiUrl}inseminations/${id}`);
+    const response = await axios.delete(`${apiUrl}inseminations/${id}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
 
     inseminationRecords.splice(recordIndex, 1);
 
