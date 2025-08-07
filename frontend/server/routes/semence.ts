@@ -141,8 +141,13 @@ export const handleGetSemences: RequestHandler = async (req, res) => {
     // In a real application, you would fetch from the backend API
     // For now, we'll use mock data but keep the structure for future backend integration
 
+    const { token } = req.query;
     const apiUrl = process.env.SERVER_API_URL;
-    const response = await axios.get(`${apiUrl}semences`);
+    const response = await axios.get(`${apiUrl}semences`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
     semenceRecords = response.data.map((data) => ({
       id: data._id,
       identificateur: data.identificateur,
@@ -156,7 +161,6 @@ export const handleGetSemences: RequestHandler = async (req, res) => {
 
     const page = parseInt(req.query.page as string) || 1;
     const limit = parseInt(req.query.limit as string) || 10;
-
     const filters: SemenceFilters = {
       identificateur: req.query.identificateur as string,
       nom_taureau: req.query.nom_taureau as string,
@@ -266,12 +270,21 @@ export const handleCreateSemence: RequestHandler = async (req, res) => {
 
     // Backend API call would be like this:
     const apiUrl = process.env.SERVER_API_URL;
-    const response = await axios.post(`${apiUrl}semences`, {
-      identificateur: input.identificateur,
-      nom_taureau: input.nom_taureau,
-      race_taureau: input.race_taureau,
-      num_taureau: input.num_taureau,
-    });
+    const response = await axios.post(
+      `${apiUrl}semences`,
+      {
+        identificateur: input.identificateur,
+        nom_taureau: input.nom_taureau,
+        race_taureau: input.race_taureau,
+        num_taureau: input.num_taureau,
+      },
+
+      {
+        headers: {
+          Authorization: `Bearer ${input.token}`,
+        },
+      },
+    );
 
     // Create new record
     const newRecord: SemenceRecord = {
@@ -303,7 +316,7 @@ export const handleCreateSemence: RequestHandler = async (req, res) => {
 export const handleUpdateSemence: RequestHandler = async (req, res) => {
   try {
     const { id } = req.params;
-    const input: UpdateSemenceInput = req.body;
+    const input = req.body;
 
     const recordIndex = semenceRecords.findIndex((r) => r.id === id);
 
@@ -344,11 +357,10 @@ export const handleUpdateSemence: RequestHandler = async (req, res) => {
 
     // Backend API call would be like this:
     const apiUrl = process.env.SERVER_API_URL;
-    const response = await axios.patch(`${apiUrl}semences/${id}`, {
-      identificateur: input.identificateur,
-      nom_taureau: input.nom_taureau,
-      race_taureau: input.race_taureau,
-      num_taureau: input.num_taureau,
+    const response = await axios.patch(`${apiUrl}semences/${id}`, input.input, {
+      headers: {
+        Authorization: `Bearer ${input.token}`,
+      },
     });
 
     // Update record
@@ -387,9 +399,13 @@ export const handleDeleteSemence: RequestHandler = async (req, res) => {
       });
     }
 
-    // Backend API call would be like this:
+    const { token } = req.query;
     const apiUrl = process.env.SERVER_API_URL;
-    const response = await axios.delete(`${apiUrl}semences/${id}`);
+    const response = await axios.delete(`${apiUrl}semences/${id}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
 
     semenceRecords.splice(recordIndex, 1);
 
