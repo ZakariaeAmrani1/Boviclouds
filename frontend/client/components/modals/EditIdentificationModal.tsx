@@ -36,6 +36,8 @@ import { Badge } from "../ui/badge";
 import { useToast } from "../../hooks/use-toast";
 import { useIdentification } from "../../hooks/useIdentification";
 import MultiImageUpload, { ImageData } from "../ui/multi-image-upload";
+import { SearchableSelect } from "../ui/searchable-select";
+import { useExploitations, useEleveurs, useResponsablesLocaux } from "../../hooks/useDropdownData";
 import {
   IdentificationRecord,
   UpdateIdentificationInput,
