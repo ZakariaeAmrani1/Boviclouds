@@ -87,9 +87,9 @@ export const useResponsablesLocaux = () => {
       // Filter for users with RESPONSABLE_LOCAL role
       const response = await UtilisateurService.getAll({}, { page: 1, limit: 100 });
       const options: Option[] = response.data
-        .filter((user: UtilisateurRecord) => 
-          user.role === UtilisateurRole.RESPONSABLE_LOCAL || 
-          user.role === UtilisateurRole.ADMIN
+        .filter((user: UtilisateurRecord) =>
+          user.role === UtilisateurRole.RESPONSABLE ||
+          user.role === UtilisateurRole.ADMINISTRATEUR
         )
         .map((user: UtilisateurRecord) => ({
           value: user.id,
