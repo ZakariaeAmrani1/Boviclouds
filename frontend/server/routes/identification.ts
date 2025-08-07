@@ -448,7 +448,6 @@ export const updateIdentification: RequestHandler = async (req, res) => {
 
       if (images.length > 0) {
         // Create FormData for the backend request
-        const FormData = require("form-data");
         const formData = new FormData();
 
         // Add JSON data
