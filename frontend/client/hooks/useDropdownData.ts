@@ -1,11 +1,8 @@
 import { useState, useEffect } from "react";
 import { ExploitationService } from "../services/exploitationService";
 import { UtilisateurService } from "../services/utilisateurService";
-import {
-  ExploitationRecord,
-  UtilisateurRecord,
-  UtilisateurRole,
-} from "@shared/exploitation";
+import { ExploitationRecord } from "@shared/exploitation";
+import { UtilisateurRecord, UtilisateurRole } from "@shared/utilisateur";
 
 interface Option {
   value: string;
