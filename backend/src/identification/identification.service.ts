@@ -7,6 +7,7 @@ import {
 import * as ExcelJS from 'exceljs';
 import { Parser } from 'json2csv';
 import { CreateIdentificationDto } from './dto/create-identification.dto';
+import { File as MulterFile } from 'multer';
 
 export class IndentificationNotFoundException extends NotFoundException {
   constructor(id: string) {
@@ -44,10 +45,23 @@ export class IdentificationService {
 
     return this.identificationModel.find(query).lean();
   }
-  async create(createDto: CreateIdentificationDto,): Promise<Identification> {
-    const existing = await this.identificationModel.findOne({nni: createDto.infos_sujet.nni});
-    if (existing) throw new IdentificationAlreadyExistsException(createDto.infos_sujet.nni);
-    const created = new this.identificationModel(createDto);
+
+  async create(
+    createDto: CreateIdentificationDto,
+    photos: MulterFile[],
+  ): Promise<Identification> {
+    const existing = await this.identificationModel.findOne({
+      'infos_sujet.nni': createDto.infos_sujet.nni,
+    });
+    if (existing) {
+      throw new IdentificationAlreadyExistsException(createDto.infos_sujet.nni);
+    }
+
+    const imagePaths = photos.map((file) => file.path);
+    createDto.infos_sujet.photos = imagePaths;
+    console.log('Image paths:', imagePaths);
+    console.log('Create DTO:', createDto);
+    const created = await this.identificationModel.create(createDto);
     return await created.save();
   }
 
@@ -94,21 +108,29 @@ export class IdentificationService {
   }
 
   async findById(id: string): Promise<Identification> {
-    if (!Types.ObjectId.isValid(id)) throw new IndentificationNotFoundException(id);
+    if (!Types.ObjectId.isValid(id))
+      throw new IndentificationNotFoundException(id);
     const identification = await this.identificationModel.findById(id).exec();
     if (!identification) throw new IndentificationNotFoundException(id);
     return identification;
   }
 
-  async update(id: string, updateDto: Partial<CreateIdentificationDto>): Promise<Identification> {
-    if (!Types.ObjectId.isValid(id)) throw new IndentificationNotFoundException(id);
-    const updated = await this.identificationModel.findByIdAndUpdate(id, updateDto, { new: true }).exec();
+  async update(
+    id: string,
+    updateDto: Partial<CreateIdentificationDto>,
+  ): Promise<Identification> {
+    if (!Types.ObjectId.isValid(id))
+      throw new IndentificationNotFoundException(id);
+    const updated = await this.identificationModel
+      .findByIdAndUpdate(id, updateDto, { new: true })
+      .exec();
     if (!updated) throw new IndentificationNotFoundException(id);
     return updated;
   }
 
   async delete(id: string): Promise<Identification> {
-    if(!Types.ObjectId.isValid(id)) throw new IndentificationNotFoundException(id);
+    if (!Types.ObjectId.isValid(id))
+      throw new IndentificationNotFoundException(id);
     const result = await this.identificationModel.findByIdAndDelete(id);
     if (!result) {
       throw new IndentificationNotFoundException(id);
