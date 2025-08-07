@@ -23,6 +23,8 @@ export class SemenceService {
     pagination: PaginationParams = { page: 1, limit: 10 },
   ): Promise<PaginatedResponse<SemenceRecord>> {
     const params = new URLSearchParams();
+    const token = localStorage.getItem("access_token");
+    params.append("token", token);
 
     // Add pagination params
     params.append("page", pagination.page.toString());
@@ -79,9 +81,9 @@ export class SemenceService {
   /**
    * Create a new semence record
    */
-  static async create(
-    input: CreateSemenceInput,
-  ): Promise<SemenceRecord> {
+  static async create(input: CreateSemenceInput): Promise<SemenceRecord> {
+    const token = localStorage.getItem("access_token");
+    input.token = token;
     const response = await fetch(API_BASE_URL, {
       method: "POST",
       headers: {
@@ -115,12 +117,17 @@ export class SemenceService {
     id: string,
     input: UpdateSemenceInput,
   ): Promise<SemenceRecord> {
+    const token = localStorage.getItem("access_token");
+    const data = {
+      input: input,
+      token: token,
+    };
     const response = await fetch(`${API_BASE_URL}/${id}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(input),
+      body: JSON.stringify(data),
     });
 
     if (!response.ok) {
@@ -145,7 +152,9 @@ export class SemenceService {
    * Delete a semence record
    */
   static async delete(id: string): Promise<void> {
-    const response = await fetch(`${API_BASE_URL}/${id}`, {
+    const params = new URLSearchParams();
+    const token = localStorage.getItem("access_token");
+    const response = await fetch(`${API_BASE_URL}/${id}?${params.toString()}`, {
       method: "DELETE",
     });
 
@@ -189,7 +198,9 @@ export class SemenceService {
   /**
    * Search semences by identificateur (quick search)
    */
-  static async searchByIdentificateur(identificateur: string): Promise<SemenceRecord[]> {
+  static async searchByIdentificateur(
+    identificateur: string,
+  ): Promise<SemenceRecord[]> {
     if (!identificateur.trim()) {
       return [];
     }
@@ -440,7 +451,9 @@ export class SemenceService {
     // This would ideally come from the backend, but for now we'll get all records
     // and extract unique races
     const result = await this.getAll({}, { page: 1, limit: 1000 });
-    const races = [...new Set(result.data.map(record => record.race_taureau))];
+    const races = [
+      ...new Set(result.data.map((record) => record.race_taureau)),
+    ];
     return races.sort();
   }
 
@@ -460,7 +473,7 @@ export class SemenceService {
     // This would ideally come from the backend, but for now we'll get all records
     // and extract unique names
     const result = await this.getAll({}, { page: 1, limit: 1000 });
-    const names = [...new Set(result.data.map(record => record.nom_taureau))];
+    const names = [...new Set(result.data.map((record) => record.nom_taureau))];
     return names.sort();
   }
 }
