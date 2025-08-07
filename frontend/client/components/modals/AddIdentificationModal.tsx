@@ -142,6 +142,11 @@ const AddIdentificationModal: React.FC<AddIdentificationModalProps> = ({
   const { toast } = useToast();
   const { loading, error, createRecord } = useIdentification();
 
+  // Dropdown data hooks
+  const { exploitations, loading: exploitationsLoading } = useExploitations();
+  const { eleveurs, loading: eleveursLoading } = useEleveurs();
+  const { responsables, loading: responsablesLoading } = useResponsablesLocaux();
+
   const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState<FormData>({
     sujet_nni: "",
