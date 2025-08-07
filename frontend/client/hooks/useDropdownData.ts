@@ -53,7 +53,7 @@ export const useEleveurs = () => {
       // Filter for users with ELEVEUR role
       const response = await UtilisateurService.getAll({}, { page: 1, limit: 100 });
       const options: Option[] = response.data
-        .filter((user: UtilisateurRecord) => user.role === UtilisateurRole.ELEVEUR || user.role === UtilisateurRole.ADMIN)
+        .filter((user: UtilisateurRecord) => user.role === UtilisateurRole.ELEVEUR || user.role === UtilisateurRole.ADMINISTRATEUR)
         .map((user: UtilisateurRecord) => ({
           value: user.id,
           label: `${user.prenom} ${user.nom}`,
