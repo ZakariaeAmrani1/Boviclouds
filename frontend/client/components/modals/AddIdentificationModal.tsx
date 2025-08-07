@@ -432,6 +432,22 @@ const AddIdentificationModal: React.FC<AddIdentificationModalProps> = ({
     return stepNumber <= currentStep || completedSteps.has(stepNumber);
   };
 
+  // Helper functions to get display names from IDs
+  const getEleveurName = (id: string) => {
+    const eleveur = eleveurs.find(e => e.value === id);
+    return eleveur ? eleveur.label : id;
+  };
+
+  const getExploitationName = (id: string) => {
+    const exploitation = exploitations.find(e => e.value === id);
+    return exploitation ? exploitation.label : id;
+  };
+
+  const getResponsableName = (id: string) => {
+    const responsable = responsables.find(r => r.value === id);
+    return responsable ? responsable.label : id;
+  };
+
   return (
     <Dialog open={isOpen} onOpenChange={handleModalClose}>
       <DialogPortal>
