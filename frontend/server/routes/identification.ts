@@ -12,6 +12,7 @@ import {
   TypeAnimal,
 } from "../../shared/identification";
 import axios from "axios";
+import FormData from "form-data";
 
 // Mock database - in a real app, this would be a proper database
 let identifications: IdentificationRecord[] = [];
@@ -331,7 +332,6 @@ export const createIdentification: RequestHandler = async (req, res) => {
 
       if (images.length > 0) {
         // Create FormData for the backend request
-        const FormData = require("form-data");
         const formData = new FormData();
 
         // Add JSON data
@@ -448,7 +448,6 @@ export const updateIdentification: RequestHandler = async (req, res) => {
 
       if (images.length > 0) {
         // Create FormData for the backend request
-        const FormData = require("form-data");
         const formData = new FormData();
 
         // Add JSON data

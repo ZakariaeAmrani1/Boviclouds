@@ -35,6 +35,8 @@ import { Badge } from "../ui/badge";
 import { useToast } from "../../hooks/use-toast";
 import { useIdentification } from "../../hooks/useIdentification";
 import MultiImageUpload, { ImageData } from "../ui/multi-image-upload";
+import { SearchableSelect } from "../ui/searchable-select";
+import { useExploitations, useEleveurs, useResponsablesLocaux } from "../../hooks/useDropdownData";
 import {
   CreateIdentificationInput,
   Race,
@@ -139,6 +141,11 @@ const AddIdentificationModal: React.FC<AddIdentificationModalProps> = ({
 }) => {
   const { toast } = useToast();
   const { loading, error, createRecord } = useIdentification();
+
+  // Dropdown data hooks
+  const { exploitations, loading: exploitationsLoading } = useExploitations();
+  const { eleveurs, loading: eleveursLoading } = useEleveurs();
+  const { responsables, loading: responsablesLoading } = useResponsablesLocaux();
 
   const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState<FormData>({
@@ -423,6 +430,22 @@ const AddIdentificationModal: React.FC<AddIdentificationModalProps> = ({
 
   const canNavigateToStep = (stepNumber: number) => {
     return stepNumber <= currentStep || completedSteps.has(stepNumber);
+  };
+
+  // Helper functions to get display names from IDs
+  const getEleveurName = (id: string) => {
+    const eleveur = eleveurs.find(e => e.value === id);
+    return eleveur ? eleveur.label : id;
+  };
+
+  const getExploitationName = (id: string) => {
+    const exploitation = exploitations.find(e => e.value === id);
+    return exploitation ? exploitation.label : id;
+  };
+
+  const getResponsableName = (id: string) => {
+    const responsable = responsables.find(r => r.value === id);
+    return responsable ? responsable.label : id;
   };
 
   return (
@@ -1063,17 +1086,17 @@ const AddIdentificationModal: React.FC<AddIdentificationModalProps> = ({
                       htmlFor="eleveur_id"
                       className="text-sm font-normal text-black"
                     >
-                      ID Éleveur *
+                      Éleveur *
                     </Label>
-                    <Input
-                      id="eleveur_id"
+                    <SearchableSelect
+                      placeholder="Sélectionner un éleveur"
                       value={formData.eleveur_id}
-                      onChange={(e) =>
-                        handleFormChange("eleveur_id", e.target.value)
-                      }
-                      className="h-12 px-4 text-sm rounded-xl border-boviclouds-gray-100"
-                      placeholder="Ex: eleveur-001"
+                      onValueChange={(value) => handleFormChange("eleveur_id", value)}
+                      options={eleveurs}
+                      loading={eleveursLoading}
                       disabled={loading}
+                      searchPlaceholder="Rechercher un éleveur..."
+                      emptyMessage="Aucun éleveur trouvé"
                     />
                   </div>
 
@@ -1082,17 +1105,17 @@ const AddIdentificationModal: React.FC<AddIdentificationModalProps> = ({
                       htmlFor="exploitation_id"
                       className="text-sm font-normal text-black"
                     >
-                      ID Exploitation *
+                      Exploitation *
                     </Label>
-                    <Input
-                      id="exploitation_id"
+                    <SearchableSelect
+                      placeholder="Sélectionner une exploitation"
                       value={formData.exploitation_id}
-                      onChange={(e) =>
-                        handleFormChange("exploitation_id", e.target.value)
-                      }
-                      className="h-12 px-4 text-sm rounded-xl border-boviclouds-gray-100"
-                      placeholder="Ex: exploit-001"
+                      onValueChange={(value) => handleFormChange("exploitation_id", value)}
+                      options={exploitations}
+                      loading={exploitationsLoading}
                       disabled={loading}
+                      searchPlaceholder="Rechercher une exploitation..."
+                      emptyMessage="Aucune exploitation trouvée"
                     />
                   </div>
 
@@ -1101,17 +1124,17 @@ const AddIdentificationModal: React.FC<AddIdentificationModalProps> = ({
                       htmlFor="responsable_local_id"
                       className="text-sm font-normal text-black"
                     >
-                      ID Responsable local *
+                      Responsable local *
                     </Label>
-                    <Input
-                      id="responsable_local_id"
+                    <SearchableSelect
+                      placeholder="Sélectionner un responsable"
                       value={formData.responsable_local_id}
-                      onChange={(e) =>
-                        handleFormChange("responsable_local_id", e.target.value)
-                      }
-                      className="h-12 px-4 text-sm rounded-xl border-boviclouds-gray-100"
-                      placeholder="Ex: resp-001"
+                      onValueChange={(value) => handleFormChange("responsable_local_id", value)}
+                      options={responsables}
+                      loading={responsablesLoading}
                       disabled={loading}
+                      searchPlaceholder="Rechercher un responsable..."
+                      emptyMessage="Aucun responsable trouvé"
                     />
                   </div>
                 </div>
@@ -1204,19 +1227,19 @@ const AddIdentificationModal: React.FC<AddIdentificationModalProps> = ({
                       <div className="flex justify-between">
                         <span className="text-purple-700">Éleveur:</span>
                         <span className="font-medium">
-                          {formData.eleveur_id}
+                          {getEleveurName(formData.eleveur_id)}
                         </span>
                       </div>
                       <div className="flex justify-between">
                         <span className="text-purple-700">Exploitation:</span>
                         <span className="font-medium">
-                          {formData.exploitation_id}
+                          {getExploitationName(formData.exploitation_id)}
                         </span>
                       </div>
                       <div className="flex justify-between">
                         <span className="text-purple-700">Responsable:</span>
                         <span className="font-medium">
-                          {formData.responsable_local_id}
+                          {getResponsableName(formData.responsable_local_id)}
                         </span>
                       </div>
                     </div>
