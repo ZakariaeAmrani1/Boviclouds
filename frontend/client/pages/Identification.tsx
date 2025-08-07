@@ -449,7 +449,7 @@ const Identification: React.FC = () => {
           <div className="overflow-x-auto min-w-full">
             <table className="w-full">
               <thead className="bg-gray-50">
-                <tr>
+                <tr key="table-header">
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     NNI
                   </th>
