@@ -1,13 +1,13 @@
 import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
-import {
-  Identification,
-} from './schemas/identification.schema';
+import { Identification } from './schemas/identification.schema';
 import * as ExcelJS from 'exceljs';
 import { Parser } from 'json2csv';
 import { CreateIdentificationDto } from './dto/create-identification.dto';
 import { File as MulterFile } from 'multer';
+import { S3Service } from 'src/common/s3/s3.service';
+import { IDENTIFICATION_BUCKET } from './constants/identification.constants';
 
 export class IndentificationNotFoundException extends NotFoundException {
   constructor(id: string) {
@@ -25,6 +25,7 @@ export class IdentificationService {
   constructor(
     @InjectModel(Identification.name)
     private readonly identificationModel: Model<Identification>,
+    private readonly s3Service: S3Service, 
   ) {}
 
   async findAll(query: any): Promise<Identification[]> {
@@ -53,18 +54,44 @@ export class IdentificationService {
     const existing = await this.identificationModel.findOne({
       'infos_sujet.nni': createDto.infos_sujet.nni,
     });
-    if (existing) {
-      throw new IdentificationAlreadyExistsException(createDto.infos_sujet.nni);
-    }
-
-    const imagePaths = photos.map((file) => file.path);
+    if (existing) throw new IdentificationAlreadyExistsException(createDto.infos_sujet.nni);
+    const imagePaths = await this.uploadPhotosToS3(photos,IDENTIFICATION_BUCKET, createDto.infos_sujet.nni);
     createDto.infos_sujet.photos = imagePaths;
-    console.log('Image paths:', imagePaths);
-    console.log('Create DTO:', createDto);
+    // console.log('Image paths:', imagePaths);
+    // console.log('Create DTO:', createDto);
     const created = await this.identificationModel.create(createDto);
     return await created.save();
   }
 
+  private async uploadPhotoToS3(
+    photo: MulterFile,
+     bucket: string,
+      cowNNI: string
+    ): Promise<string> {
+    const key = `identifications/${cowNNI}-${photo.originalname}-${Date.now()}`;
+    await this.s3Service.uploadFile({
+      bucket,
+      key,
+      file: photo.buffer,
+    });
+    return await this.s3Service.getFileUrl(bucket, key);
+
+  }
+
+  private async uploadPhotosToS3(
+    photos: MulterFile[],
+    bucket: string,
+    cowNNI: string,
+  ): Promise<string[]> {
+    const uploadedUrls: string[] = await Promise.all(
+      photos.map(async (file) => {
+        const url = await this.uploadPhotoToS3(file, bucket, cowNNI);
+        return url;
+      }))
+    return uploadedUrls;
+  }
+  
+  // Export identifications to CSV or Excel
   async export(
     format: 'csv' | 'excel',
     filters: {
