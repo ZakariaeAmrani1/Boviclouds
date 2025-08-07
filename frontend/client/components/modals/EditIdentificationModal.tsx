@@ -1413,7 +1413,7 @@ const EditIdentificationModal: React.FC<EditIdentificationModalProps> = ({
                         <span
                           className={`font-medium ${formData.eleveur_id !== originalData?.eleveur_id ? "text-amber-600" : ""}`}
                         >
-                          {formData.eleveur_id}
+                          {getEleveurName(formData.eleveur_id)}
                         </span>
                       </div>
                       <div className="flex justify-between">
@@ -1421,7 +1421,7 @@ const EditIdentificationModal: React.FC<EditIdentificationModalProps> = ({
                         <span
                           className={`font-medium ${formData.exploitation_id !== originalData?.exploitation_id ? "text-amber-600" : ""}`}
                         >
-                          {formData.exploitation_id}
+                          {getExploitationName(formData.exploitation_id)}
                         </span>
                       </div>
                       <div className="flex justify-between">
@@ -1429,7 +1429,7 @@ const EditIdentificationModal: React.FC<EditIdentificationModalProps> = ({
                         <span
                           className={`font-medium ${formData.responsable_local_id !== originalData?.responsable_local_id ? "text-amber-600" : ""}`}
                         >
-                          {formData.responsable_local_id}
+                          {getResponsableName(formData.responsable_local_id)}
                         </span>
                       </div>
                     </div>
