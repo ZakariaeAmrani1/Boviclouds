@@ -474,60 +474,68 @@ const Identification: React.FC = () => {
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {currentData.map((record, index) => (
-                  <tr key={record.id || `record-${index}`} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                      {record.infos_sujet.nni}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {formatDate(record.infos_sujet.date_naissance)}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <Badge className={getTypeColor(record.infos_sujet.type)}>
-                        {record.infos_sujet.type}
-                      </Badge>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <Badge className={getSexeColor(record.infos_sujet.sexe)}>
-                        {record.infos_sujet.sexe}
-                      </Badge>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {record.infos_sujet.race}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {record.createdBy}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      <div className="flex space-x-2">
-                        <button
-                          onClick={() => openViewModal(record)}
-                          className="p-1.5 text-blue-600 hover:text-blue-900 hover:bg-blue-50 rounded-md transition-colors"
-                          title="Voir"
-                          disabled={actionLoading}
-                        >
-                          <Eye className="w-4 h-4" />
-                        </button>
-                        <button
-                          onClick={() => openEditModal(record)}
-                          className="p-1.5 text-green-600 hover:text-green-900 hover:bg-green-50 rounded-md transition-colors"
-                          title="Modifier"
-                          disabled={actionLoading}
-                        >
-                          <Edit className="w-4 h-4" />
-                        </button>
-                        <button
-                          onClick={() => openDeleteDialog(record)}
-                          className="p-1.5 text-red-600 hover:text-red-900 hover:bg-red-50 rounded-md transition-colors"
-                          title="Supprimer"
-                          disabled={actionLoading}
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
-                      </div>
+                {currentData.length === 0 ? (
+                  <tr key="empty-state">
+                    <td colSpan={7} className="px-6 py-8 text-center text-gray-500">
+                      Aucune identification trouvée
                     </td>
                   </tr>
-                ))}
+                ) : (
+                  currentData.map((record, index) => (
+                    <tr key={record.id || `record-${index}`} className="hover:bg-gray-50">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                        {record.infos_sujet.nni}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {formatDate(record.infos_sujet.date_naissance)}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <Badge className={getTypeColor(record.infos_sujet.type)}>
+                          {record.infos_sujet.type}
+                        </Badge>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <Badge className={getSexeColor(record.infos_sujet.sexe)}>
+                          {record.infos_sujet.sexe}
+                        </Badge>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {record.infos_sujet.race}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {record.createdBy}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        <div className="flex space-x-2">
+                          <button
+                            onClick={() => openViewModal(record)}
+                            className="p-1.5 text-blue-600 hover:text-blue-900 hover:bg-blue-50 rounded-md transition-colors"
+                            title="Voir"
+                            disabled={actionLoading}
+                          >
+                            <Eye className="w-4 h-4" />
+                          </button>
+                          <button
+                            onClick={() => openEditModal(record)}
+                            className="p-1.5 text-green-600 hover:text-green-900 hover:bg-green-50 rounded-md transition-colors"
+                            title="Modifier"
+                            disabled={actionLoading}
+                          >
+                            <Edit className="w-4 h-4" />
+                          </button>
+                          <button
+                            onClick={() => openDeleteDialog(record)}
+                            className="p-1.5 text-red-600 hover:text-red-900 hover:bg-red-50 rounded-md transition-colors"
+                            title="Supprimer"
+                            disabled={actionLoading}
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))
+                )}
               </tbody>
             </table>
           </div>
