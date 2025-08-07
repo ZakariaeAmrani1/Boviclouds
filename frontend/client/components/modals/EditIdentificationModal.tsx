@@ -146,6 +146,11 @@ const EditIdentificationModal: React.FC<EditIdentificationModalProps> = ({
   const { toast } = useToast();
   const { loading, error, updateRecord } = useIdentification();
 
+  // Dropdown data hooks
+  const { exploitations, loading: exploitationsLoading } = useExploitations();
+  const { eleveurs, loading: eleveursLoading } = useEleveurs();
+  const { responsables, loading: responsablesLoading } = useResponsablesLocaux();
+
 
 
   const [currentStep, setCurrentStep] = useState(1);
