@@ -474,8 +474,8 @@ const Identification: React.FC = () => {
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {currentData.map((record) => (
-                  <tr key={record.id} className="hover:bg-gray-50">
+                {currentData.map((record, index) => (
+                  <tr key={record.id || `record-${index}`} className="hover:bg-gray-50">
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                       {record.infos_sujet.nni}
                     </td>
