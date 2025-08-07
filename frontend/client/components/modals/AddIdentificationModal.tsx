@@ -1070,17 +1070,17 @@ const AddIdentificationModal: React.FC<AddIdentificationModalProps> = ({
                       htmlFor="eleveur_id"
                       className="text-sm font-normal text-black"
                     >
-                      ID Éleveur *
+                      Éleveur *
                     </Label>
-                    <Input
-                      id="eleveur_id"
+                    <SearchableSelect
+                      placeholder="Sélectionner un éleveur"
                       value={formData.eleveur_id}
-                      onChange={(e) =>
-                        handleFormChange("eleveur_id", e.target.value)
-                      }
-                      className="h-12 px-4 text-sm rounded-xl border-boviclouds-gray-100"
-                      placeholder="Ex: eleveur-001"
+                      onValueChange={(value) => handleFormChange("eleveur_id", value)}
+                      options={eleveurs}
+                      loading={eleveursLoading}
                       disabled={loading}
+                      searchPlaceholder="Rechercher un éleveur..."
+                      emptyMessage="Aucun éleveur trouvé"
                     />
                   </div>
 
@@ -1089,17 +1089,17 @@ const AddIdentificationModal: React.FC<AddIdentificationModalProps> = ({
                       htmlFor="exploitation_id"
                       className="text-sm font-normal text-black"
                     >
-                      ID Exploitation *
+                      Exploitation *
                     </Label>
-                    <Input
-                      id="exploitation_id"
+                    <SearchableSelect
+                      placeholder="Sélectionner une exploitation"
                       value={formData.exploitation_id}
-                      onChange={(e) =>
-                        handleFormChange("exploitation_id", e.target.value)
-                      }
-                      className="h-12 px-4 text-sm rounded-xl border-boviclouds-gray-100"
-                      placeholder="Ex: exploit-001"
+                      onValueChange={(value) => handleFormChange("exploitation_id", value)}
+                      options={exploitations}
+                      loading={exploitationsLoading}
                       disabled={loading}
+                      searchPlaceholder="Rechercher une exploitation..."
+                      emptyMessage="Aucune exploitation trouvée"
                     />
                   </div>
 
@@ -1108,17 +1108,17 @@ const AddIdentificationModal: React.FC<AddIdentificationModalProps> = ({
                       htmlFor="responsable_local_id"
                       className="text-sm font-normal text-black"
                     >
-                      ID Responsable local *
+                      Responsable local *
                     </Label>
-                    <Input
-                      id="responsable_local_id"
+                    <SearchableSelect
+                      placeholder="Sélectionner un responsable"
                       value={formData.responsable_local_id}
-                      onChange={(e) =>
-                        handleFormChange("responsable_local_id", e.target.value)
-                      }
-                      className="h-12 px-4 text-sm rounded-xl border-boviclouds-gray-100"
-                      placeholder="Ex: resp-001"
+                      onValueChange={(value) => handleFormChange("responsable_local_id", value)}
+                      options={responsables}
+                      loading={responsablesLoading}
                       disabled={loading}
+                      searchPlaceholder="Rechercher un responsable..."
+                      emptyMessage="Aucun responsable trouvé"
                     />
                   </div>
                 </div>
