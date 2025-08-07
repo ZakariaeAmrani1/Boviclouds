@@ -1227,19 +1227,19 @@ const AddIdentificationModal: React.FC<AddIdentificationModalProps> = ({
                       <div className="flex justify-between">
                         <span className="text-purple-700">Éleveur:</span>
                         <span className="font-medium">
-                          {formData.eleveur_id}
+                          {getEleveurName(formData.eleveur_id)}
                         </span>
                       </div>
                       <div className="flex justify-between">
                         <span className="text-purple-700">Exploitation:</span>
                         <span className="font-medium">
-                          {formData.exploitation_id}
+                          {getExploitationName(formData.exploitation_id)}
                         </span>
                       </div>
                       <div className="flex justify-between">
                         <span className="text-purple-700">Responsable:</span>
                         <span className="font-medium">
-                          {formData.responsable_local_id}
+                          {getResponsableName(formData.responsable_local_id)}
                         </span>
                       </div>
                     </div>
