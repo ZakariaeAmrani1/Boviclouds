@@ -1,9 +1,14 @@
-import React from "react";
+import React, { useState } from "react";
 import { useAuth } from "../contexts/AuthContext";
 import { Badge } from "./ui/badge";
+import { Button } from "./ui/button";
+import { Card, CardContent } from "./ui/card";
+import { ChevronDown } from "lucide-react";
+import type { UserRole } from "../lib/roleNavigation";
 
 const RoleIndicator: React.FC = () => {
   const { userRole, isAuthenticated } = useAuth();
+  const [showRoleMenu, setShowRoleMenu] = useState(false);
 
   if (!isAuthenticated) {
     return null;
@@ -43,11 +48,64 @@ const RoleIndicator: React.FC = () => {
     }
   };
 
+  const testRoles: UserRole[] = [
+    "ADMIN",
+    "INSEMINATEUR",
+    "IDENTIFICATEUR",
+    "CONTROLEUR_LAITIER",
+    "RESPONSABLE_LOCAL"
+  ];
+
+  const switchRole = (newRole: UserRole) => {
+    // Just update the user object in localStorage for testing sidebar
+    const savedUser = localStorage.getItem('user');
+    if (savedUser) {
+      try {
+        const user = JSON.parse(savedUser);
+        user.role = newRole;
+        localStorage.setItem('user', JSON.stringify(user));
+        window.location.reload(); // Reload to apply changes
+      } catch (error) {
+        console.error('Error updating user role:', error);
+      }
+    }
+  };
+
   return (
     <div className="fixed top-4 right-4 z-50">
-      <Badge className={`${getRoleColor(userRole)} font-medium`}>
-        Rôle: {getRoleDisplayName(userRole)}
-      </Badge>
+      <div className="relative">
+        <Badge
+          className={`${getRoleColor(userRole)} font-medium cursor-pointer flex items-center gap-1`}
+          onClick={() => setShowRoleMenu(!showRoleMenu)}
+        >
+          Rôle: {getRoleDisplayName(userRole)}
+          {import.meta.env.DEV && <ChevronDown className="h-3 w-3" />}
+        </Badge>
+
+        {import.meta.env.DEV && showRoleMenu && (
+          <Card className="absolute top-full mt-2 right-0 w-48">
+            <CardContent className="p-2">
+              <div className="text-xs text-muted-foreground mb-2">Test des rôles:</div>
+              <div className="space-y-1">
+                {testRoles.map((role) => (
+                  <Button
+                    key={role}
+                    variant="ghost"
+                    size="sm"
+                    className="w-full justify-start text-xs h-auto py-1"
+                    onClick={() => {
+                      switchRole(role);
+                      setShowRoleMenu(false);
+                    }}
+                  >
+                    {getRoleDisplayName(role)}
+                  </Button>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        )}
+      </div>
     </div>
   );
 };
