@@ -68,7 +68,7 @@ export class IdentificationService {
      bucket: string,
       cowNNI: string
     ): Promise<string> {
-    const key = `identifications/${cowNNI}-${photo.originalname}-${Date.now()}`;
+    const key = `${cowNNI}/${cowNNI}-${photo.originalname}-${Date.now()}`;
     await this.s3Service.uploadFile({
       bucket,
       key,
