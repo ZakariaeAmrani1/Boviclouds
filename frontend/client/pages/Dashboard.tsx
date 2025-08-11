@@ -1,39 +1,10 @@
-import React, { useState, useEffect } from "react";
-import {
-  ChevronRight,
-  TrendingUp,
-  TrendingDown,
-  Calendar,
-  Filter,
-  Download,
-  MoreHorizontal,
-  AlertTriangle,
-  CheckCircle,
-  Clock,
-  PawPrint,
-  Droplets,
-  Heart,
-  Users,
-} from "lucide-react";
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
-} from "recharts";
-import { DashboardService } from "../services/dashboardService";
-import { DashboardData, DashboardFilters } from "@shared/dashboard";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "../components/ui/select";
+import React from "react";
+import { useAuth } from "../contexts/AuthContext";
+import { UtilisateurRole } from "@shared/utilisateur";
+import AdminDashboard from "../components/dashboards/AdminDashboard";
+import EleveurDashboard from "../components/dashboards/EleveurDashboard";
+import InseminateurDashboard from "../components/dashboards/InseminateurDashboard";
+import { AlertTriangle } from "lucide-react";
 
 // Custom tooltip component for the chart
 const CustomTooltip = ({ active, payload, label }: any) => {
