@@ -18,17 +18,17 @@ interface JWTPayload {
  */
 export const decodeJWT = (token: string): JWTPayload | null => {
   try {
-    const base64Url = token.split('.')[1];
-    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    const base64Url = token.split(".")[1];
+    const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
     const jsonPayload = decodeURIComponent(
       atob(base64)
-        .split('')
-        .map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
-        .join('')
+        .split("")
+        .map((c) => "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2))
+        .join(""),
     );
     return JSON.parse(jsonPayload);
   } catch (error) {
-    console.error('Error decoding JWT:', error);
+    console.error("Error decoding JWT:", error);
     return null;
   }
 };
@@ -37,9 +37,9 @@ export const decodeJWT = (token: string): JWTPayload | null => {
  * Get user role from JWT token
  */
 export const getUserRoleFromToken = (): string | null => {
-  const token = localStorage.getItem('access_token');
+  const token = localStorage.getItem("access_token");
   if (!token) return null;
-  
+
   const payload = decodeJWT(token);
   return payload?.role || null;
 };
@@ -51,7 +51,7 @@ export const isTokenExpired = (token: string): boolean => {
   try {
     const payload = decodeJWT(token);
     if (!payload) return true;
-    
+
     const currentTime = Date.now() / 1000;
     return payload.exp < currentTime;
   } catch {
@@ -63,25 +63,35 @@ export const isTokenExpired = (token: string): boolean => {
  * Role-based navigation configuration
  */
 export const ROLE_NAVIGATION: Record<string, string[]> = {
-  "Administrateur": [
-    'dashboard', 'rebouclage', 'identification', 'insemination', 'semences',
-    'lactations', 'exploitations', 'utilisateurs', 'cctv', 'traitement', 'profile'
+  ADMIN: [
+    "dashboard",
+    "rebouclage",
+    "identification",
+    "insemination",
+    "semences",
+    "lactations",
+    "exploitations",
+    "utilisateurs",
+    "cctv",
+    "traitement",
+    "profile",
   ],
-  "Inseminateur": [
-    'dashboard', 'insemination', 'semences', 'profile'
-  ],
-  "Identificateur": [
-    'dashboard', 'identification', 'rebouclage', 'profile'
-  ],
-  "Contrôleur": [
-    'dashboard', 'lactations', 'profile'
-  ],
-  "Éleveur": [
-    'dashboard', 'cctv', 'profile'
-  ],
-  "Résponsable Local": [
-    'dashboard', 'rebouclage', 'identification', 'insemination', 'semences',
-    'lactations', 'exploitations', 'utilisateurs', 'cctv', 'traitement', 'profile'
+  INSEMINATEUR: ["dashboard", "insemination", "semences", "profile"],
+  IDENTIFICATEUR: ["dashboard", "identification", "rebouclage", "profile"],
+  CONTROLEUR_LAITIER: ["dashboard", "lactations", "profile"],
+  ELEVEUR: ["dashboard", "cctv", "profile"],
+  RESPONSABLE_LOCAL: [
+    "dashboard",
+    "rebouclage",
+    "identification",
+    "insemination",
+    "semences",
+    "lactations",
+    "exploitations",
+    "utilisateurs",
+    "cctv",
+    "traitement",
+    "profile",
   ],
 };
 
@@ -112,48 +122,15 @@ export const ROUTE_ROLE_MAP: Record<string, string[]> = {
     "Éleveur",
     "Résponsable Local",
   ],
-  rebouclage: [
-    "Administrateur",
-    "Identificateur",
-    "Résponsable Local",
-  ],
-  identification: [
-    "Administrateur",
-    "Identificateur",
-    "Résponsable Local",
-  ],
-  insemination: [
-    "Administrateur",
-    "Inseminateur",
-    "Résponsable Local",
-  ],
-  semences: [
-    "Administrateur",
-    "Inseminateur",
-    "Résponsable Local",
-  ],
-  lactations: [
-    "Administrateur",
-    "Contrôleur",
-    "Résponsable Local",
-  ],
-  exploitations: [
-    "Administrateur",
-    "Résponsable Local",
-  ],
-  utilisateurs: [
-    "Administrateur",
-    "Résponsable Local",
-  ],
-  cctv: [
-    "Administrateur",
-    "Éleveur",
-    "Résponsable Local",
-  ],
-  traitement: [
-    "Administrateur",
-    "Résponsable Local",
-  ],
+  rebouclage: ["Administrateur", "Identificateur", "Résponsable Local"],
+  identification: ["Administrateur", "Identificateur", "Résponsable Local"],
+  insemination: ["Administrateur", "Inseminateur", "Résponsable Local"],
+  semences: ["Administrateur", "Inseminateur", "Résponsable Local"],
+  lactations: ["Administrateur", "Contrôleur", "Résponsable Local"],
+  exploitations: ["Administrateur", "Résponsable Local"],
+  utilisateurs: ["Administrateur", "Résponsable Local"],
+  cctv: ["Administrateur", "Éleveur", "Résponsable Local"],
+  traitement: ["Administrateur", "Résponsable Local"],
   profile: [
     "Administrateur",
     "Inseminateur",
