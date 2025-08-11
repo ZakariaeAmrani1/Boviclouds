@@ -35,12 +35,25 @@ export const decodeJWT = (token: string): DecodedToken | null => {
 
 export const getUserRole = (): string | null => {
   const token = localStorage.getItem('access_token');
-  if (!token) {
-    return null;
+  if (token) {
+    const decoded = decodeJWT(token);
+    if (decoded?.role) {
+      return decoded.role;
+    }
   }
 
-  const decoded = decodeJWT(token);
-  return decoded?.role || null;
+  // Fallback: check if role is stored in user object (for backward compatibility)
+  const savedUser = localStorage.getItem('user');
+  if (savedUser) {
+    try {
+      const user = JSON.parse(savedUser);
+      return user.role || null;
+    } catch (error) {
+      console.error('Error parsing saved user for role:', error);
+    }
+  }
+
+  return null;
 };
 
 export const isTokenExpired = (token: string): boolean => {
