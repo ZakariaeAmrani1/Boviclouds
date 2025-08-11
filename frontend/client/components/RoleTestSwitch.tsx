@@ -21,6 +21,7 @@ const RoleTestSwitch: React.FC = () => {
     { role: "IDENTIFICATEUR", label: "Identificateur", description: "Dashboard, Identifications, Rebouclage" },
     { role: "CONTROLEUR_LAITIER", label: "Contrôleur Laitier", description: "Dashboard, Lactations" },
     { role: "RESPONSABLE_LOCAL", label: "Responsable Local", description: "Toutes les pages" },
+    { role: "ELEVEUR", label: "Éleveur", description: "Dashboard, CCTV" },
   ];
 
   const setTestRole = (role: UserRole) => {
