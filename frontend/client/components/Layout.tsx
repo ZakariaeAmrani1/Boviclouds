@@ -43,10 +43,10 @@ const Layout: React.FC = () => {
           {/* This is where the routed page content will be rendered */}
           <Outlet />
         </div>
-
-        {/* Role indicator for testing */}
-        <RoleIndicator />
       </div>
+
+      {/* Role test switch for development */}
+      <RoleTestSwitch />
     </div>
   );
 };
