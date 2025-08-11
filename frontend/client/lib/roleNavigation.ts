@@ -124,6 +124,10 @@ const rolePermissions: Record<UserRole, string[]> = {
     "/cctv",
     "/traitement",
   ],
+  ELEVEUR: [
+    "/",
+    "/cctv",
+  ],
 };
 
 // Simple function to get current user role from localStorage without JWT interference
