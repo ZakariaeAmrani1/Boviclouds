@@ -22,7 +22,7 @@ import { UserRole } from 'src/users/schemas/users/user.role';
 import { CreateIdentificationDto } from './dto/create-identification.dto';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { CurrentUser } from 'src/auth/decorators/active-user.decorator';
-import {File as MulterFile} from 'multer';
+import { File as MulterFile } from 'multer';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { PhotosRequiredValidator } from 'src/common/validators/photo-required-validator';
 
@@ -69,10 +69,12 @@ export class IdentificationController {
             maxSize: 5 * 1024 * 1024,
           }),
           new FileTypeValidator({
-            fileType: /(jpg|jpeg|png)$/i, })
+            fileType: /(jpg|jpeg|png)$/i,
+          }),
         ],
-      })
-    ) photos: MulterFile[],
+      }),
+    )
+    photos: MulterFile[],
   ) {
     const data: CreateIdentificationDto = {
       ...body,
@@ -85,7 +87,6 @@ export class IdentificationController {
       complem: JSON.parse(body.complem),
       createdBy: user?.userId,
     };
-    console.log(data,photos)
     return this.identificationService.create(data, photos);
   }
 
