@@ -29,6 +29,7 @@ export class UsersController {
     return this.getUser(user.userId);
   }
 
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Patch('change-password')
   async changePassword(
     @CurrentUser() user,
@@ -65,13 +66,11 @@ export class UsersController {
     return this.usersService.deleteUser(id);
   }
 
-  @UseGuards(JwtAuthGuard, RolesGuard)
   @Post('forgot-password')
   async forgotPassword(@Body('email') email: string, @Req() req) {
     return this.usersService.forgotPassword(email, req);
   }
 
-  @UseGuards(JwtAuthGuard, RolesGuard)
   @Post('reset-password/:token')
   async resetPassword(
     @Param('token') token: string,
