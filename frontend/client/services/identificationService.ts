@@ -223,7 +223,10 @@ export class IdentificationService {
    * Delete an identification record
    */
   static async delete(id: string): Promise<void> {
-    const response = await fetch(`${API_BASE_URL}/${id}`, {
+    const token = localStorage.getItem("access_token");
+    const params = new URLSearchParams();
+    params.append("token", token);
+    const response = await fetch(`${API_BASE_URL}/${id}?${params.toString()}`, {
       method: "DELETE",
     });
 

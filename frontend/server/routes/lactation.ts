@@ -93,7 +93,6 @@ export const handleGetLactations: RequestHandler = async (req, res) => {
         Authorization: `Bearer ${token}`,
       },
     });
-    console.log(response.data);
     lactationRecords = response.data.map((data: any) => ({
       id: data._id,
       sujet_id: data.sujet_id._id,
