@@ -24,10 +24,12 @@ const Dashboard = () => {
       case "Inseminateur":
         return <InseminateurDashboard />;
 
-      case "Identificateur":
       case "Contrôleur":
-        // For now, these roles use the admin dashboard
-        // You can create specific dashboards later
+        return <ControleurDashboard />;
+
+      case "Identificateur":
+        // For now, this role uses the admin dashboard
+        // You can create a specific dashboard later
         return <AdminDashboard />;
 
       default:
