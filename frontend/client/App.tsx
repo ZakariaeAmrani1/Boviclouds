@@ -1,5 +1,4 @@
 import "./global.css";
-import "./lib/roleTestUtils"; // Load role testing utility in development
 
 import { Toaster } from "@/components/ui/toaster";
 import { createRoot } from "react-dom/client";
