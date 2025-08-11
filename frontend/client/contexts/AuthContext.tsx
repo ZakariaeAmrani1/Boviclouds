@@ -50,6 +50,7 @@ interface AuthProviderProps {
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
+  const [userRole, setUserRole] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const apiUrl = import.meta.env.VITE_API_URL;
 
@@ -57,14 +58,30 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     // Check if user is already logged in (from localStorage)
     const checkAuthStatus = () => {
       const savedUser = localStorage.getItem("user");
+      const accessToken = localStorage.getItem("access_token");
       const keepLoggedIn = localStorage.getItem("keep_logged_in");
 
-      if (savedUser) {
+      if (savedUser && accessToken) {
         try {
-          setUser(JSON.parse(savedUser));
+          // Check if token is expired
+          if (isTokenExpired(accessToken)) {
+            // Token expired, clear everything
+            localStorage.removeItem("user");
+            localStorage.removeItem("access_token");
+            localStorage.removeItem("keep_logged_in");
+            setIsLoading(false);
+            return;
+          }
+
+          const userData = JSON.parse(savedUser);
+          const role = getUserRoleFromToken();
+
+          setUser(userData);
+          setUserRole(role);
         } catch (error) {
           console.error("Error parsing saved user:", error);
           localStorage.removeItem("user");
+          localStorage.removeItem("access_token");
           localStorage.removeItem("keep_logged_in");
         }
       }
