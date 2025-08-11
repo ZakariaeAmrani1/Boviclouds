@@ -47,6 +47,9 @@ const Layout: React.FC = () => {
 
         {/* Role indicator for testing */}
         <RoleIndicator />
+
+        {/* Role test panel for development */}
+        <RoleTestPanel />
       </div>
     </div>
   );
