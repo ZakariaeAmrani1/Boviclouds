@@ -36,7 +36,11 @@ import { useToast } from "../../hooks/use-toast";
 import { useIdentification } from "../../hooks/useIdentification";
 import MultiImageUpload, { ImageData } from "../ui/multi-image-upload";
 import { SearchableSelect } from "../ui/searchable-select";
-import { useExploitations, useEleveurs, useResponsablesLocaux } from "../../hooks/useDropdownData";
+import {
+  useExploitations,
+  useEleveurs,
+  useResponsablesLocaux,
+} from "../../hooks/useDropdownData";
 import {
   CreateIdentificationInput,
   Race,
@@ -145,7 +149,8 @@ const AddIdentificationModal: React.FC<AddIdentificationModalProps> = ({
   // Dropdown data hooks
   const { exploitations, loading: exploitationsLoading } = useExploitations();
   const { eleveurs, loading: eleveursLoading } = useEleveurs();
-  const { responsables, loading: responsablesLoading } = useResponsablesLocaux();
+  const { responsables, loading: responsablesLoading } =
+    useResponsablesLocaux();
 
   const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState<FormData>({
@@ -180,7 +185,10 @@ const AddIdentificationModal: React.FC<AddIdentificationModalProps> = ({
   >({});
   const [completedSteps, setCompletedSteps] = useState<Set<number>>(new Set());
 
-  const handleFormChange = (field: keyof FormData, value: string | ImageData[]) => {
+  const handleFormChange = (
+    field: keyof FormData,
+    value: string | ImageData[],
+  ) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
     // Clear validation error for this field
     if (validationErrors[field]) {
@@ -193,7 +201,7 @@ const AddIdentificationModal: React.FC<AddIdentificationModalProps> = ({
   };
 
   const handleImagesChange = (images: ImageData[]) => {
-    handleFormChange('images', images);
+    handleFormChange("images", images);
   };
 
   const resetForm = () => {
@@ -434,17 +442,17 @@ const AddIdentificationModal: React.FC<AddIdentificationModalProps> = ({
 
   // Helper functions to get display names from IDs
   const getEleveurName = (id: string) => {
-    const eleveur = eleveurs.find(e => e.value === id);
+    const eleveur = eleveurs.find((e) => e.value === id);
     return eleveur ? eleveur.label : id;
   };
 
   const getExploitationName = (id: string) => {
-    const exploitation = exploitations.find(e => e.value === id);
+    const exploitation = exploitations.find((e) => e.value === id);
     return exploitation ? exploitation.label : id;
   };
 
   const getResponsableName = (id: string) => {
-    const responsable = responsables.find(r => r.value === id);
+    const responsable = responsables.find((r) => r.value === id);
     return responsable ? responsable.label : id;
   };
 
@@ -645,7 +653,8 @@ const AddIdentificationModal: React.FC<AddIdentificationModalProps> = ({
                     Photos de l'animal
                   </h3>
                   <p className="text-gray-600">
-                    Ajoutez des photos pour l'identification de l'animal (optionnel)
+                    Ajoutez des photos pour l'identification de l'animal
+                    (optionnel)
                   </p>
                 </div>
 
@@ -659,7 +668,9 @@ const AddIdentificationModal: React.FC<AddIdentificationModalProps> = ({
                 />
 
                 <div className="text-xs text-gray-500 text-center bg-blue-50 p-3 rounded-lg">
-                  📝 <strong>Conseil:</strong> Prenez des photos claires du museau, des flancs et de la face de l'animal pour une meilleure identification.
+                  📝 <strong>Conseil:</strong> Prenez des photos claires du
+                  museau, des flancs et de la face de l'animal pour une
+                  meilleure identification.
                 </div>
               </div>
             )}
@@ -1091,7 +1102,9 @@ const AddIdentificationModal: React.FC<AddIdentificationModalProps> = ({
                     <SearchableSelect
                       placeholder="Sélectionner un éleveur"
                       value={formData.eleveur_id}
-                      onValueChange={(value) => handleFormChange("eleveur_id", value)}
+                      onValueChange={(value) =>
+                        handleFormChange("eleveur_id", value)
+                      }
                       options={eleveurs}
                       loading={eleveursLoading}
                       disabled={loading}
@@ -1110,7 +1123,9 @@ const AddIdentificationModal: React.FC<AddIdentificationModalProps> = ({
                     <SearchableSelect
                       placeholder="Sélectionner une exploitation"
                       value={formData.exploitation_id}
-                      onValueChange={(value) => handleFormChange("exploitation_id", value)}
+                      onValueChange={(value) =>
+                        handleFormChange("exploitation_id", value)
+                      }
                       options={exploitations}
                       loading={exploitationsLoading}
                       disabled={loading}
@@ -1129,7 +1144,9 @@ const AddIdentificationModal: React.FC<AddIdentificationModalProps> = ({
                     <SearchableSelect
                       placeholder="Sélectionner un responsable"
                       value={formData.responsable_local_id}
-                      onValueChange={(value) => handleFormChange("responsable_local_id", value)}
+                      onValueChange={(value) =>
+                        handleFormChange("responsable_local_id", value)
+                      }
                       options={responsables}
                       loading={responsablesLoading}
                       disabled={loading}
