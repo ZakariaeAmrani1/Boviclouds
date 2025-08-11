@@ -86,30 +86,6 @@ const allMenuItems: MenuItem[] = [
     path: "/traitement",
     badge: null,
   },
-  {
-    icon: Calendar,
-    label: "Planning",
-    path: "/planning",
-    badge: null,
-  },
-  {
-    icon: Shield,
-    label: "Health",
-    path: "/health",
-    badge: "5",
-  },
-  {
-    icon: FileText,
-    label: "Documents",
-    path: "/documents",
-    badge: null,
-  },
-  {
-    icon: Settings,
-    label: "Settings",
-    path: "/settings",
-    badge: null,
-  },
 ];
 
 // Define which pages each role can access
