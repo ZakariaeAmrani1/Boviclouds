@@ -8,12 +8,12 @@ import { Roles } from 'src/auth/roles.decorator';
 import { UserRole } from 'src/users/schemas/users/user.role';
 
 @Controller('api/v1/races')
-@UseGuards(JwtAuthGuard,RolesGuard)
-@Roles(UserRole.ADMIN,UserRole.RESPONSABLE_LOCAL)
+@UseGuards(JwtAuthGuard, RolesGuard)
 export class RacesController {
   constructor(private readonly racesService: RacesService) {}
 
   @Post()
+  @Roles(UserRole.ADMIN, UserRole.RESPONSABLE_LOCAL)
   create(@Body() createRaceDto: CreateRaceDto) {
     return this.racesService.create(createRaceDto);
   }
@@ -29,11 +29,13 @@ export class RacesController {
   }
 
   @Patch(':id')
+  @Roles(UserRole.ADMIN, UserRole.RESPONSABLE_LOCAL)
   update(@Param('id') id: string, @Body() updateRaceDto: UpdateRaceDto) {
     return this.racesService.update(id, updateRaceDto);
   }
 
   @Delete(':id')
+  @Roles(UserRole.ADMIN, UserRole.RESPONSABLE_LOCAL)
   remove(@Param('id') id: string) {
     return this.racesService.remove(id);
   }

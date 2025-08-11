@@ -28,7 +28,6 @@ import { PhotosRequiredValidator } from 'src/common/validators/photo-required-va
 
 @Controller('api/v1/identifications')
 @UseGuards(JwtAuthGuard, RolesGuard)
-@Roles(UserRole.IDENTIFICATEUR, UserRole.ADMIN)
 export class IdentificationController {
   constructor(private readonly identificationService: IdentificationService) {}
 
@@ -57,6 +56,7 @@ export class IdentificationController {
     return res.send(buffer);
   }
   @Post()
+  @Roles(UserRole.IDENTIFICATEUR, UserRole.ADMIN)
   @UseInterceptors(FilesInterceptor('photos', 5))
   async create(
     @Body() body: any,
@@ -69,10 +69,12 @@ export class IdentificationController {
             maxSize: 5 * 1024 * 1024,
           }),
           new FileTypeValidator({
-            fileType: /(jpg|jpeg|png)$/i, })
+            fileType: /(jpg|jpeg|png)$/i,
+          }),
         ],
-      })
-    ) photos: MulterFile[],
+      }),
+    )
+    photos: MulterFile[],
   ) {
     const data: CreateIdentificationDto = {
       ...body,
@@ -85,7 +87,7 @@ export class IdentificationController {
       complem: JSON.parse(body.complem),
       createdBy: user?.userId,
     };
-    console.log(data,photos)
+    console.log(data, photos);
     return this.identificationService.create(data, photos);
   }
 
@@ -95,6 +97,7 @@ export class IdentificationController {
   }
 
   @Get('filter')
+  @Roles(UserRole.IDENTIFICATEUR, UserRole.ADMIN)
   async filter(
     @Query('nni') nni?: string,
     @Query('date_naissance') date_naissance?: string,
@@ -107,6 +110,7 @@ export class IdentificationController {
     });
   }
   @Delete(':id')
+  @Roles(UserRole.IDENTIFICATEUR, UserRole.ADMIN)
   async deleteIdentification(@Param('id') id: string) {
     return this.identificationService.delete(id);
   }
