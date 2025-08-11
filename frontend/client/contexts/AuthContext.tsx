@@ -1,5 +1,7 @@
 import axios from "axios";
 import React, { createContext, useContext, useState, useEffect } from "react";
+import { getUserRoleFromToken, isTokenExpired } from "../utils/auth";
+import { UtilisateurRole } from "@shared/utilisateur";
 
 interface User {
   CIN: string;
@@ -14,10 +16,12 @@ interface User {
   province: string;
   password: string;
   raison_sociale: "";
+  role?: string;
 }
 
 interface AuthContextType {
   user: User | null;
+  userRole: string | null;
   login: (
     email: string,
     password: string,
@@ -27,6 +31,7 @@ interface AuthContextType {
   logout: () => void;
   isLoading: boolean;
   isAuthenticated: boolean;
+  hasAccess: (route: string) => boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
