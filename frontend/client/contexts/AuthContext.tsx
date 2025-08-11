@@ -154,17 +154,29 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const logout = () => {
     setUser(null);
+    setUserRole(null);
     localStorage.removeItem("user");
+    localStorage.removeItem("access_token");
     localStorage.removeItem("keep_logged_in");
+  };
+
+  // Check if user has access to a specific route
+  const hasAccess = (route: string): boolean => {
+    if (!userRole) return false;
+
+    const { hasAccess: hasRouteAccess } = require("../utils/auth");
+    return hasRouteAccess(userRole, route);
   };
 
   const value: AuthContextType = {
     user,
+    userRole,
     login,
     register,
     logout,
     isLoading,
     isAuthenticated: !!user,
+    hasAccess,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
