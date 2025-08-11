@@ -91,17 +91,17 @@ const App = () => (
               }
             >
               {/* Nested routes that will render within the Layout */}
-              <Route index element={<Dashboard />} />
-              <Route path="rebouclage" element={<Rebouclage />} />
-              <Route path="identification" element={<Identification />} />
-              <Route path="insemination" element={<Insemination />} />
-              <Route path="semences" element={<Semences />} />
-              <Route path="lactations" element={<Lactations />} />
-              <Route path="exploitations" element={<Exploitations />} />
-              <Route path="utilisateurs" element={<Utilisateurs />} />
-              <Route path="cctv" element={<CCTV />} />
-              <Route path="traitement" element={<Traitement />} />
-              <Route path="profile" element={<EditProfile />} />
+              <Route index element={<RoleProtectedRoute><Dashboard /></RoleProtectedRoute>} />
+              <Route path="rebouclage" element={<RoleProtectedRoute><Rebouclage /></RoleProtectedRoute>} />
+              <Route path="identification" element={<RoleProtectedRoute><Identification /></RoleProtectedRoute>} />
+              <Route path="insemination" element={<RoleProtectedRoute><Insemination /></RoleProtectedRoute>} />
+              <Route path="semences" element={<RoleProtectedRoute><Semences /></RoleProtectedRoute>} />
+              <Route path="lactations" element={<RoleProtectedRoute><Lactations /></RoleProtectedRoute>} />
+              <Route path="exploitations" element={<RoleProtectedRoute><Exploitations /></RoleProtectedRoute>} />
+              <Route path="utilisateurs" element={<RoleProtectedRoute><Utilisateurs /></RoleProtectedRoute>} />
+              <Route path="cctv" element={<RoleProtectedRoute><CCTV /></RoleProtectedRoute>} />
+              <Route path="traitement" element={<RoleProtectedRoute><Traitement /></RoleProtectedRoute>} />
+              <Route path="profile" element={<RoleProtectedRoute><EditProfile /></RoleProtectedRoute>} />
             </Route>
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
