@@ -136,7 +136,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const logout = () => {
     setUser(null);
+    setUserRole(null);
     localStorage.removeItem("user");
+    localStorage.removeItem("access_token");
     localStorage.removeItem("keep_logged_in");
   };
 
