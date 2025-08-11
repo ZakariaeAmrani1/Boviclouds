@@ -1,30 +1,15 @@
 import React, { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
+import { getCurrentUserRole, getMenuItemsForRole } from "../lib/roleNavigation";
 import {
-  Home,
-  BarChart3,
-  Users,
-  FileText,
-  Settings,
-  HelpCircle,
   ChevronDown,
   Bell,
-  Search,
   LogOut,
-  Calendar,
-  Shield,
-  Zap,
-  Activity,
   X,
   ChevronLeft,
   ChevronRight,
-  Camera,
-  Stethoscope,
-  FileSearch,
-  FlaskConical,
-  Milk,
-  Building2,
+  Settings,
 } from "lucide-react";
 
 interface SidebarProps {
