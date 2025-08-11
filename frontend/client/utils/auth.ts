@@ -63,24 +63,24 @@ export const isTokenExpired = (token: string): boolean => {
  * Role-based navigation configuration
  */
 export const ROLE_NAVIGATION: Record<string, string[]> = {
-  [UtilisateurRole.ADMINISTRATEUR]: [
-    'dashboard', 'rebouclage', 'identification', 'insemination', 'semences', 
+  "Administrateur": [
+    'dashboard', 'rebouclage', 'identification', 'insemination', 'semences',
     'lactations', 'exploitations', 'utilisateurs', 'cctv', 'traitement', 'profile'
   ],
-  [UtilisateurRole.INSEMINATEUR]: [
+  "Inseminateur": [
     'dashboard', 'insemination', 'semences', 'profile'
   ],
-  [UtilisateurRole.IDENTIFICATEUR]: [
+  "Identificateur": [
     'dashboard', 'identification', 'rebouclage', 'profile'
   ],
-  [UtilisateurRole.CONTROLEUR]: [
+  "Contrôleur": [
     'dashboard', 'lactations', 'profile'
   ],
-  [UtilisateurRole.ELEVEUR]: [
+  "Éleveur": [
     'dashboard', 'cctv', 'profile'
   ],
-  [UtilisateurRole.RESPONSABLE]: [
-    'dashboard', 'rebouclage', 'identification', 'insemination', 'semences', 
+  "Résponsable Local": [
+    'dashboard', 'rebouclage', 'identification', 'insemination', 'semences',
     'lactations', 'exploitations', 'utilisateurs', 'cctv', 'traitement', 'profile'
   ],
 };
