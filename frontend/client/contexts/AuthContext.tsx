@@ -1,7 +1,5 @@
 import axios from "axios";
 import React, { createContext, useContext, useState, useEffect } from "react";
-import { getUserRole } from "../lib/jwt";
-import type { UserRole } from "../lib/roleNavigation";
 
 interface User {
   CIN: string;
@@ -20,7 +18,6 @@ interface User {
 
 interface AuthContextType {
   user: User | null;
-  userRole: UserRole | null;
   login: (
     email: string,
     password: string,
@@ -48,7 +45,6 @@ interface AuthProviderProps {
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
-  const [userRole, setUserRole] = useState<UserRole | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const apiUrl = import.meta.env.VITE_API_URL;
 
@@ -61,13 +57,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       if (savedUser) {
         try {
           setUser(JSON.parse(savedUser));
-          // Get role from JWT token
-          const role = getUserRole();
-          setUserRole(role);
         } catch (error) {
           console.error("Error parsing saved user:", error);
           localStorage.removeItem("user");
-          localStorage.removeItem("access_token");
           localStorage.removeItem("keep_logged_in");
         }
       }
@@ -92,11 +84,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       localStorage.setItem("user", JSON.stringify(res.data.data.user));
       localStorage.setItem("access_token", res.data.data.access_token);
       localStorage.setItem("keep_logged_in", JSON.stringify(keepLoggedIn));
-
-      // Get role from JWT token
-      const role = getUserRole();
-      setUserRole(role);
-
       setIsLoading(false);
       return true;
     } catch (error) {
@@ -137,15 +124,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const logout = () => {
     setUser(null);
-    setUserRole(null);
     localStorage.removeItem("user");
-    localStorage.removeItem("access_token");
     localStorage.removeItem("keep_logged_in");
   };
 
   const value: AuthContextType = {
     user,
-    userRole,
     login,
     register,
     logout,
