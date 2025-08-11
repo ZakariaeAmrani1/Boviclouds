@@ -1,7 +1,5 @@
 import axios from "axios";
 import React, { createContext, useContext, useState, useEffect } from "react";
-import { getUserRoleFromToken, isTokenExpired } from "../utils/auth";
-import { UtilisateurRole } from "@shared/utilisateur";
 
 interface User {
   CIN: string;
@@ -16,12 +14,10 @@ interface User {
   province: string;
   password: string;
   raison_sociale: "";
-  role?: string;
 }
 
 interface AuthContextType {
   user: User | null;
-  userRole: string | null;
   login: (
     email: string,
     password: string,
@@ -31,7 +27,6 @@ interface AuthContextType {
   logout: () => void;
   isLoading: boolean;
   isAuthenticated: boolean;
-  hasAccess: (route: string) => boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -50,7 +45,6 @@ interface AuthProviderProps {
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
-  const [userRole, setUserRole] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const apiUrl = import.meta.env.VITE_API_URL;
 
@@ -58,30 +52,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     // Check if user is already logged in (from localStorage)
     const checkAuthStatus = () => {
       const savedUser = localStorage.getItem("user");
-      const accessToken = localStorage.getItem("access_token");
       const keepLoggedIn = localStorage.getItem("keep_logged_in");
 
-      if (savedUser && accessToken) {
+      if (savedUser) {
         try {
-          // Check if token is expired
-          if (isTokenExpired(accessToken)) {
-            // Token expired, clear everything
-            localStorage.removeItem("user");
-            localStorage.removeItem("access_token");
-            localStorage.removeItem("keep_logged_in");
-            setIsLoading(false);
-            return;
-          }
-
-          const userData = JSON.parse(savedUser);
-          const role = getUserRoleFromToken();
-
-          setUser(userData);
-          setUserRole(role);
+          setUser(JSON.parse(savedUser));
         } catch (error) {
           console.error("Error parsing saved user:", error);
           localStorage.removeItem("user");
-          localStorage.removeItem("access_token");
           localStorage.removeItem("keep_logged_in");
         }
       }
@@ -102,24 +80,16 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         email: email,
         password: password,
       });
-
-      const userData = res.data.data.user;
-      const accessToken = res.data.data.access_token;
-
-      setUser(userData);
-      localStorage.setItem("user", JSON.stringify(userData));
-      localStorage.setItem("access_token", accessToken);
+      setUser(res.data.data.user);
+      localStorage.setItem("user", JSON.stringify(res.data.data.user));
+      localStorage.setItem("access_token", res.data.data.access_token);
       localStorage.setItem("keep_logged_in", JSON.stringify(keepLoggedIn));
-
-      // Extract role from JWT token
-      const role = getUserRoleFromToken();
-      setUserRole(role);
-
       setIsLoading(false);
       return true;
     } catch (error) {
       console.error("Error posting data:", error);
       setIsLoading(false);
+
       return false;
     }
   };
@@ -154,29 +124,17 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const logout = () => {
     setUser(null);
-    setUserRole(null);
     localStorage.removeItem("user");
-    localStorage.removeItem("access_token");
     localStorage.removeItem("keep_logged_in");
-  };
-
-  // Check if user has access to a specific route
-  const hasAccess = (route: string): boolean => {
-    if (!userRole) return false;
-
-    const { hasAccess: hasRouteAccess } = require("../utils/auth");
-    return hasRouteAccess(userRole, route);
   };
 
   const value: AuthContextType = {
     user,
-    userRole,
     login,
     register,
     logout,
     isLoading,
     isAuthenticated: !!user,
-    hasAccess,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

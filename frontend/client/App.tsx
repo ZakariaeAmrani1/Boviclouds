@@ -8,7 +8,6 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./contexts/AuthContext";
 import ProtectedRoute from "./components/ProtectedRoute";
-import RoleProtectedRoute from "./components/RoleProtectedRoute";
 import Layout from "./components/Layout";
 import Login from "./pages/Login";
 import ChangePassword from "./pages/ChangePassword";
@@ -91,94 +90,17 @@ const App = () => (
               }
             >
               {/* Nested routes that will render within the Layout */}
-              <Route
-                index
-                element={
-                  <RoleProtectedRoute requiredRoute="dashboard">
-                    <Dashboard />
-                  </RoleProtectedRoute>
-                }
-              />
-              <Route
-                path="rebouclage"
-                element={
-                  <RoleProtectedRoute requiredRoute="rebouclage">
-                    <Rebouclage />
-                  </RoleProtectedRoute>
-                }
-              />
-              <Route
-                path="identification"
-                element={
-                  <RoleProtectedRoute requiredRoute="identification">
-                    <Identification />
-                  </RoleProtectedRoute>
-                }
-              />
-              <Route
-                path="insemination"
-                element={
-                  <RoleProtectedRoute requiredRoute="insemination">
-                    <Insemination />
-                  </RoleProtectedRoute>
-                }
-              />
-              <Route
-                path="semences"
-                element={
-                  <RoleProtectedRoute requiredRoute="semences">
-                    <Semences />
-                  </RoleProtectedRoute>
-                }
-              />
-              <Route
-                path="lactations"
-                element={
-                  <RoleProtectedRoute requiredRoute="lactations">
-                    <Lactations />
-                  </RoleProtectedRoute>
-                }
-              />
-              <Route
-                path="exploitations"
-                element={
-                  <RoleProtectedRoute requiredRoute="exploitations">
-                    <Exploitations />
-                  </RoleProtectedRoute>
-                }
-              />
-              <Route
-                path="utilisateurs"
-                element={
-                  <RoleProtectedRoute requiredRoute="utilisateurs">
-                    <Utilisateurs />
-                  </RoleProtectedRoute>
-                }
-              />
-              <Route
-                path="cctv"
-                element={
-                  <RoleProtectedRoute requiredRoute="cctv">
-                    <CCTV />
-                  </RoleProtectedRoute>
-                }
-              />
-              <Route
-                path="traitement"
-                element={
-                  <RoleProtectedRoute requiredRoute="traitement">
-                    <Traitement />
-                  </RoleProtectedRoute>
-                }
-              />
-              <Route
-                path="profile"
-                element={
-                  <RoleProtectedRoute requiredRoute="profile">
-                    <EditProfile />
-                  </RoleProtectedRoute>
-                }
-              />
+              <Route index element={<Dashboard />} />
+              <Route path="rebouclage" element={<Rebouclage />} />
+              <Route path="identification" element={<Identification />} />
+              <Route path="insemination" element={<Insemination />} />
+              <Route path="semences" element={<Semences />} />
+              <Route path="lactations" element={<Lactations />} />
+              <Route path="exploitations" element={<Exploitations />} />
+              <Route path="utilisateurs" element={<Utilisateurs />} />
+              <Route path="cctv" element={<CCTV />} />
+              <Route path="traitement" element={<Traitement />} />
+              <Route path="profile" element={<EditProfile />} />
             </Route>
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
