@@ -23,7 +23,6 @@ import { UserRole } from 'src/users/schemas/users/user.role';
 export class LactationController {
   constructor(private readonly lactationService: LactationService) {}
 
-  @UseGuards(JwtAuthGuard)
   @Post()
   create(@CurrentUser() user:any, @Body() createLactationDto: CreateLactationDto) {
     return this.lactationService.create(user, createLactationDto);
