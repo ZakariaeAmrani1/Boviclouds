@@ -1,5 +1,6 @@
 import axios from "axios";
 import React, { createContext, useContext, useState, useEffect } from "react";
+import { getUserRole, type UserRole } from "../lib/roleNavigation";
 
 interface User {
   CIN: string;
@@ -18,6 +19,7 @@ interface User {
 
 interface AuthContextType {
   user: User | null;
+  userRole: UserRole | null;
   login: (
     email: string,
     password: string,
