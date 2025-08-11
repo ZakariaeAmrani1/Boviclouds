@@ -60,9 +60,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       if (savedUser) {
         try {
           setUser(JSON.parse(savedUser));
+          // Get role from JWT token
+          const role = getUserRole();
+          setUserRole(role);
         } catch (error) {
           console.error("Error parsing saved user:", error);
           localStorage.removeItem("user");
+          localStorage.removeItem("access_token");
           localStorage.removeItem("keep_logged_in");
         }
       }
