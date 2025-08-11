@@ -4,6 +4,7 @@ import { UtilisateurRole } from "@shared/utilisateur";
 import AdminDashboard from "../components/dashboards/AdminDashboard";
 import EleveurDashboard from "../components/dashboards/EleveurDashboard";
 import InseminateurDashboard from "../components/dashboards/InseminateurDashboard";
+import ControleurDashboard from "../components/dashboards/ControleurDashboard";
 import { AlertTriangle } from "lucide-react";
 
 // Component to render appropriate dashboard based on user role
