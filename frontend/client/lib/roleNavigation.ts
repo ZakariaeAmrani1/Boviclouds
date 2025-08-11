@@ -146,14 +146,10 @@ export const getMenuItemsForRole = (role: UserRole | null): MenuItem[] => {
   return allMenuItems.filter(item => allowedPaths.includes(item.path));
 };
 
+// Helper function for future use if route protection is needed
 export const canAccessPath = (role: UserRole | null, path: string): boolean => {
-  // Allow access to public routes without authentication
-  if (path === "/login" || path === "/register" || path === "/changePassword") {
-    return true;
-  }
-
   if (!role) {
-    return path === "/";
+    return true; // Allow all access when no role restrictions
   }
 
   const allowedPaths = rolePermissions[role] || ["/"];
