@@ -18,7 +18,7 @@ export interface MenuItem {
   badge?: string | null;
 }
 
-export type UserRole = 'ADMIN' | 'INSEMINATEUR' | 'IDENTIFICATEUR' | 'CONTROLEUR_LAITIER' | 'RESPONSABLE_LOCAL';
+export type UserRole = 'ADMIN' | 'INSEMINATEUR' | 'IDENTIFICATEUR' | 'CONTROLEUR_LAITIER' | 'RESPONSABLE_LOCAL' | 'ELEVEUR';
 
 // Define all available menu items
 const allMenuItems: MenuItem[] = [
