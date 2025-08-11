@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
+import { getAllowedNavigation } from "../utils/auth";
 import {
   Home,
   BarChart3,
@@ -37,94 +38,88 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, onToggle }) => {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
-  const { logout } = useAuth();
+  const { logout, userRole } = useAuth();
 
-  const menuItems = [
+  const allMenuItems = [
     {
       icon: Home,
       label: "Dashboard",
       path: "/",
       badge: null,
+      route: "dashboard",
     },
     {
       icon: Activity,
       label: "Rebouclage",
       path: "/rebouclage",
       badge: "12",
+      route: "rebouclage",
     },
     {
       icon: FileSearch,
       label: "Identification",
       path: "/identification",
       badge: null,
+      route: "identification",
     },
     {
       icon: Zap,
       label: "Insémination",
       path: "/insemination",
       badge: null,
+      route: "insemination",
     },
     {
       icon: FlaskConical,
       label: "Semences",
       path: "/semences",
       badge: null,
+      route: "semences",
     },
     {
       icon: Milk,
       label: "Lactations",
       path: "/lactations",
       badge: null,
+      route: "lactations",
     },
     {
       icon: Building2,
       label: "Exploitations",
       path: "/exploitations",
       badge: null,
+      route: "exploitations",
     },
     {
       icon: Users,
       label: "Utilisateurs",
       path: "/utilisateurs",
       badge: null,
+      route: "utilisateurs",
     },
     {
       icon: Camera,
       label: "CCTV",
       path: "/cctv",
       badge: null,
+      route: "cctv",
     },
     {
       icon: Stethoscope,
       label: "Traitement",
       path: "/traitement",
       badge: null,
-    },
-    {
-      icon: Calendar,
-      label: "Planning",
-      path: "/planning",
-      badge: null,
-    },
-    {
-      icon: Shield,
-      label: "Health",
-      path: "/health",
-      badge: "5",
-    },
-    {
-      icon: FileText,
-      label: "Documents",
-      path: "/documents",
-      badge: null,
-    },
-    {
-      icon: Settings,
-      label: "Settings",
-      path: "/settings",
-      badge: null,
+      route: "traitement",
     },
   ];
+
+  // Filter menu items based on user role
+  const menuItems = useMemo(() => {
+    if (!userRole) return [];
+
+    const allowedRoutes = getAllowedNavigation(userRole);
+    return allMenuItems.filter(item => allowedRoutes.includes(item.route));
+  }, [userRole]);
 
   const handleMenuClick = (path: string) => {
     console.log(isOpen);
