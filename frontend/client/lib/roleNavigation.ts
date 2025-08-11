@@ -147,8 +147,13 @@ export const getMenuItemsForRole = (role: UserRole | null): MenuItem[] => {
 };
 
 export const canAccessPath = (role: UserRole | null, path: string): boolean => {
+  // Allow access to public routes without authentication
+  if (path === "/login" || path === "/register" || path === "/changePassword") {
+    return true;
+  }
+
   if (!role) {
-    return path === "/" || path === "/login" || path === "/register";
+    return path === "/";
   }
 
   const allowedPaths = rolePermissions[role] || ["/"];
