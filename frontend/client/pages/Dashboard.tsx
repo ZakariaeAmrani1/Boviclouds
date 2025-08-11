@@ -1,39 +1,13 @@
-import React, { useState, useEffect } from "react";
-import {
-  ChevronRight,
-  TrendingUp,
-  TrendingDown,
-  Calendar,
-  Filter,
-  Download,
-  MoreHorizontal,
-  AlertTriangle,
-  CheckCircle,
-  Clock,
-  PawPrint,
-  Droplets,
-  Heart,
-  Users,
-} from "lucide-react";
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
-} from "recharts";
-import { DashboardService } from "../services/dashboardService";
-import { DashboardData, DashboardFilters } from "@shared/dashboard";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "../components/ui/select";
+import React from "react";
+import { getCurrentUserRole } from "../lib/roleNavigation";
+
+// Import role-specific dashboards
+import AdminDashboard from "../components/dashboards/AdminDashboard";
+import InseminateurDashboard from "../components/dashboards/InseminateurDashboard";
+import IdentificateurDashboard from "../components/dashboards/IdentificateurDashboard";
+import ControleurLaitierDashboard from "../components/dashboards/ControleurLaitierDashboard";
+import ResponsableLocalDashboard from "../components/dashboards/ResponsableLocalDashboard";
+import EleveurDashboard from "../components/dashboards/EleveurDashboard";
 
 // Custom tooltip component for the chart
 const CustomTooltip = ({ active, payload, label }: any) => {
