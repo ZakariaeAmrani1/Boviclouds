@@ -113,7 +113,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
       // Extract role from JWT token
       const role = getUserRoleFromToken();
-      setUserRole(role[0]);
+      setUserRole(role);
 
       setIsLoading(false);
       return true;
