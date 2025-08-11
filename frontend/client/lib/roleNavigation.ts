@@ -101,24 +101,24 @@ const rolePermissions: Record<UserRole, string[]> = {
     "/utilisateurs",
     "/cctv",
     "/traitement",
-    "/planning",
-    "/health",
-    "/documents",
-    "/settings",
+    "/profile",
   ],
   INSEMINATEUR: [
     "/",
     "/insemination",
     "/semences",
+    "/profile",
   ],
   IDENTIFICATEUR: [
     "/",
     "/identification",
     "/rebouclage",
+    "/profile",
   ],
   CONTROLEUR_LAITIER: [
     "/",
     "/lactations",
+    "/profile",
   ],
   RESPONSABLE_LOCAL: [
     "/",
@@ -131,10 +131,7 @@ const rolePermissions: Record<UserRole, string[]> = {
     "/utilisateurs",
     "/cctv",
     "/traitement",
-    "/planning",
-    "/health",
-    "/documents",
-    "/settings",
+    "/profile",
   ],
 };
 
