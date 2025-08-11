@@ -14,20 +14,20 @@ const Dashboard = () => {
   // Render appropriate dashboard based on user role
   const renderDashboard = () => {
     switch (userRole) {
-      case "ADMIN":
+      case "Administrateur":
       case "Résponsable Local":
         return <AdminDashboard />;
 
-      case "ELEVEUR":
+      case "Éleveur":
         return <EleveurDashboard />;
 
-      case "INSEMINATEUR":
+      case "Inseminateur":
         return <InseminateurDashboard />;
 
-      case "CONTROLEUR_LAITIER":
+      case "Contrôleur":
         return <ControleurDashboard />;
 
-      case "IDENTIFICATEUR":
+      case "Identificateur":
         // For now, this role uses the admin dashboard
         // You can create a specific dashboard later
         return <AdminDashboard />;

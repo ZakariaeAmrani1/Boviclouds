@@ -13,12 +13,13 @@ async function bootstrap() {
       transform: true,
       forbidNonWhitelisted: true,
     }),
+  
   );
   app.enableCors({
     origin: '*',
     credentials: true,
   });
-
+ 
   // app.useGlobalGuards(new RolesGuard(app.get(Reflector)));
   app.useGlobalFilters(new AllExceptionsFilter());
   app.useStaticAssets(join(__dirname, '..', 'uploads'), {
@@ -27,6 +28,9 @@ async function bootstrap() {
 
   await app.listen(process.env.PORT ?? 3000);
   console.log(process.env.NODE_ENV);
-  app.use(morgan('dev'));
+  if (process.env.NODE_ENV === 'developement') {
+    app.use(morgan('dev'));
+  }
 }
 bootstrap();
+
