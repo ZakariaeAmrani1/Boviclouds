@@ -9,11 +9,11 @@ import { Roles } from 'src/auth/roles.decorator';
 
 @Controller('api/v1/semences')
 @UseGuards(JwtAuthGuard, RolesGuard)
-@Roles(UserRole.RESPONSABLE_LOCAL, UserRole.ADMIN)
 export class SemencesController {
   constructor(private readonly semencesService: SemencesService) {}
 
   @Post()
+  @Roles(UserRole.RESPONSABLE_LOCAL, UserRole.ADMIN)
   create(@Body() createSemenceDto: CreateSemenceDto) {
     return this.semencesService.create(createSemenceDto);
   }
@@ -33,11 +33,13 @@ export class SemencesController {
   }
 
   @Patch(':id')
+  @Roles(UserRole.RESPONSABLE_LOCAL, UserRole.ADMIN)
   update(@Param('id') id: string, @Body() updateSemenceDto: UpdateSemenceDto) {
     return this.semencesService.update(id, updateSemenceDto);
   }
 
   @Delete(':id')
+  @Roles(UserRole.RESPONSABLE_LOCAL, UserRole.ADMIN)
   remove(@Param('id') id: string) {
     return this.semencesService.remove(id);
   }
