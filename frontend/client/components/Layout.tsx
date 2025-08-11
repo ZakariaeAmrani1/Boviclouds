@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { Outlet } from "react-router-dom";
 import Sidebar from "./Sidebar";
 import MobileHeader from "./MobileHeader";
+import RoleTestSwitch from "./RoleTestSwitch";
+import RoleIndicator from "./RoleIndicator";
 
 const Layout: React.FC = () => {
   const [sidebarOpen, setSidebarOpen] = useState(true); // Default open on desktop
@@ -42,6 +44,9 @@ const Layout: React.FC = () => {
           {/* This is where the routed page content will be rendered */}
           <Outlet />
         </div>
+
+        {/* Role indicator for testing */}
+        <RoleIndicator />
       </div>
     </div>
   );
