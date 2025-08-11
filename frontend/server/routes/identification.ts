@@ -176,12 +176,12 @@ export const getIdentifications: RequestHandler = async (req, res) => {
 
     response.data.map((data) => {
       identifications.push({
-        id: data.id,
+        id: data._id,
         infos_sujet: {
           nni: data.infos_sujet.nni,
           date_naissance: data.infos_sujet.date_naissance,
-          race: Race.ANGUS,
-          sexe: data.infos_sujet.race === "MALE" ? Sexe.MALE : Sexe.FEMELLE,
+          race: data.infos_sujet.race,
+          sexe: data.infos_sujet.sexe === "Mâle" ? Sexe.MALE : Sexe.FEMELLE,
           type:
             data.infos_sujet.type === "BOVIN"
               ? TypeAnimal.BOVIN
@@ -335,23 +335,41 @@ export const createIdentification: RequestHandler = async (req, res) => {
         const formData = new FormData();
 
         // Add JSON data
+        // formData.append(
+        //   "data",
+        //   JSON.stringify({
+        //     infos_sujet: data.infos_sujet,
+        //     infos_mere: data.infos_mere,
+        //     grand_pere_maternel: data.grand_pere_maternel,
+        //     pere: data.pere,
+        //     grand_pere_paternel: data.grand_pere_paternel,
+        //     grand_mere_paternelle: data.grand_mere_paternelle,
+        //     complem: data.complem,
+        //     createdBy: data.createdBy,
+        //   }),
+        // );
+
+        formData.append("infos_sujet", JSON.stringify(data.infos_sujet));
+        formData.append("infos_mere", JSON.stringify(data.infos_mere));
         formData.append(
-          "data",
-          JSON.stringify({
-            infos_sujet: data.infos_sujet,
-            infos_mere: data.infos_mere,
-            grand_pere_maternel: data.grand_pere_maternel,
-            pere: data.pere,
-            grand_pere_paternel: data.grand_pere_paternel,
-            grand_mere_paternelle: data.grand_mere_paternelle,
-            complem: data.complem,
-            createdBy: data.createdBy,
-          }),
+          "grand_pere_maternel",
+          JSON.stringify(data.grand_pere_maternel),
         );
+        formData.append("pere", JSON.stringify(data.pere));
+        formData.append(
+          "grand_pere_paternel",
+          JSON.stringify(data.grand_pere_paternel),
+        );
+        formData.append(
+          "grand_mere_paternelle",
+          JSON.stringify(data.grand_mere_paternelle),
+        );
+        formData.append("complem", JSON.stringify(data.complem));
+        formData.append("createdBy", data.createdBy);
 
         // Add images
         images.forEach((image, index) => {
-          formData.append("images", image.buffer, image.originalname);
+          formData.append("photos", image.buffer, image.originalname);
         });
 
         response = await axios.post(`${apiUrl}identifications`, formData, {
@@ -529,9 +547,18 @@ export const updateIdentification: RequestHandler = async (req, res) => {
 };
 
 // Delete identification
-export const deleteIdentification: RequestHandler = (req, res) => {
+export const deleteIdentification: RequestHandler = async (req, res) => {
   try {
     const { id } = req.params;
+
+    const apiUrl = process.env.SERVER_API_URL;
+    const { token } = req.query;
+    const response = await axios.delete(`${apiUrl}identifications/${id}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
     const identificationIndex = identifications.findIndex((i) => i.id === id);
 
     if (identificationIndex === -1) {

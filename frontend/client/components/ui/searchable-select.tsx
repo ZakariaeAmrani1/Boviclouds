@@ -47,7 +47,7 @@ export const SearchableSelect: React.FC<SearchableSelectProps> = ({
           option.label.toLowerCase().includes(searchTerm.toLowerCase()) ||
           option.value.toLowerCase().includes(searchTerm.toLowerCase()) ||
           (option.sublabel &&
-            option.sublabel.toLowerCase().includes(searchTerm.toLowerCase()))
+            option.sublabel.toLowerCase().includes(searchTerm.toLowerCase())),
       );
       setFilteredOptions(filtered);
     }
@@ -102,7 +102,7 @@ export const SearchableSelect: React.FC<SearchableSelectProps> = ({
           "w-full h-12 px-4 text-sm rounded-xl border border-boviclouds-gray-100 bg-white text-left flex items-center justify-between",
           "hover:border-boviclouds-primary focus:outline-none focus:ring-2 focus:ring-boviclouds-primary focus:border-transparent",
           "disabled:opacity-50 disabled:cursor-not-allowed",
-          isOpen && "border-boviclouds-primary ring-2 ring-boviclouds-primary"
+          isOpen && "border-boviclouds-primary ring-2 ring-boviclouds-primary",
         )}
       >
         <span className={cn("truncate", !selectedOption && "text-gray-500")}>
@@ -118,7 +118,7 @@ export const SearchableSelect: React.FC<SearchableSelectProps> = ({
           <ChevronDown
             className={cn(
               "w-4 h-4 text-gray-400 transition-transform",
-              isOpen && "transform rotate-180"
+              isOpen && "transform rotate-180",
             )}
           />
         </div>
@@ -150,16 +150,18 @@ export const SearchableSelect: React.FC<SearchableSelectProps> = ({
                 Chargement...
               </div>
             ) : filteredOptions.length === 0 ? (
-              <div className="p-4 text-center text-gray-500">{emptyMessage}</div>
+              <div className="p-4 text-center text-gray-500">
+                {emptyMessage}
+              </div>
             ) : (
               filteredOptions.map((option) => (
                 <button
-                  key={option.value}
+                  key={option.value + Math.floor(Math.random() * 90) + 10}
                   type="button"
                   onClick={() => handleSelect(option.value)}
                   className={cn(
                     "w-full px-4 py-3 text-left hover:bg-gray-50 flex items-center justify-between text-sm",
-                    value === option.value && "bg-boviclouds-primary/10"
+                    value === option.value && "bg-boviclouds-primary/10",
                   )}
                 >
                   <div className="flex flex-col">

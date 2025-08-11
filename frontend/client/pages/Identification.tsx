@@ -476,13 +476,19 @@ const Identification: React.FC = () => {
               <tbody className="bg-white divide-y divide-gray-200">
                 {currentData.length === 0 ? (
                   <tr key="empty-state">
-                    <td colSpan={7} className="px-6 py-8 text-center text-gray-500">
+                    <td
+                      colSpan={7}
+                      className="px-6 py-8 text-center text-gray-500"
+                    >
                       Aucune identification trouvée
                     </td>
                   </tr>
                 ) : (
                   currentData.map((record, index) => (
-                    <tr key={record.id || `record-${index}`} className="hover:bg-gray-50">
+                    <tr
+                      key={record.id || `record-${index}`}
+                      className="hover:bg-gray-50"
+                    >
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                         {record.infos_sujet.nni}
                       </td>
@@ -490,12 +496,16 @@ const Identification: React.FC = () => {
                         {formatDate(record.infos_sujet.date_naissance)}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <Badge className={getTypeColor(record.infos_sujet.type)}>
+                        <Badge
+                          className={getTypeColor(record.infos_sujet.type)}
+                        >
                           {record.infos_sujet.type}
                         </Badge>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <Badge className={getSexeColor(record.infos_sujet.sexe)}>
+                        <Badge
+                          className={getSexeColor(record.infos_sujet.sexe)}
+                        >
                           {record.infos_sujet.sexe}
                         </Badge>
                       </td>
