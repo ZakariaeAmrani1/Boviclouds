@@ -102,16 +102,24 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         email: email,
         password: password,
       });
-      setUser(res.data.data.user);
-      localStorage.setItem("user", JSON.stringify(res.data.data.user));
-      localStorage.setItem("access_token", res.data.data.access_token);
+
+      const userData = res.data.data.user;
+      const accessToken = res.data.data.access_token;
+
+      setUser(userData);
+      localStorage.setItem("user", JSON.stringify(userData));
+      localStorage.setItem("access_token", accessToken);
       localStorage.setItem("keep_logged_in", JSON.stringify(keepLoggedIn));
+
+      // Extract role from JWT token
+      const role = getUserRoleFromToken();
+      setUserRole(role);
+
       setIsLoading(false);
       return true;
     } catch (error) {
       console.error("Error posting data:", error);
       setIsLoading(false);
-
       return false;
     }
   };
