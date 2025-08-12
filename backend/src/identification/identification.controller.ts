@@ -22,7 +22,7 @@ import { UserRole } from 'src/users/schemas/users/user.role';
 import { CreateIdentificationDto } from './dto/create-identification.dto';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { CurrentUser } from 'src/auth/decorators/active-user.decorator';
-import {File as MulterFile} from 'multer';
+import { Express } from 'express';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { PhotosRequiredValidator } from 'src/common/validators/photo-required-validator';
 
@@ -74,7 +74,7 @@ export class IdentificationController {
         ],
       }),
     )
-    photos: MulterFile[],
+    photos: Express.Multer.File[],
   ) {
     const data: CreateIdentificationDto = {
       ...body,

@@ -11,7 +11,7 @@ import { Insemination } from './schemas/insemination.schema';
 import { Model, Types } from 'mongoose';
 import * as csv from 'csv-parser';
 import * as XLSX from 'xlsx';
-import type { File as MulterFile } from 'multer';
+import { Express } from 'express';
 
 export class InseminationNotFoundException extends HttpException {
   constructor(id: string) {
@@ -35,13 +35,12 @@ export class InseminationsService {
   }
 
   async findAll(): Promise<Insemination[]> {
-    return await this.inseminationModel
-      .find()
-      .exec();
+    return await this.inseminationModel.find().exec();
   }
 
   async findOne(id: string): Promise<Insemination | null> {
-    if (!Types.ObjectId.isValid(id)) throw new InseminationNotFoundException(id);
+    if (!Types.ObjectId.isValid(id))
+      throw new InseminationNotFoundException(id);
     const insemination = await this.inseminationModel.findById(id);
     if (!insemination) throw new InseminationNotFoundException(id);
     return insemination;
@@ -51,7 +50,8 @@ export class InseminationsService {
     id: string,
     updateInseminationDto: UpdateInseminationDto,
   ): Promise<Insemination> {
-    if (!Types.ObjectId.isValid(id)) throw new InseminationNotFoundException(id);
+    if (!Types.ObjectId.isValid(id))
+      throw new InseminationNotFoundException(id);
     const insemination = await this.inseminationModel.findByIdAndUpdate(
       id,
       updateInseminationDto,
@@ -63,13 +63,13 @@ export class InseminationsService {
 
   async remove(id: string): Promise<Insemination> {
     if (!Types.ObjectId.isValid(id))
-          throw new InseminationNotFoundException(id);
+      throw new InseminationNotFoundException(id);
     const insemination = await this.inseminationModel.findByIdAndDelete(id);
     if (!insemination) throw new InseminationNotFoundException(id);
     return insemination;
   }
 
-  async importInseminations(file: MulterFile) {
+  async importInseminations(file: Express.Multer.File) {
     if (!file) throw new BadRequestException('No file uploaded');
 
     const requiredFields = [
@@ -130,6 +130,8 @@ export class InseminationsService {
   }
 
   private hasEmptyFields(row: Record<string, any>, required: string[]) {
-  return required.some(field => !row[field] || row[field].toString().trim() === '');
-}
+    return required.some(
+      (field) => !row[field] || row[field].toString().trim() === '',
+    );
+  }
 }
