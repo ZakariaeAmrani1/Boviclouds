@@ -25,6 +25,16 @@ export interface CreateRebouclageInput {
   nouveauNNI: string;
   identificateur_id: string;
   dateRebouclage?: string;
+  mode?: 'manual' | 'automatic';
+}
+
+// Input for creating a rebouclage record in automatic mode (with image)
+export interface CreateRebouclageAutomaticInput {
+  nouveauNNI: string;
+  identificateur_id: string;
+  dateRebouclage?: string;
+  mode: 'automatic';
+  image: File;
 }
 
 // Input for updating an existing rebouclage record
