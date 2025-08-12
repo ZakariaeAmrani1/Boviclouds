@@ -17,7 +17,6 @@ import { LactationModule } from './lactation/lactation.module';
 import { RacesModule } from './races/races.module';
 import { StatsModule } from './stats/stats.module';
 
-
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
