@@ -23,6 +23,32 @@ export class RebouclageController {
     return this.rebouclageService.create(dto);
   }
 
+  @Post('automatic')
+  @UseInterceptors(FileInterceptor('image'))
+  async createAutomatic(
+    @Body() data: string,
+    @UploadedFile() image: Express.Multer.File
+  ) {
+    try {
+      // Parse the JSON data from the request
+      const parsedData = JSON.parse(data);
+      const dto: CreateRebouclageAutomaticDto = {
+        nouveau_nni: parsedData.nouveauNNI,
+        identificateur_id: parsedData.identificateur_id,
+        date_creation: parsedData.dateRebouclage,
+        mode: 'automatic' as any
+      };
+
+      if (!image) {
+        throw new Error('Image is required for automatic mode');
+      }
+
+      return await this.rebouclageService.createAutomatic(dto, image);
+    } catch (error) {
+      throw new Error(`Error processing automatic rebouclage: ${error.message}`);
+    }
+  }
+
   @Get()
   getAll() {
     return this.rebouclageService.findAll();
