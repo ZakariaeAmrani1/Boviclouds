@@ -258,11 +258,11 @@ export const useUsers = () => {
       const result = await LactationService.getUsers();
       setUsers(result);
     } catch (err) {
-      setError(
-        err instanceof Error
-          ? err.message
-          : "Erreur lors du chargement des utilisateurs",
-      );
+      console.error("Error fetching users:", err);
+      const errorMessage = err instanceof Error
+        ? err.message
+        : "Erreur lors du chargement des utilisateurs";
+      setError(errorMessage);
       setUsers([]);
     } finally {
       setLoading(false);
@@ -316,11 +316,11 @@ export const useIdentifications = () => {
       const result = await LactationService.getIdentifications();
       setIdentifications(result);
     } catch (err) {
-      setError(
-        err instanceof Error
-          ? err.message
-          : "Erreur lors du chargement des identifications",
-      );
+      console.error("Error fetching identifications:", err);
+      const errorMessage = err instanceof Error
+        ? err.message
+        : "Erreur lors du chargement des identifications";
+      setError(errorMessage);
       setIdentifications([]);
     } finally {
       setLoading(false);

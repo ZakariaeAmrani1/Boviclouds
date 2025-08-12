@@ -229,54 +229,84 @@ export class LactationService {
    * Get all users for dropdown menus
    */
   static async getUsers(): Promise<User[]> {
-    const token = localStorage.getItem("access_token");
-    const response = await fetch("/api/utilisateur", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ token }),
-    });
+    try {
+      const token = localStorage.getItem("access_token");
 
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
+      if (!token) {
+        console.warn("No access token found, returning empty users array");
+        return [];
+      }
 
-    const result: UsersListResponse = await response.json();
+      const response = await fetch("/api/utilisateur", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ token }),
+      });
 
-    if (!result.success || !result.data) {
-      throw new Error(
-        result.message || "Erreur lors de la récupération des utilisateurs",
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error(`HTTP error! status: ${response.status}, response: ${errorText}`);
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const result: UsersListResponse = await response.json();
+
+      if (!result.success || !result.data) {
+        throw new Error(
+          result.message || "Erreur lors de la récupération des utilisateurs",
+        );
+      }
+
+      const data = result.data.filter(
+        (user) => user.role === "CONTROLEUR_LAITIER",
       );
+      return data;
+    } catch (error) {
+      console.error("Error in getUsers:", error);
+      // Return empty array instead of throwing to prevent app crashes
+      return [];
     }
-    const data = result.data.filter(
-      (user) => user.role === "CONTROLEUR_LAITIER",
-    );
-    return data;
   }
 
   /**
    * Get all identifications for dropdown menus
    */
   static async getIdentifications(): Promise<Identification[]> {
-    const token = localStorage.getItem("access_token");
-    const params = new URLSearchParams();
-    params.append("token", token);
-    const response = await fetch(`/api/identifications?${params.toString()}`);
+    try {
+      const token = localStorage.getItem("access_token");
 
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+      if (!token) {
+        console.warn("No access token found, returning empty identifications array");
+        return [];
+      }
+
+      const params = new URLSearchParams();
+      params.append("token", token);
+
+      const response = await fetch(`/api/identifications?${params.toString()}`);
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error(`HTTP error! status: ${response.status}, response: ${errorText}`);
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const result: IdentificationsListResponse = await response.json();
+
+      if (!result.success || !result.data) {
+        throw new Error(
+          result.message || "Erreur lors de la récupération des identifications",
+        );
+      }
+
+      return result.data;
+    } catch (error) {
+      console.error("Error in getIdentifications:", error);
+      // Return empty array instead of throwing to prevent app crashes
+      return [];
     }
-
-    const result: IdentificationsListResponse = await response.json();
-
-    if (!result.success || !result.data) {
-      throw new Error(
-        result.message || "Erreur lors de la récupération des identifications",
-      );
-    }
-
-    return result.data;
   }
 
   /**
