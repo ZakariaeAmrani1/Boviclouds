@@ -9,6 +9,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./contexts/AuthContext";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Layout from "./components/Layout";
+import ErrorBoundary from "./components/ErrorBoundary";
 import Login from "./pages/Login";
 import ChangePassword from "./pages/ChangePassword";
 import Dashboard from "./pages/Dashboard";
@@ -76,37 +77,39 @@ const App = () => (
     <TooltipProvider>
       <Toaster />
       <Sonner />
-      <AuthProvider>
-        <BrowserRouter>
-          <Routes>
-            <Route path="/login" element={<Login />} />
-            <Route path="/changePassword" element={<ChangePassword />} />
-            <Route
-              path="/"
-              element={
-                <ProtectedRoute>
-                  <Layout />
-                </ProtectedRoute>
-              }
-            >
-              {/* Nested routes that will render within the Layout */}
-              <Route index element={<Dashboard />} />
-              <Route path="rebouclage" element={<Rebouclage />} />
-              <Route path="identification" element={<Identification />} />
-              <Route path="insemination" element={<Insemination />} />
-              <Route path="semences" element={<Semences />} />
-              <Route path="lactations" element={<Lactations />} />
-              <Route path="exploitations" element={<Exploitations />} />
-              <Route path="utilisateurs" element={<Utilisateurs />} />
-              <Route path="cctv" element={<CCTV />} />
-              <Route path="traitement" element={<Traitement />} />
-              <Route path="profile" element={<EditProfile />} />
-            </Route>
-            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </BrowserRouter>
-      </AuthProvider>
+      <ErrorBoundary>
+        <AuthProvider>
+          <BrowserRouter>
+            <Routes>
+              <Route path="/login" element={<Login />} />
+              <Route path="/changePassword" element={<ChangePassword />} />
+              <Route
+                path="/"
+                element={
+                  <ProtectedRoute>
+                    <Layout />
+                  </ProtectedRoute>
+                }
+              >
+                {/* Nested routes that will render within the Layout */}
+                <Route index element={<Dashboard />} />
+                <Route path="rebouclage" element={<Rebouclage />} />
+                <Route path="identification" element={<Identification />} />
+                <Route path="insemination" element={<Insemination />} />
+                <Route path="semences" element={<Semences />} />
+                <Route path="lactations" element={<Lactations />} />
+                <Route path="exploitations" element={<Exploitations />} />
+                <Route path="utilisateurs" element={<Utilisateurs />} />
+                <Route path="cctv" element={<CCTV />} />
+                <Route path="traitement" element={<Traitement />} />
+                <Route path="profile" element={<EditProfile />} />
+              </Route>
+              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </BrowserRouter>
+        </AuthProvider>
+      </ErrorBoundary>
     </TooltipProvider>
   </QueryClientProvider>
 );
