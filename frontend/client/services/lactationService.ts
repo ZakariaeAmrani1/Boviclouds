@@ -259,24 +259,39 @@ export class LactationService {
    * Get all identifications for dropdown menus
    */
   static async getIdentifications(): Promise<Identification[]> {
-    const token = localStorage.getItem("access_token");
-    const params = new URLSearchParams();
-    params.append("token", token);
-    const response = await fetch(`/api/identifications?${params.toString()}`);
+    try {
+      const token = localStorage.getItem("access_token");
 
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+      if (!token) {
+        console.warn("No access token found, returning empty identifications array");
+        return [];
+      }
+
+      const params = new URLSearchParams();
+      params.append("token", token);
+
+      const response = await fetch(`/api/identifications?${params.toString()}`);
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error(`HTTP error! status: ${response.status}, response: ${errorText}`);
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const result: IdentificationsListResponse = await response.json();
+
+      if (!result.success || !result.data) {
+        throw new Error(
+          result.message || "Erreur lors de la récupération des identifications",
+        );
+      }
+
+      return result.data;
+    } catch (error) {
+      console.error("Error in getIdentifications:", error);
+      // Return empty array instead of throwing to prevent app crashes
+      return [];
     }
-
-    const result: IdentificationsListResponse = await response.json();
-
-    if (!result.success || !result.data) {
-      throw new Error(
-        result.message || "Erreur lors de la récupération des identifications",
-      );
-    }
-
-    return result.data;
   }
 
   /**
