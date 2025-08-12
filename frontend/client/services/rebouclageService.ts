@@ -1,11 +1,13 @@
 import {
   RebouclageRecord,
   CreateRebouclageInput,
+  CreateRebouclageAutomaticInput,
   UpdateRebouclageInput,
   RebouclageFilters,
   PaginationParams,
   PaginatedResponse,
   RebouclageStatus,
+  RebouclageAutomaticResponse,
 } from "@shared/rebouclage";
 import axios from "axios";
 
