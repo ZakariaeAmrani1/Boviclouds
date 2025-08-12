@@ -69,6 +69,7 @@ import {
 } from "../lib/rebouclageValidation";
 
 type ModalMode = "create" | "edit" | "view";
+type ModalStep = "mode-selection" | "image-upload" | "form";
 
 interface FormData {
   ancienNNI: string;
@@ -77,6 +78,12 @@ interface FormData {
   indentificateur_id: string;
   mode: 'manual' | 'automatic';
   selectedImage?: File;
+}
+
+interface ImageProcessingState {
+  loading: boolean;
+  error: string | null;
+  extractedNNI: string | null;
 }
 
 const Rebouclage: React.FC = () => {
