@@ -823,7 +823,7 @@ const Rebouclage: React.FC = () => {
       <Dialog open={isModalOpen} onOpenChange={handleModalClose}>
         <DialogPortal>
           <DialogOverlay className="bg-black/20" />
-          <DialogContent className="w-[95vw] max-w-4xl max-h-[90vh] overflow-y-auto mx-4">
+          <DialogContent className="w-[95vw] max-w-2xl max-h-[90vh] overflow-y-auto mx-4">
             <DialogHeader>
               <DialogTitle className="text-lg font-medium text-black">
                 {modalMode === "create" && modalStep === "mode-selection" && "Choisir le mode de saisie"}
