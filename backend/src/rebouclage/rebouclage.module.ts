@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { MulterModule } from '@nestjs/platform-express';
 import { RebouclageService } from './rebouclage.service';
 import { RebouclageController } from './rebouclage.controller';
 import { MongooseModule } from '@nestjs/mongoose';
