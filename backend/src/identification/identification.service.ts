@@ -1,4 +1,8 @@
-import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { Identification } from './schemas/identification.schema';
@@ -8,6 +12,8 @@ import { CreateIdentificationDto } from './dto/create-identification.dto';
 import { File as MulterFile } from 'multer';
 import { S3Service } from 'src/common/s3/s3.service';
 import { IDENTIFICATION_BUCKET } from './constants/identification.constants';
+import { HttpService } from '@nestjs/axios';
+import { lastValueFrom } from 'rxjs';
 
 export class IndentificationNotFoundException extends NotFoundException {
   constructor(id: string) {
@@ -16,7 +22,7 @@ export class IndentificationNotFoundException extends NotFoundException {
 }
 
 export class IdentificationAlreadyExistsException extends ConflictException {
-  constructor(nni: string) { 
+  constructor(nni: string) {
     super(`Identification with NNI ${nni} already exists`);
   }
 }
@@ -25,7 +31,8 @@ export class IdentificationService {
   constructor(
     @InjectModel(Identification.name)
     private readonly identificationModel: Model<Identification>,
-    private readonly s3Service: S3Service, 
+    private readonly s3Service: S3Service,
+    private readonly httpService: HttpService,
   ) {}
 
   async findAll(query: any): Promise<Identification[]> {
@@ -54,20 +61,43 @@ export class IdentificationService {
     const existing = await this.identificationModel.findOne({
       'infos_sujet.nni': createDto.infos_sujet.nni,
     });
-    if (existing) throw new IdentificationAlreadyExistsException(createDto.infos_sujet.nni);
-    const imagePaths = await this.uploadPhotosToS3(photos,IDENTIFICATION_BUCKET, createDto.infos_sujet.nni);
+    if (existing)
+      throw new IdentificationAlreadyExistsException(createDto.infos_sujet.nni);
+    const imagePaths = await this.uploadPhotosToS3(
+      photos,
+      IDENTIFICATION_BUCKET,
+      createDto.infos_sujet.nni,
+    );
     createDto.infos_sujet.photos = imagePaths;
     // console.log('Image paths:', imagePaths);
     // console.log('Create DTO:', createDto);
     const created = await this.identificationModel.create(createDto);
+    try {
+      await lastValueFrom(
+        this.httpService.post(
+          'http://192.168.11.30:8000/add-cow',
+          {
+            cow_id: createDto.infos_sujet.nni,
+          },
+          {
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          },
+        ),
+      );
+    } catch (error) {
+      console.log(error);
+    }
+
     return await created.save();
   }
 
   private async uploadPhotoToS3(
     photo: MulterFile,
-     bucket: string,
-      cowNNI: string
-    ): Promise<string> {
+    bucket: string,
+    cowNNI: string,
+  ): Promise<string> {
     const key = `${cowNNI}/${cowNNI}-${Date.now()}-${photo.originalname}`;
     await this.s3Service.uploadFile({
       bucket,
@@ -75,7 +105,6 @@ export class IdentificationService {
       file: photo.buffer,
     });
     return await this.s3Service.getFileUrl(bucket, key);
-
   }
 
   private async uploadPhotosToS3(
@@ -87,10 +116,11 @@ export class IdentificationService {
       photos.map(async (file) => {
         const url = await this.uploadPhotoToS3(file, bucket, cowNNI);
         return url;
-      }))
+      }),
+    );
     return uploadedUrls;
   }
-  
+
   // Export identifications to CSV or Excel
   async export(
     format: 'csv' | 'excel',
