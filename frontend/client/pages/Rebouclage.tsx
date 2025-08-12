@@ -174,8 +174,31 @@ const Rebouclage: React.FC = () => {
     }
   };
 
-  const handleFormChange = (field: keyof FormData, value: string) => {
+  const handleFormChange = (field: keyof FormData, value: string | File) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      if (file.size > 5 * 1024 * 1024) { // 5MB limit
+        toast({
+          title: "Erreur",
+          description: "L'image ne doit pas dépasser 5MB",
+          variant: "destructive",
+        });
+        return;
+      }
+      if (!file.type.startsWith('image/')) {
+        toast({
+          title: "Erreur",
+          description: "Veuillez sélectionner un fichier image",
+          variant: "destructive",
+        });
+        return;
+      }
+      setFormData((prev) => ({ ...prev, selectedImage: file }));
+    }
   };
 
   const resetForm = () => {
