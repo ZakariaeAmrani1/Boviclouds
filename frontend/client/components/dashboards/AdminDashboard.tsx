@@ -192,7 +192,14 @@ const AdminDashboard: React.FC = () => {
             <MoreHorizontal className="w-5 h-5 text-gray-400 cursor-pointer" />
           </div>
           <ResponsiveContainer width="100%" height={300}>
-            <LineChart data={dashboardData?.monthlyEvolution || []}>
+            <LineChart data={dashboardData ? [
+              { month: "Jan", animals: 4000, production: 1200 },
+              { month: "Fév", animals: 4150, production: 1250 },
+              { month: "Mar", animals: 4300, production: 1300 },
+              { month: "Avr", animals: 4200, production: 1280 },
+              { month: "Mai", animals: 4500, production: 1350 },
+              { month: "Juin", animals: 4600, production: 1400 }
+            ] : []}>
               <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
               <XAxis dataKey="month" tick={{ fontSize: 12 }} />
               <YAxis tick={{ fontSize: 12 }} />
