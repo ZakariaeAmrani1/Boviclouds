@@ -13,6 +13,9 @@ import {
   Calendar,
   X,
   AlertTriangle,
+  Upload,
+  Camera,
+  FileText,
 } from "lucide-react";
 import {
   Dialog,
