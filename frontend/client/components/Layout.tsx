@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { Outlet } from "react-router-dom";
 import Sidebar from "./Sidebar";
 import MobileHeader from "./MobileHeader";
-import RoleTestSwitch from "./RoleTestSwitch";
 
 const Layout: React.FC = () => {
   const [sidebarOpen, setSidebarOpen] = useState(true); // Default open on desktop
