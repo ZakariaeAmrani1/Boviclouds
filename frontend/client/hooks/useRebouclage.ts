@@ -73,20 +73,11 @@ export const useRebouclage = () => {
   const [error, setError] = useState<string | null>(null);
 
   const createRecord = useCallback(
-    async (input: CreateRebouclageInput | CreateRebouclageAutomaticInput): Promise<RebouclageRecord | null> => {
+    async (input: CreateRebouclageInput): Promise<RebouclageRecord | null> => {
       setLoading(true);
       setError(null);
       try {
-        let result: RebouclageRecord;
-
-        if ('image' in input && input.mode === 'automatic') {
-          // Automatic mode with image
-          result = await RebouclageService.createAutomatic(input);
-        } else {
-          // Manual mode
-          result = await RebouclageService.create(input as CreateRebouclageInput);
-        }
-
+        const result = await RebouclageService.create(input);
         return result;
       } catch (err) {
         setError(
