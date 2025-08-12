@@ -90,6 +90,16 @@ import {
   getExploitationStats,
   exportExploitations,
 } from "./routes/exploitation";
+import {
+  handleGetRebouclages,
+  handleGetRebouclage,
+  handleCreateRebouclage,
+  handleCreateRebouclageAutomatic,
+  handleUpdateRebouclage,
+  handleDeleteRebouclage,
+  handleExportRebouclages,
+  handleGetRebouclageStats,
+} from "./routes/rebouclage";
 
 // Configure multer for file uploads
 const storage = multer.memoryStorage();
