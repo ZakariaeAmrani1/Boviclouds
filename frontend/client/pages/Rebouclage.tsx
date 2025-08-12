@@ -178,7 +178,7 @@ const Rebouclage: React.FC = () => {
     if (success) {
       toast({
         title: "Export réussi",
-        description: "Les données ont été exportées avec succès.",
+        description: "Les donn��es ont été exportées avec succès.",
       });
     } else {
       toast({
@@ -213,6 +213,53 @@ const Rebouclage: React.FC = () => {
         return;
       }
       setFormData((prev) => ({ ...prev, selectedImage: file }));
+    }
+  };
+
+  const processImageForNNI = async (image: File) => {
+    setImageProcessing({ loading: true, error: null, extractedNNI: null });
+
+    try {
+      const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:8080/api/";
+      const token = localStorage.getItem("access_token");
+
+      const formData = new FormData();
+      formData.append('image', image);
+
+      const response = await fetch(`${apiUrl}rebouclage/extract-nni`, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        body: formData,
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        setImageProcessing({ loading: false, error: null, extractedNNI: data.extractedNNI });
+        setFormData((prev) => ({ ...prev, ancienNNI: data.extractedNNI }));
+        setModalStep("form");
+
+        toast({
+          title: "Succès",
+          description: `NNI extrait avec succès: ${data.extractedNNI}`,
+        });
+      } else {
+        throw new Error(data.message || "Erreur lors de l'extraction du NNI");
+      }
+    } catch (error: any) {
+      setImageProcessing({
+        loading: false,
+        error: error.message || "Erreur lors du traitement de l'image",
+        extractedNNI: null
+      });
+
+      toast({
+        title: "Erreur",
+        description: error.message || "Erreur lors du traitement de l'image",
+        variant: "destructive",
+      });
     }
   };
 
