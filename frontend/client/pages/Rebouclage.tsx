@@ -184,6 +184,8 @@ const Rebouclage: React.FC = () => {
       nouveauNNI: "",
       dateRebouclage: "",
       indentificateur_id: "",
+      mode: 'manual',
+      selectedImage: undefined,
     });
   };
 
