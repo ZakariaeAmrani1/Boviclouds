@@ -1,5 +1,6 @@
 import {
   CreateRebouclageInput,
+  CreateRebouclageAutomaticInput,
   UpdateRebouclageInput,
   RebouclageStatus,
 } from "@shared/rebouclage";
