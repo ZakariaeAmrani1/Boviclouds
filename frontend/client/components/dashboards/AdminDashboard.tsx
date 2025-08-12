@@ -45,7 +45,6 @@ const AdminDashboard: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [filters, setFilters] = useState<DashboardFilters>({
     period: "month",
-    exploitation: "",
   });
 
   useEffect(() => {
