@@ -229,5 +229,15 @@ export function createServer() {
   app.put("/api/exploitation/:id", updateExploitation);
   app.delete("/api/exploitation/:id", deleteExploitation);
 
+  // Rebouclage API routes
+  app.get("/api/rebouclage/stats", handleGetRebouclageStats);
+  app.get("/api/rebouclage/export", handleExportRebouclages);
+  app.get("/api/rebouclage/:id", handleGetRebouclage);
+  app.get("/api/rebouclage", handleGetRebouclages);
+  app.post("/api/rebouclage", handleCreateRebouclage);
+  app.post("/api/rebouclage/automatic", upload.single('image'), handleCreateRebouclageAutomatic);
+  app.put("/api/rebouclage/:id", handleUpdateRebouclage);
+  app.delete("/api/rebouclage/:id", handleDeleteRebouclage);
+
   return app;
 }
