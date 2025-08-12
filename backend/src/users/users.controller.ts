@@ -37,8 +37,6 @@ export class UsersController {
   ) {
     return this.usersService.updatePassword(user.userId, changePwdDto);
   }
-  @Roles(UserRole.ADMIN)
-  @UseGuards(JwtAuthGuard, RolesGuard)
   @Get()
   async getAllUsers() {
     return this.usersService.findAll();
