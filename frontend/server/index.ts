@@ -237,6 +237,7 @@ export function createServer() {
   app.get("/api/rebouclage", handleGetRebouclages);
   app.post("/api/rebouclage", handleCreateRebouclage);
   app.post("/api/rebouclage/automatic", upload.single('image'), handleCreateRebouclageAutomatic);
+  app.post("/api/rebouclage/extract-nni", upload.single('image'), handleExtractNNI);
   app.put("/api/rebouclage/:id", handleUpdateRebouclage);
   app.delete("/api/rebouclage/:id", handleDeleteRebouclage);
 
