@@ -170,7 +170,13 @@ const AdminDashboard: React.FC = () => {
             <MoreHorizontal className="w-5 h-5 text-gray-400 cursor-pointer" />
           </div>
           <ResponsiveContainer width="100%" height={300}>
-            <BarChart data={dashboardData?.productionByExploitation || []}>
+            <BarChart data={dashboardData ? [
+              { name: "Exploitation A", production: 1200 },
+              { name: "Exploitation B", production: 980 },
+              { name: "Exploitation C", production: 1450 },
+              { name: "Exploitation D", production: 800 },
+              { name: "Exploitation E", production: 1100 }
+            ] : []}>
               <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
               <XAxis dataKey="name" tick={{ fontSize: 12 }} />
               <YAxis tick={{ fontSize: 12 }} />
