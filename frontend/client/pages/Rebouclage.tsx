@@ -227,6 +227,8 @@ const Rebouclage: React.FC = () => {
         nouveauNNI: fullRecord.nouveauNNI,
         dateRebouclage: fullRecord.dateRebouclage,
         indentificateur_id: fullRecord.identificateur_id,
+        mode: 'manual', // Edit mode always uses manual
+        selectedImage: undefined,
       });
       setModalMode("edit");
       setSelectedRecord(fullRecord);
