@@ -1109,32 +1109,55 @@ const Rebouclage: React.FC = () => {
               </div>
             )}
 
-            <DialogFooter className="flex flex-col sm:flex-row justify-end gap-2 pt-4 border-t border-boviclouds-gray-50">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={handleModalClose}
-                className="w-full sm:w-32 h-10 rounded-lg text-sm font-normal border-boviclouds-gray-300 text-boviclouds-gray-800 hover:bg-boviclouds-gray-50"
-              >
-                {modalMode === "view" ? "Fermer" : "Annuler"}
-              </Button>
-              {modalMode !== "view" && (
-                <Button
-                  type="button"
-                  onClick={handleSubmit}
-                  disabled={actionLoading}
-                  className="w-full sm:w-32 h-10 rounded-lg text-sm font-semibold bg-boviclouds-primary hover:bg-boviclouds-primary/90 text-white disabled:opacity-50"
-                >
-                  {actionLoading ? (
-                    <RefreshCw className="w-4 h-4 animate-spin" />
-                  ) : modalMode === "create" ? (
-                    "Créer"
-                  ) : (
-                    "Mettre à jour"
-                  )}
-                </Button>
-              )}
-            </DialogFooter>
+            {modalStep !== "image-upload" && (
+              <DialogFooter className="flex flex-col sm:flex-row justify-end gap-2 pt-4 border-t border-boviclouds-gray-50">
+                {modalStep === "mode-selection" && (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={handleModalClose}
+                    className="w-full sm:w-32 h-10 rounded-lg text-sm font-normal border-boviclouds-gray-300 text-boviclouds-gray-800 hover:bg-boviclouds-gray-50"
+                  >
+                    Annuler
+                  </Button>
+                )}
+
+                {modalStep === "form" && (
+                  <>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => {
+                        if (modalMode === "create" && formData.mode === "automatic") {
+                          setModalStep("image-upload");
+                        } else {
+                          handleModalClose();
+                        }
+                      }}
+                      className="w-full sm:w-32 h-10 rounded-lg text-sm font-normal border-boviclouds-gray-300 text-boviclouds-gray-800 hover:bg-boviclouds-gray-50"
+                    >
+                      {modalMode === "view" ? "Fermer" : modalMode === "create" && formData.mode === "automatic" ? "Retour" : "Annuler"}
+                    </Button>
+                    {modalMode !== "view" && (
+                      <Button
+                        type="button"
+                        onClick={handleSubmit}
+                        disabled={actionLoading}
+                        className="w-full sm:w-32 h-10 rounded-lg text-sm font-semibold bg-boviclouds-primary hover:bg-boviclouds-primary/90 text-white disabled:opacity-50"
+                      >
+                        {actionLoading ? (
+                          <RefreshCw className="w-4 h-4 animate-spin" />
+                        ) : modalMode === "create" ? (
+                          "Créer"
+                        ) : (
+                          "Mettre à jour"
+                        )}
+                      </Button>
+                    )}
+                  </>
+                )}
+              </DialogFooter>
+            )}
           </DialogContent>
         </DialogPortal>
       </Dialog>
