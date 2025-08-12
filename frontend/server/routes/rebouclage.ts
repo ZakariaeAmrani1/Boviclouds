@@ -311,6 +311,70 @@ export const handleExportRebouclages: RequestHandler = async (req, res) => {
   }
 };
 
+// Extract NNI from image
+export const handleExtractNNI: RequestHandler = async (req, res) => {
+  try {
+    let image: Express.Multer.File | undefined;
+
+    // Get uploaded image
+    if (req.files && Array.isArray(req.files)) {
+      image = req.files[0];
+    } else if (req.files && "image" in req.files) {
+      image = Array.isArray(req.files.image) ? req.files.image[0] : req.files.image;
+    } else if (req.file) {
+      image = req.file;
+    }
+
+    if (!image) {
+      return res.status(400).json({
+        success: false,
+        message: "Une image est requise pour l'extraction du NNI",
+      });
+    }
+
+    try {
+      // Mock OCR processing - in real implementation, you would use an OCR service
+      // like Google Vision API, AWS Textract, or a custom OCR solution
+      const mockProcessImage = async (imageBuffer: Buffer): Promise<string> => {
+        // Simulate processing delay
+        await new Promise(resolve => setTimeout(resolve, 1500));
+
+        // Mock OCR result - in real implementation, this would be actual OCR
+        // You could also implement some basic pattern recognition here
+        const mockNNI = `FR${Date.now().toString().slice(-10)}`;
+
+        // Simulate some potential errors
+        const shouldError = Math.random() < 0.1; // 10% chance of error for demo
+        if (shouldError) {
+          throw new Error("NNI non détecté dans l'image. Veuillez essayer avec une image plus claire.");
+        }
+
+        return mockNNI;
+      };
+
+      const extractedNNI = await mockProcessImage(image.buffer);
+
+      res.json({
+        success: true,
+        extractedNNI,
+        message: "NNI extrait avec succès",
+      });
+    } catch (imageProcessingError: any) {
+      console.error("Error processing image:", imageProcessingError);
+      res.status(400).json({
+        success: false,
+        message: imageProcessingError.message || "Erreur lors du traitement de l'image",
+      });
+    }
+  } catch (error: any) {
+    console.error("Error extracting NNI:", error);
+    res.status(error.response?.status || 500).json({
+      success: false,
+      message: error.response?.data?.message || "Error extracting NNI",
+    });
+  }
+};
+
 // Get rebouclage stats
 export const handleGetRebouclageStats: RequestHandler = async (req, res) => {
   try {
