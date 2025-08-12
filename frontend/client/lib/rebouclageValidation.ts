@@ -78,29 +78,8 @@ export const validateCreateInput = (
     }
   }
 
-  // Validate status if provided
-  if (input.statut && !Object.values(RebouclageStatus).includes(input.statut)) {
-    errors.push({ field: "statut", message: "Statut invalide" });
-  }
-
-  // Validate code exploitation format if provided
-  if (
-    input.codeExploitation &&
-    !/^[A-Z0-9]{3,10}$/.test(input.codeExploitation)
-  ) {
-    errors.push({
-      field: "codeExploitation",
-      message: "Code exploitation invalide (3-10 caractères alphanumériques)",
-    });
-  }
-
-  // Validate notes length if provided
-  if (input.notes && input.notes.length > 500) {
-    errors.push({
-      field: "notes",
-      message: "Les notes ne peuvent pas dépasser 500 caractères",
-    });
-  }
+  // These fields are not in CreateRebouclageInput interface anymore
+  // They are in UpdateRebouclageInput only
 
   return {
     isValid: errors.length === 0,
