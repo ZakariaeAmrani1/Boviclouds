@@ -56,6 +56,7 @@ import {
 import {
   RebouclageRecord,
   CreateRebouclageInput,
+  CreateRebouclageAutomaticInput,
   UpdateRebouclageInput,
   RebouclageFilters,
   RebouclageStatus,
