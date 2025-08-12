@@ -762,109 +762,203 @@ const Rebouclage: React.FC = () => {
               )}
             </DialogHeader>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 py-4 sm:py-6">
-              {/* Left Column */}
-              <div className="space-y-3 sm:space-y-4">
-                {/* Ancien NNI */}
-                <div className="space-y-2">
-                  <Label
-                    htmlFor="ancienNNI"
-                    className="text-sm font-normal text-black"
-                  >
-                    Ancien NNI *
+            <div className="space-y-4 sm:space-y-6 py-4 sm:py-6">
+              {/* Mode Selection - Only show in create mode */}
+              {modalMode === "create" && (
+                <div className="space-y-3">
+                  <Label className="text-sm font-normal text-black">
+                    Mode de saisie *
                   </Label>
-                  <Input
-                    id="ancienNNI"
-                    value={formData.ancienNNI}
-                    onChange={(e) => {
-                      handleFormChange("ancienNNI", e.target.value);
-                      setValidationErrors((prev) =>
-                        prev.filter((err) => err.field !== "ancienNNI"),
-                      );
-                    }}
-                    className={`h-10 sm:h-12 px-3 sm:px-4 text-sm rounded-xl ${
-                      getFieldError(validationErrors, "ancienNNI")
-                        ? "border-red-500 focus:border-red-500"
-                        : "border-boviclouds-gray-100"
-                    }`}
-                    placeholder="Ex: FR1234567890"
-                    disabled={modalMode === "view"}
-                  />
-                  {getFieldError(validationErrors, "ancienNNI") && (
-                    <p className="text-sm text-red-600">
-                      {getFieldError(validationErrors, "ancienNNI")}
-                    </p>
-                  )}
+                  <div className="grid grid-cols-2 gap-3">
+                    <button
+                      type="button"
+                      onClick={() => handleFormChange("mode", "manual")}
+                      className={`p-4 rounded-xl border-2 transition-all ${
+                        formData.mode === "manual"
+                          ? "border-boviclouds-primary bg-boviclouds-green-light"
+                          : "border-boviclouds-gray-200 hover:border-boviclouds-gray-300"
+                      }`}
+                    >
+                      <div className="flex flex-col items-center space-y-2">
+                        <FileText className="w-8 h-8 text-boviclouds-primary" />
+                        <span className="text-sm font-medium">Manuel</span>
+                        <span className="text-xs text-gray-600 text-center">
+                          Saisir l'ancien NNI manuellement
+                        </span>
+                      </div>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleFormChange("mode", "automatic")}
+                      className={`p-4 rounded-xl border-2 transition-all ${
+                        formData.mode === "automatic"
+                          ? "border-boviclouds-primary bg-boviclouds-green-light"
+                          : "border-boviclouds-gray-200 hover:border-boviclouds-gray-300"
+                      }`}
+                    >
+                      <div className="flex flex-col items-center space-y-2">
+                        <Camera className="w-8 h-8 text-boviclouds-primary" />
+                        <span className="text-sm font-medium">Automatique</span>
+                        <span className="text-xs text-gray-600 text-center">
+                          Extraire l'ancien NNI depuis une image
+                        </span>
+                      </div>
+                    </button>
+                  </div>
                 </div>
+              )}
 
-                {/* Nouveau NNI */}
-                <div className="space-y-2">
-                  <Label
-                    htmlFor="nouveauNNI"
-                    className="text-sm font-normal text-black"
-                  >
-                    Nouveau NNI *
-                  </Label>
-                  <Input
-                    id="nouveauNNI"
-                    value={formData.nouveauNNI}
-                    onChange={(e) => {
-                      handleFormChange("nouveauNNI", e.target.value);
-                      setValidationErrors((prev) =>
-                        prev.filter((err) => err.field !== "nouveauNNI"),
-                      );
-                    }}
-                    className={`h-10 sm:h-12 px-3 sm:px-4 text-sm rounded-xl ${
-                      getFieldError(validationErrors, "nouveauNNI")
-                        ? "border-red-500 focus:border-red-500"
-                        : "border-boviclouds-gray-100"
-                    }`}
-                    placeholder="Ex: FR1234567890"
-                    disabled={modalMode === "view"}
-                  />
-                  {getFieldError(validationErrors, "nouveauNNI") && (
-                    <p className="text-sm text-red-600">
-                      {getFieldError(validationErrors, "nouveauNNI")}
-                    </p>
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
+                {/* Left Column */}
+                <div className="space-y-3 sm:space-y-4">
+                  {/* Image Upload for Automatic Mode */}
+                  {modalMode === "create" && formData.mode === "automatic" && (
+                    <div className="space-y-2">
+                      <Label className="text-sm font-normal text-black">
+                        Image du NNI *
+                      </Label>
+                      <div className="border-2 border-dashed border-boviclouds-gray-200 rounded-xl p-6 text-center">
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={handleImageUpload}
+                          className="hidden"
+                          id="imageUpload"
+                        />
+                        <label htmlFor="imageUpload" className="cursor-pointer">
+                          {formData.selectedImage ? (
+                            <div className="space-y-2">
+                              <img
+                                src={URL.createObjectURL(formData.selectedImage)}
+                                alt="Image sélectionnée"
+                                className="max-h-32 mx-auto rounded-lg"
+                              />
+                              <p className="text-sm text-green-600">
+                                {formData.selectedImage.name}
+                              </p>
+                              <p className="text-xs text-gray-500">
+                                Cliquez pour changer
+                              </p>
+                            </div>
+                          ) : (
+                            <div className="space-y-2">
+                              <Upload className="w-8 h-8 mx-auto text-boviclouds-gray-400" />
+                              <p className="text-sm text-boviclouds-gray-600">
+                                Cliquez pour sélectionner une image
+                              </p>
+                              <p className="text-xs text-boviclouds-gray-500">
+                                PNG, JPG jusqu'à 5MB
+                              </p>
+                            </div>
+                          )}
+                        </label>
+                      </div>
+                    </div>
                   )}
-                </div>
-              </div>
 
-              {/* Right Column */}
-              <div className="space-y-3 sm:space-y-4">
-                {/* Date du rebouclage */}
-                <div className="space-y-2">
-                  <Label
-                    htmlFor="dateRebouclage"
-                    className="text-sm font-normal text-black"
-                  >
-                    Date du rebouclage
-                  </Label>
-                  <div className="relative">
+                  {/* Ancien NNI - Only show in manual mode or view/edit */}
+                  {(modalMode !== "create" || formData.mode === "manual") && (
+                    <div className="space-y-2">
+                      <Label
+                        htmlFor="ancienNNI"
+                        className="text-sm font-normal text-black"
+                      >
+                        Ancien NNI *
+                      </Label>
+                      <Input
+                        id="ancienNNI"
+                        value={formData.ancienNNI}
+                        onChange={(e) => {
+                          handleFormChange("ancienNNI", e.target.value);
+                          setValidationErrors((prev) =>
+                            prev.filter((err) => err.field !== "ancienNNI"),
+                          );
+                        }}
+                        className={`h-10 sm:h-12 px-3 sm:px-4 text-sm rounded-xl ${
+                          getFieldError(validationErrors, "ancienNNI")
+                            ? "border-red-500 focus:border-red-500"
+                            : "border-boviclouds-gray-100"
+                        }`}
+                        placeholder="Ex: FR1234567890"
+                        disabled={modalMode === "view"}
+                      />
+                      {getFieldError(validationErrors, "ancienNNI") && (
+                        <p className="text-sm text-red-600">
+                          {getFieldError(validationErrors, "ancienNNI")}
+                        </p>
+                      )}
+                    </div>
+                  )}
+
+                  {/* Nouveau NNI */}
+                  <div className="space-y-2">
+                    <Label
+                      htmlFor="nouveauNNI"
+                      className="text-sm font-normal text-black"
+                    >
+                      Nouveau NNI *
+                    </Label>
                     <Input
-                      id="dateRebouclage"
-                      type="datetime-local"
-                      value={formData.dateRebouclage}
+                      id="nouveauNNI"
+                      value={formData.nouveauNNI}
                       onChange={(e) => {
-                        handleFormChange("dateRebouclage", e.target.value);
+                        handleFormChange("nouveauNNI", e.target.value);
                         setValidationErrors((prev) =>
-                          prev.filter((err) => err.field !== "dateRebouclage"),
+                          prev.filter((err) => err.field !== "nouveauNNI"),
                         );
                       }}
-                      className={`h-10 sm:h-12 px-3 sm:px-4 text-sm rounded-xl pr-10 sm:pr-12 ${
-                        getFieldError(validationErrors, "dateRebouclage")
+                      className={`h-10 sm:h-12 px-3 sm:px-4 text-sm rounded-xl ${
+                        getFieldError(validationErrors, "nouveauNNI")
                           ? "border-red-500 focus:border-red-500"
                           : "border-boviclouds-gray-100"
                       }`}
+                      placeholder="Ex: FR1234567890"
                       disabled={modalMode === "view"}
                     />
-                    <Calendar className="absolute right-3 sm:right-4 top-1/2 transform -translate-y-1/2 w-4 h-4 text-black" />
+                    {getFieldError(validationErrors, "nouveauNNI") && (
+                      <p className="text-sm text-red-600">
+                        {getFieldError(validationErrors, "nouveauNNI")}
+                      </p>
+                    )}
                   </div>
-                  {getFieldError(validationErrors, "dateRebouclage") && (
-                    <p className="text-sm text-red-600">
-                      {getFieldError(validationErrors, "dateRebouclage")}
-                    </p>
-                  )}
+                </div>
+
+                {/* Right Column */}
+                <div className="space-y-3 sm:space-y-4">
+                  {/* Date du rebouclage */}
+                  <div className="space-y-2">
+                    <Label
+                      htmlFor="dateRebouclage"
+                      className="text-sm font-normal text-black"
+                    >
+                      Date du rebouclage
+                    </Label>
+                    <div className="relative">
+                      <Input
+                        id="dateRebouclage"
+                        type="datetime-local"
+                        value={formData.dateRebouclage}
+                        onChange={(e) => {
+                          handleFormChange("dateRebouclage", e.target.value);
+                          setValidationErrors((prev) =>
+                            prev.filter((err) => err.field !== "dateRebouclage"),
+                          );
+                        }}
+                        className={`h-10 sm:h-12 px-3 sm:px-4 text-sm rounded-xl pr-10 sm:pr-12 ${
+                          getFieldError(validationErrors, "dateRebouclage")
+                            ? "border-red-500 focus:border-red-500"
+                            : "border-boviclouds-gray-100"
+                        }`}
+                        disabled={modalMode === "view"}
+                      />
+                      <Calendar className="absolute right-3 sm:right-4 top-1/2 transform -translate-y-1/2 w-4 h-4 text-black" />
+                    </div>
+                    {getFieldError(validationErrors, "dateRebouclage") && (
+                      <p className="text-sm text-red-600">
+                        {getFieldError(validationErrors, "dateRebouclage")}
+                      </p>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
