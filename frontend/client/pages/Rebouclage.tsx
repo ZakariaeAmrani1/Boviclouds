@@ -259,32 +259,80 @@ const Rebouclage: React.FC = () => {
 
     try {
       if (modalMode === "create") {
-        const input: CreateRebouclageInput = {
-          ancienNNI: formData.ancienNNI.trim(),
-          nouveauNNI: formData.nouveauNNI.trim(),
-          dateRebouclage: formData.dateRebouclage || undefined,
-          identificateur_id: formData.indentificateur_id.trim(),
-        };
+        if (formData.mode === 'automatic') {
+          // Automatic mode validation
+          if (!formData.selectedImage) {
+            toast({
+              title: "Erreur de validation",
+              description: "Veuillez sélectionner une image pour le mode automatique.",
+              variant: "destructive",
+            });
+            return;
+          }
+          if (!formData.nouveauNNI.trim()) {
+            toast({
+              title: "Erreur de validation",
+              description: "Le nouveau NNI est requis.",
+              variant: "destructive",
+            });
+            return;
+          }
+          if (!formData.indentificateur_id.trim()) {
+            toast({
+              title: "Erreur de validation",
+              description: "L'identificateur est requis.",
+              variant: "destructive",
+            });
+            return;
+          }
 
-        const validation = validateCreateInput(input);
-        if (!validation.isValid) {
-          setValidationErrors(validation.errors);
-          toast({
-            title: "Erreur de validation",
-            description: "Veuillez corriger les erreurs dans le formulaire.",
-            variant: "destructive",
-          });
-          return;
-        }
+          const automaticInput: CreateRebouclageAutomaticInput = {
+            nouveauNNI: formData.nouveauNNI.trim(),
+            identificateur_id: formData.indentificateur_id.trim(),
+            dateRebouclage: formData.dateRebouclage || undefined,
+            mode: 'automatic',
+            image: formData.selectedImage,
+          };
 
-        const result = await createRecord(input);
-        if (result) {
-          toast({
-            title: "Succès",
-            description: "Le rebouclage a été créé avec succès.",
-          });
-          refresh();
-          setIsModalOpen(false);
+          const result = await createRecord(automaticInput);
+          if (result) {
+            toast({
+              title: "Succès",
+              description: "Le rebouclage a été créé avec succès en mode automatique.",
+            });
+            refresh();
+            setIsModalOpen(false);
+          }
+        } else {
+          // Manual mode validation
+          const input: CreateRebouclageInput = {
+            ancienNNI: formData.ancienNNI.trim(),
+            nouveauNNI: formData.nouveauNNI.trim(),
+            dateRebouclage: formData.dateRebouclage || undefined,
+            identificateur_id: formData.indentificateur_id.trim(),
+            mode: 'manual',
+          };
+
+          const validation = validateCreateInput(input);
+          if (!validation.isValid) {
+            setValidationErrors(validation.errors);
+            toast({
+              title: "Erreur de validation",
+              description: "Veuillez corriger les erreurs dans le formulaire.",
+              variant: "destructive",
+            });
+            return;
+          }
+
+          const result = await createRecord(input);
+          if (result) {
+            toast({
+              title: "Succès",
+              description: "Le rebouclage a été créé avec succès.",
+            });
+            refresh();
+            setIsModalOpen(false);
+          }
         }
       } else if (modalMode === "edit" && selectedRecord) {
         const input: UpdateRebouclageInput = {
