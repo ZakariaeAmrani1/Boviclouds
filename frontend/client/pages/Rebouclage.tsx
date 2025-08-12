@@ -1117,7 +1117,7 @@ const Rebouclage: React.FC = () => {
                     type="button"
                     variant="outline"
                     onClick={handleModalClose}
-                    className="w-full sm:w-32 h-10 rounded-lg text-sm font-normal border-boviclouds-gray-300 text-boviclouds-gray-800 hover:bg-boviclouds-gray-50"
+                    className="w-full sm:w-24 h-9 rounded-md text-sm border-boviclouds-gray-300 text-boviclouds-gray-800 hover:bg-boviclouds-gray-50"
                   >
                     Annuler
                   </Button>
@@ -1135,7 +1135,7 @@ const Rebouclage: React.FC = () => {
                           handleModalClose();
                         }
                       }}
-                      className="w-full sm:w-32 h-10 rounded-lg text-sm font-normal border-boviclouds-gray-300 text-boviclouds-gray-800 hover:bg-boviclouds-gray-50"
+                      className="w-full sm:w-24 h-9 rounded-md text-sm border-boviclouds-gray-300 text-boviclouds-gray-800 hover:bg-boviclouds-gray-50"
                     >
                       {modalMode === "view" ? "Fermer" : modalMode === "create" && formData.mode === "automatic" ? "Retour" : "Annuler"}
                     </Button>
@@ -1144,7 +1144,7 @@ const Rebouclage: React.FC = () => {
                         type="button"
                         onClick={handleSubmit}
                         disabled={actionLoading}
-                        className="w-full sm:w-32 h-10 rounded-lg text-sm font-semibold bg-boviclouds-primary hover:bg-boviclouds-primary/90 text-white disabled:opacity-50"
+                        className="w-full sm:w-24 h-9 rounded-md text-sm bg-boviclouds-primary hover:bg-boviclouds-primary/90 text-white disabled:opacity-50"
                       >
                         {actionLoading ? (
                           <RefreshCw className="w-4 h-4 animate-spin" />
