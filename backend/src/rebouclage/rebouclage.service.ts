@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Rebouclage } from './schemas/rebouclage.schema';
-import { CreateRebouclageDto } from './dto/create-rebouclage.dto';
+import { CreateRebouclageDto, CreateRebouclageAutomaticDto } from './dto/create-rebouclage.dto';
 import { Model } from 'mongoose';
 import * as ExcelJS from 'exceljs';
 import { Parser as Json2CsvParser } from 'json2csv';
