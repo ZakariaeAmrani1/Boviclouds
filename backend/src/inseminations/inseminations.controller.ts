@@ -1,15 +1,27 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, HttpStatus, HttpCode, UseInterceptors, UploadedFile, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  HttpStatus,
+  HttpCode,
+  UseInterceptors,
+  UploadedFile,
+  UseGuards,
+} from '@nestjs/common';
 import { InseminationsService } from './inseminations.service';
 import { CreateInseminationDto } from './dto/create-insemination.dto';
 import { UpdateInseminationDto } from './dto/update-insemination.dto';
 import { multerMemoryStorage } from 'multer-config';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { File as MulterFile } from 'multer';
+import { Express } from 'express';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { RolesGuard } from 'src/auth/roles.guard';
 import { UserRole } from 'src/users/schemas/users/user.role';
 import { Roles } from 'src/auth/roles.decorator';
-
 
 @Controller('api/v1/inseminations')
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -46,8 +58,8 @@ export class InseminationsController {
     return await this.inseminationsService.remove(id);
   }
   @Post('import-inseminations')
-  @UseInterceptors(FileInterceptor('file',multerMemoryStorage))
-  async importInseminations(@UploadedFile() file: MulterFile) {
+  @UseInterceptors(FileInterceptor('file', multerMemoryStorage))
+  async importInseminations(@UploadedFile() file: Express.Multer.File) {
     return await this.inseminationsService.importInseminations(file);
   }
 }
