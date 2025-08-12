@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Post, Query, Res, UseGuards, UseInterceptors, UploadedFile } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Query, Res, UseGuards, UseInterceptors, UploadedFile, BadRequestException } from '@nestjs/common';
 import { Response } from 'express';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Roles } from '../auth/roles.decorator';
@@ -7,7 +7,7 @@ import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { RebouclageService } from './rebouclage.service';
 
 import { UserRole } from 'src/users/schemas/users/user.role';
-import { CreateRebouclageDto, CreateRebouclageAutomaticDto } from './dto/create-rebouclage.dto';
+import { CreateRebouclageDto, CreateRebouclageAutomaticDto, RebouclageMode } from './dto/create-rebouclage.dto';
 
 
 
