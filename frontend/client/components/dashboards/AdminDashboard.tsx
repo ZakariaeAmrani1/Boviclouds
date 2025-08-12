@@ -133,7 +133,7 @@ const AdminDashboard: React.FC = () => {
           <div className="flex items-center justify-between">
             <div>
               <p className="body-small text-muted-foreground">Production Totale</p>
-              <p className="heading-2 text-purple-600">{dashboardData?.totalProduction || 0}L</p>
+              <p className="heading-2 text-purple-600">{dashboardData?.metrics.milkProduction || 0}L</p>
             </div>
             <div className="p-3 bg-purple-50 rounded-xl">
               <Droplets className="w-6 h-6 text-purple-600" />
