@@ -47,8 +47,8 @@ export const validateCreateInput = (
     });
   }
 
-  if (!input.creePar?.trim()) {
-    errors.push({ field: "creePar", message: "Le créateur est requis" });
+  if (!input.identificateur_id?.trim()) {
+    errors.push({ field: "identificateur_id", message: "L'identificateur est requis" });
   }
 
   // Check if ancien and nouveau NNI are different
