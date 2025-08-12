@@ -30,22 +30,27 @@ export class RebouclageController {
     @UploadedFile() image: Express.Multer.File
   ) {
     try {
+      if (!image) {
+        throw new BadRequestException('Image is required for automatic mode');
+      }
+
       // Parse the JSON data from the request
       const parsedData = JSON.parse(data);
       const dto: CreateRebouclageAutomaticDto = {
         nouveau_nni: parsedData.nouveauNNI,
         identificateur_id: parsedData.identificateur_id,
         date_creation: parsedData.dateRebouclage,
-        mode: 'automatic' as any
+        mode: RebouclageMode.AUTOMATIC
       };
 
-      if (!image) {
-        throw new Error('Image is required for automatic mode');
-      }
-
-      return await this.rebouclageService.createAutomatic(dto, image);
+      const result = await this.rebouclageService.createAutomatic(dto, image);
+      return {
+        success: true,
+        data: result,
+        message: 'Rebouclage automatique créé avec succès'
+      };
     } catch (error) {
-      throw new Error(`Error processing automatic rebouclage: ${error.message}`);
+      throw new BadRequestException(`Error processing automatic rebouclage: ${error.message}`);
     }
   }
 
