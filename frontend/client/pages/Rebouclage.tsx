@@ -92,6 +92,7 @@ const Rebouclage: React.FC = () => {
   // Modal states
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalMode, setModalMode] = useState<ModalMode>("create");
+  const [modalStep, setModalStep] = useState<ModalStep>("mode-selection");
   const [selectedRecord, setSelectedRecord] = useState<RebouclageRecord | null>(
     null,
   );
@@ -99,6 +100,13 @@ const Rebouclage: React.FC = () => {
   const [recordToDelete, setRecordToDelete] = useState<RebouclageRecord | null>(
     null,
   );
+
+  // Image processing state
+  const [imageProcessing, setImageProcessing] = useState<ImageProcessingState>({
+    loading: false,
+    error: null,
+    extractedNNI: null,
+  });
 
   // Form states
   const [searchForm, setSearchForm] = useState<RebouclageFilters>({
