@@ -43,9 +43,6 @@ const Layout: React.FC = () => {
           <Outlet />
         </div>
       </div>
-
-      {/* Role test switch for development */}
-      <RoleTestSwitch />
     </div>
   );
 };
