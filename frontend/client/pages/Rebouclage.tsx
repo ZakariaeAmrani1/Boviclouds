@@ -75,6 +75,8 @@ interface FormData {
   nouveauNNI: string;
   dateRebouclage: string;
   indentificateur_id: string;
+  mode: 'manual' | 'automatic';
+  selectedImage?: File;
 }
 
 const Rebouclage: React.FC = () => {
