@@ -99,6 +99,7 @@ import {
   handleDeleteRebouclage,
   handleExportRebouclages,
   handleGetRebouclageStats,
+  handleExtractNNI,
 } from "./routes/rebouclage";
 
 // Configure multer for file uploads
