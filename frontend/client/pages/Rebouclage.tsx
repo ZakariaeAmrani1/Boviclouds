@@ -178,7 +178,7 @@ const Rebouclage: React.FC = () => {
     if (success) {
       toast({
         title: "Export réussi",
-        description: "Les donn��es ont été exportées avec succès.",
+        description: "Les données ont été exportées avec succès.",
       });
     } else {
       toast({
@@ -272,13 +272,25 @@ const Rebouclage: React.FC = () => {
       mode: 'manual',
       selectedImage: undefined,
     });
+    setImageProcessing({ loading: false, error: null, extractedNNI: null });
   };
 
   const openCreateModal = () => {
     resetForm();
     setModalMode("create");
+    setModalStep("mode-selection");
     setSelectedRecord(null);
     setIsModalOpen(true);
+  };
+
+  const handleModeSelection = (mode: 'manual' | 'automatic') => {
+    setFormData((prev) => ({ ...prev, mode }));
+
+    if (mode === 'manual') {
+      setModalStep("form");
+    } else {
+      setModalStep("image-upload");
+    }
   };
 
   const openEditModal = async (record: RebouclageRecord) => {
