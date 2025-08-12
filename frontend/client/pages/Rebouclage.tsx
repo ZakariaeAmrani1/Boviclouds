@@ -13,6 +13,9 @@ import {
   Calendar,
   X,
   AlertTriangle,
+  Upload,
+  Camera,
+  FileText,
 } from "lucide-react";
 import {
   Dialog,
@@ -53,6 +56,7 @@ import {
 import {
   RebouclageRecord,
   CreateRebouclageInput,
+  CreateRebouclageAutomaticInput,
   UpdateRebouclageInput,
   RebouclageFilters,
   RebouclageStatus,
@@ -65,12 +69,21 @@ import {
 } from "../lib/rebouclageValidation";
 
 type ModalMode = "create" | "edit" | "view";
+type ModalStep = "mode-selection" | "image-upload" | "form";
 
 interface FormData {
   ancienNNI: string;
   nouveauNNI: string;
   dateRebouclage: string;
   indentificateur_id: string;
+  mode: 'manual' | 'automatic';
+  selectedImage?: File;
+}
+
+interface ImageProcessingState {
+  loading: boolean;
+  error: string | null;
+  extractedNNI: string | null;
 }
 
 const Rebouclage: React.FC = () => {
@@ -79,6 +92,7 @@ const Rebouclage: React.FC = () => {
   // Modal states
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalMode, setModalMode] = useState<ModalMode>("create");
+  const [modalStep, setModalStep] = useState<ModalStep>("mode-selection");
   const [selectedRecord, setSelectedRecord] = useState<RebouclageRecord | null>(
     null,
   );
@@ -86,6 +100,13 @@ const Rebouclage: React.FC = () => {
   const [recordToDelete, setRecordToDelete] = useState<RebouclageRecord | null>(
     null,
   );
+
+  // Image processing state
+  const [imageProcessing, setImageProcessing] = useState<ImageProcessingState>({
+    loading: false,
+    error: null,
+    extractedNNI: null,
+  });
 
   // Form states
   const [searchForm, setSearchForm] = useState<RebouclageFilters>({
@@ -99,6 +120,8 @@ const Rebouclage: React.FC = () => {
     nouveauNNI: "",
     dateRebouclage: "",
     indentificateur_id: "",
+    mode: 'manual',
+    selectedImage: undefined,
   });
 
   const [validationErrors, setValidationErrors] = useState<ValidationError[]>(
@@ -166,8 +189,78 @@ const Rebouclage: React.FC = () => {
     }
   };
 
-  const handleFormChange = (field: keyof FormData, value: string) => {
+  const handleFormChange = (field: keyof FormData, value: string | File) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      if (file.size > 5 * 1024 * 1024) { // 5MB limit
+        toast({
+          title: "Erreur",
+          description: "L'image ne doit pas dépasser 5MB",
+          variant: "destructive",
+        });
+        return;
+      }
+      if (!file.type.startsWith('image/')) {
+        toast({
+          title: "Erreur",
+          description: "Veuillez sélectionner un fichier image",
+          variant: "destructive",
+        });
+        return;
+      }
+      setFormData((prev) => ({ ...prev, selectedImage: file }));
+    }
+  };
+
+  const processImageForNNI = async (image: File) => {
+    setImageProcessing({ loading: true, error: null, extractedNNI: null });
+
+    try {
+      const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:8080/api/";
+      const token = localStorage.getItem("access_token");
+
+      const formData = new FormData();
+      formData.append('image', image);
+
+      const response = await fetch(`${apiUrl}rebouclage/extract-nni`, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        body: formData,
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        setImageProcessing({ loading: false, error: null, extractedNNI: data.extractedNNI });
+        setFormData((prev) => ({ ...prev, ancienNNI: data.extractedNNI }));
+        setModalStep("form");
+
+        toast({
+          title: "Succès",
+          description: `NNI extrait avec succès: ${data.extractedNNI}`,
+        });
+      } else {
+        throw new Error(data.message || "Erreur lors de l'extraction du NNI");
+      }
+    } catch (error: any) {
+      setImageProcessing({
+        loading: false,
+        error: error.message || "Erreur lors du traitement de l'image",
+        extractedNNI: null
+      });
+
+      toast({
+        title: "Erreur",
+        description: error.message || "Erreur lors du traitement de l'image",
+        variant: "destructive",
+      });
+    }
   };
 
   const resetForm = () => {
@@ -176,14 +269,28 @@ const Rebouclage: React.FC = () => {
       nouveauNNI: "",
       dateRebouclage: "",
       indentificateur_id: "",
+      mode: 'manual',
+      selectedImage: undefined,
     });
+    setImageProcessing({ loading: false, error: null, extractedNNI: null });
   };
 
   const openCreateModal = () => {
     resetForm();
     setModalMode("create");
+    setModalStep("mode-selection");
     setSelectedRecord(null);
     setIsModalOpen(true);
+  };
+
+  const handleModeSelection = (mode: 'manual' | 'automatic') => {
+    setFormData((prev) => ({ ...prev, mode }));
+
+    if (mode === 'manual') {
+      setModalStep("form");
+    } else {
+      setModalStep("image-upload");
+    }
   };
 
   const openEditModal = async (record: RebouclageRecord) => {
@@ -194,8 +301,11 @@ const Rebouclage: React.FC = () => {
         nouveauNNI: fullRecord.nouveauNNI,
         dateRebouclage: fullRecord.dateRebouclage,
         indentificateur_id: fullRecord.identificateur_id,
+        mode: 'manual', // Edit mode always uses manual
+        selectedImage: undefined,
       });
       setModalMode("edit");
+      setModalStep("form"); // Go directly to form for edit
       setSelectedRecord(fullRecord);
       setIsModalOpen(true);
     }
@@ -209,8 +319,11 @@ const Rebouclage: React.FC = () => {
         nouveauNNI: fullRecord.nouveauNNI,
         dateRebouclage: fullRecord.dateRebouclage,
         indentificateur_id: fullRecord.identificateur_id,
+        mode: 'manual', // Default to manual for viewing
+        selectedImage: undefined,
       });
       setModalMode("view");
+      setModalStep("form"); // Go directly to form for view
       setSelectedRecord(fullRecord);
       setIsModalOpen(true);
     }
@@ -226,32 +339,81 @@ const Rebouclage: React.FC = () => {
 
     try {
       if (modalMode === "create") {
-        const input: CreateRebouclageInput = {
-          ancienNNI: formData.ancienNNI.trim(),
-          nouveauNNI: formData.nouveauNNI.trim(),
-          dateRebouclage: formData.dateRebouclage || undefined,
-          identificateur_id: formData.indentificateur_id.trim(),
-        };
+        if (formData.mode === 'automatic') {
+          // Automatic mode - ancien NNI should already be extracted and filled
+          if (!formData.ancienNNI.trim()) {
+            toast({
+              title: "Erreur de validation",
+              description: "L'ancien NNI est requis. Veuillez d'abord extraire le NNI depuis l'image.",
+              variant: "destructive",
+            });
+            return;
+          }
+          if (!formData.nouveauNNI.trim()) {
+            toast({
+              title: "Erreur de validation",
+              description: "Le nouveau NNI est requis.",
+              variant: "destructive",
+            });
+            return;
+          }
+          if (!formData.indentificateur_id.trim()) {
+            toast({
+              title: "Erreur de validation",
+              description: "L'identificateur est requis.",
+              variant: "destructive",
+            });
+            return;
+          }
 
-        const validation = validateCreateInput(input);
-        if (!validation.isValid) {
-          setValidationErrors(validation.errors);
-          toast({
-            title: "Erreur de validation",
-            description: "Veuillez corriger les erreurs dans le formulaire.",
-            variant: "destructive",
-          });
-          return;
-        }
+          // For automatic mode, we now use the regular create flow since NNI is already extracted
+          const input: CreateRebouclageInput = {
+            ancienNNI: formData.ancienNNI.trim(),
+            nouveauNNI: formData.nouveauNNI.trim(),
+            dateRebouclage: formData.dateRebouclage || undefined,
+            identificateur_id: formData.indentificateur_id.trim(),
+            mode: 'automatic',
+          };
 
-        const result = await createRecord(input);
-        if (result) {
-          toast({
-            title: "Succès",
-            description: "Le rebouclage a été créé avec succès.",
-          });
-          refresh();
-          setIsModalOpen(false);
+          const result = await createRecord(input);
+          if (result) {
+            toast({
+              title: "Succès",
+              description: "Le rebouclage a été créé avec succès en mode automatique.",
+            });
+            refresh();
+            setIsModalOpen(false);
+          }
+        } else {
+          // Manual mode validation
+          const input: CreateRebouclageInput = {
+            ancienNNI: formData.ancienNNI.trim(),
+            nouveauNNI: formData.nouveauNNI.trim(),
+            dateRebouclage: formData.dateRebouclage || undefined,
+            identificateur_id: formData.indentificateur_id.trim(),
+            mode: 'manual',
+          };
+
+          const validation = validateCreateInput(input);
+          if (!validation.isValid) {
+            setValidationErrors(validation.errors);
+            toast({
+              title: "Erreur de validation",
+              description: "Veuillez corriger les erreurs dans le formulaire.",
+              variant: "destructive",
+            });
+            return;
+          }
+
+          const result = await createRecord(input);
+          if (result) {
+            toast({
+              title: "Succès",
+              description: "Le rebouclage a été créé avec succès.",
+            });
+            refresh();
+            setIsModalOpen(false);
+          }
         }
       } else if (modalMode === "edit" && selectedRecord) {
         const input: UpdateRebouclageInput = {
@@ -314,6 +476,7 @@ const Rebouclage: React.FC = () => {
 
   const handleModalClose = () => {
     setIsModalOpen(false);
+    setModalStep("mode-selection");
     setSelectedRecord(null);
     setValidationErrors([]);
     resetForm();
@@ -660,14 +823,16 @@ const Rebouclage: React.FC = () => {
       <Dialog open={isModalOpen} onOpenChange={handleModalClose}>
         <DialogPortal>
           <DialogOverlay className="bg-black/20" />
-          <DialogContent className="w-[95vw] max-w-4xl max-h-[90vh] overflow-y-auto mx-4">
+          <DialogContent className="w-[95vw] max-w-2xl max-h-[90vh] overflow-y-auto mx-4">
             <DialogHeader>
               <DialogTitle className="text-lg font-medium text-black">
-                {modalMode === "create" && "Ajouter un rebouclage"}
+                {modalMode === "create" && modalStep === "mode-selection" && "Choisir le mode de saisie"}
+                {modalMode === "create" && modalStep === "image-upload" && "Télécharger l'image"}
+                {modalMode === "create" && modalStep === "form" && "Ajouter un rebouclage"}
                 {modalMode === "edit" && "Modifier le rebouclage"}
                 {modalMode === "view" && "Détails du rebouclage"}
               </DialogTitle>
-              {modalMode === "view" && (
+              {(modalMode === "view" || modalStep === "form") && (
                 <button
                   onClick={handleModalClose}
                   className="absolute right-4 top-4 p-1 rounded-full hover:bg-gray-100"
@@ -677,112 +842,267 @@ const Rebouclage: React.FC = () => {
               )}
             </DialogHeader>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 py-4 sm:py-6">
-              {/* Left Column */}
-              <div className="space-y-3 sm:space-y-4">
-                {/* Ancien NNI */}
-                <div className="space-y-2">
-                  <Label
-                    htmlFor="ancienNNI"
-                    className="text-sm font-normal text-black"
-                  >
-                    Ancien NNI *
-                  </Label>
-                  <Input
-                    id="ancienNNI"
-                    value={formData.ancienNNI}
-                    onChange={(e) => {
-                      handleFormChange("ancienNNI", e.target.value);
-                      setValidationErrors((prev) =>
-                        prev.filter((err) => err.field !== "ancienNNI"),
-                      );
-                    }}
-                    className={`h-10 sm:h-12 px-3 sm:px-4 text-sm rounded-xl ${
-                      getFieldError(validationErrors, "ancienNNI")
-                        ? "border-red-500 focus:border-red-500"
-                        : "border-boviclouds-gray-100"
-                    }`}
-                    placeholder="Ex: FR1234567890"
-                    disabled={modalMode === "view"}
-                  />
-                  {getFieldError(validationErrors, "ancienNNI") && (
-                    <p className="text-sm text-red-600">
-                      {getFieldError(validationErrors, "ancienNNI")}
-                    </p>
-                  )}
+            {/* Mode Selection Step */}
+            {modalMode === "create" && modalStep === "mode-selection" && (
+              <div className="space-y-4 py-4">
+                <div className="text-center">
+                  <p className="text-sm text-gray-600">
+                    Choisissez comment vous souhaitez saisir l'ancien NNI
+                  </p>
                 </div>
-
-                {/* Nouveau NNI */}
-                <div className="space-y-2">
-                  <Label
-                    htmlFor="nouveauNNI"
-                    className="text-sm font-normal text-black"
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  <button
+                    type="button"
+                    onClick={() => handleModeSelection("manual")}
+                    className="p-4 rounded-lg border border-boviclouds-gray-200 hover:border-boviclouds-primary hover:bg-boviclouds-green-light transition-all group"
                   >
-                    Nouveau NNI *
-                  </Label>
-                  <Input
-                    id="nouveauNNI"
-                    value={formData.nouveauNNI}
-                    onChange={(e) => {
-                      handleFormChange("nouveauNNI", e.target.value);
-                      setValidationErrors((prev) =>
-                        prev.filter((err) => err.field !== "nouveauNNI"),
-                      );
-                    }}
-                    className={`h-10 sm:h-12 px-3 sm:px-4 text-sm rounded-xl ${
-                      getFieldError(validationErrors, "nouveauNNI")
-                        ? "border-red-500 focus:border-red-500"
-                        : "border-boviclouds-gray-100"
-                    }`}
-                    placeholder="Ex: FR1234567890"
-                    disabled={modalMode === "view"}
-                  />
-                  {getFieldError(validationErrors, "nouveauNNI") && (
-                    <p className="text-sm text-red-600">
-                      {getFieldError(validationErrors, "nouveauNNI")}
-                    </p>
-                  )}
+                    <div className="flex flex-col items-center space-y-2">
+                      <FileText className="w-6 h-6 text-boviclouds-primary" />
+                      <span className="text-base font-medium text-gray-900">Manuel</span>
+                      <span className="text-xs text-gray-600 text-center">
+                        Saisir l'ancien NNI manuellement
+                      </span>
+                    </div>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleModeSelection("automatic")}
+                    className="p-4 rounded-lg border border-boviclouds-gray-200 hover:border-boviclouds-primary hover:bg-boviclouds-green-light transition-all group"
+                  >
+                    <div className="flex flex-col items-center space-y-2">
+                      <Camera className="w-6 h-6 text-boviclouds-primary" />
+                      <span className="text-base font-medium text-gray-900">Automatique</span>
+                      <span className="text-xs text-gray-600 text-center">
+                        Extraire depuis une image
+                      </span>
+                    </div>
+                  </button>
                 </div>
               </div>
+            )}
 
-              {/* Right Column */}
-              <div className="space-y-3 sm:space-y-4">
-                {/* Date du rebouclage */}
-                <div className="space-y-2">
-                  <Label
-                    htmlFor="dateRebouclage"
-                    className="text-sm font-normal text-black"
-                  >
-                    Date du rebouclage
-                  </Label>
-                  <div className="relative">
-                    <Input
-                      id="dateRebouclage"
-                      type="datetime-local"
-                      value={formData.dateRebouclage}
-                      onChange={(e) => {
-                        handleFormChange("dateRebouclage", e.target.value);
-                        setValidationErrors((prev) =>
-                          prev.filter((err) => err.field !== "dateRebouclage"),
-                        );
-                      }}
-                      className={`h-10 sm:h-12 px-3 sm:px-4 text-sm rounded-xl pr-10 sm:pr-12 ${
-                        getFieldError(validationErrors, "dateRebouclage")
-                          ? "border-red-500 focus:border-red-500"
-                          : "border-boviclouds-gray-100"
-                      }`}
-                      disabled={modalMode === "view"}
-                    />
-                    <Calendar className="absolute right-3 sm:right-4 top-1/2 transform -translate-y-1/2 w-4 h-4 text-black" />
+            {/* Image Upload Step */}
+            {modalMode === "create" && modalStep === "image-upload" && (
+              <div className="space-y-4 py-4">
+                <div className="text-center">
+                  <p className="text-sm text-gray-600">
+                    Téléchargez une image contenant le NNI à extraire
+                  </p>
+                </div>
+
+                {imageProcessing.error && (
+                  <div className="p-3 bg-red-50 border border-red-200 rounded-md">
+                    <div className="flex items-center space-x-2">
+                      <AlertTriangle className="w-4 h-4 text-red-500" />
+                      <p className="text-sm text-red-700">{imageProcessing.error}</p>
+                    </div>
                   </div>
-                  {getFieldError(validationErrors, "dateRebouclage") && (
-                    <p className="text-sm text-red-600">
-                      {getFieldError(validationErrors, "dateRebouclage")}
-                    </p>
+                )}
+
+                <div className="max-w-sm mx-auto">
+                  <div className="border-2 border-dashed border-boviclouds-gray-300 rounded-md p-6 text-center hover:border-boviclouds-primary transition-colors">
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleImageUpload}
+                      className="hidden"
+                      id="imageUpload"
+                      disabled={imageProcessing.loading}
+                    />
+                    <label htmlFor="imageUpload" className="cursor-pointer">
+                      {formData.selectedImage ? (
+                        <div className="space-y-3">
+                          <img
+                            src={URL.createObjectURL(formData.selectedImage)}
+                            alt="Image sélectionnée"
+                            className="max-h-32 mx-auto rounded-md shadow-sm"
+                          />
+                          <div className="space-y-1">
+                            <p className="text-sm font-medium text-green-600">
+                              {formData.selectedImage.name}
+                            </p>
+                            <p className="text-xs text-gray-500">
+                              Cliquez pour changer
+                            </p>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="space-y-3">
+                          <Upload className="w-8 h-8 mx-auto text-boviclouds-gray-400" />
+                          <div className="space-y-1">
+                            <p className="text-base font-medium text-gray-700">
+                              Sélectionner une image
+                            </p>
+                            <p className="text-sm text-gray-500">
+                              PNG, JPG jusqu'à 5MB
+                            </p>
+                          </div>
+                        </div>
+                      )}
+                    </label>
+                  </div>
+
+                  {formData.selectedImage && (
+                    <div className="mt-3 space-y-2">
+                      <Button
+                        onClick={() => processImageForNNI(formData.selectedImage!)}
+                        disabled={imageProcessing.loading}
+                        className="w-full h-10 bg-boviclouds-primary hover:bg-boviclouds-primary/90 text-white"
+                      >
+                        {imageProcessing.loading ? (
+                          <>
+                            <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
+                            Extraction en cours...
+                          </>
+                        ) : (
+                          <>
+                            <Camera className="w-4 h-4 mr-2" />
+                            Extraire le NNI
+                          </>
+                        )}
+                      </Button>
+
+                      <Button
+                        variant="outline"
+                        onClick={() => setModalStep("mode-selection")}
+                        disabled={imageProcessing.loading}
+                        className="w-full h-10"
+                      >
+                        Retour
+                      </Button>
+                    </div>
                   )}
                 </div>
               </div>
-            </div>
+            )}
+
+            {/* Form Step */}
+            {modalStep === "form" && (
+              <div className="space-y-4 py-4">
+                {modalMode === "create" && formData.mode === "automatic" && imageProcessing.extractedNNI && (
+                  <div className="p-3 bg-green-50 border border-green-200 rounded-md">
+                    <div className="flex items-center space-x-2">
+                      <Camera className="w-4 h-4 text-green-600" />
+                      <p className="text-sm text-green-700">
+                        NNI extrait: <span className="font-medium">{imageProcessing.extractedNNI}</span>
+                      </p>
+                    </div>
+                  </div>
+                )}
+
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                  {/* Left Column */}
+                  <div className="space-y-3">
+                    {/* Ancien NNI */}
+                    <div className="space-y-2">
+                      <Label
+                        htmlFor="ancienNNI"
+                        className="text-sm font-normal text-black"
+                      >
+                        Ancien NNI *
+                      </Label>
+                      <Input
+                        id="ancienNNI"
+                        value={formData.ancienNNI}
+                        onChange={(e) => {
+                          handleFormChange("ancienNNI", e.target.value);
+                          setValidationErrors((prev) =>
+                            prev.filter((err) => err.field !== "ancienNNI"),
+                          );
+                        }}
+                        className={`h-10 px-3 text-sm rounded-md ${
+                          getFieldError(validationErrors, "ancienNNI")
+                            ? "border-red-500 focus:border-red-500"
+                            : "border-boviclouds-gray-100"
+                        }`}
+                        placeholder="Ex: FR1234567890"
+                        disabled={modalMode === "view" || (modalMode === "create" && formData.mode === "automatic")}
+                      />
+                      {getFieldError(validationErrors, "ancienNNI") && (
+                        <p className="text-sm text-red-600">
+                          {getFieldError(validationErrors, "ancienNNI")}
+                        </p>
+                      )}
+                      {modalMode === "create" && formData.mode === "automatic" && (
+                        <p className="text-xs text-gray-500">
+                          Ce champ a été rempli automatiquement à partir de l'image
+                        </p>
+                      )}
+                    </div>
+
+                    {/* Nouveau NNI */}
+                    <div className="space-y-2">
+                      <Label
+                        htmlFor="nouveauNNI"
+                        className="text-sm font-normal text-black"
+                      >
+                        Nouveau NNI *
+                      </Label>
+                      <Input
+                        id="nouveauNNI"
+                        value={formData.nouveauNNI}
+                        onChange={(e) => {
+                          handleFormChange("nouveauNNI", e.target.value);
+                          setValidationErrors((prev) =>
+                            prev.filter((err) => err.field !== "nouveauNNI"),
+                          );
+                        }}
+                        className={`h-10 px-3 text-sm rounded-md ${
+                          getFieldError(validationErrors, "nouveauNNI")
+                            ? "border-red-500 focus:border-red-500"
+                            : "border-boviclouds-gray-100"
+                        }`}
+                        placeholder="Ex: FR1234567890"
+                        disabled={modalMode === "view"}
+                      />
+                      {getFieldError(validationErrors, "nouveauNNI") && (
+                        <p className="text-sm text-red-600">
+                          {getFieldError(validationErrors, "nouveauNNI")}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Right Column */}
+                  <div className="space-y-3">
+                    {/* Date du rebouclage */}
+                    <div className="space-y-2">
+                      <Label
+                        htmlFor="dateRebouclage"
+                        className="text-sm font-normal text-black"
+                      >
+                        Date du rebouclage
+                      </Label>
+                      <div className="relative">
+                        <Input
+                          id="dateRebouclage"
+                          type="datetime-local"
+                          value={formData.dateRebouclage}
+                          onChange={(e) => {
+                            handleFormChange("dateRebouclage", e.target.value);
+                            setValidationErrors((prev) =>
+                              prev.filter((err) => err.field !== "dateRebouclage"),
+                            );
+                          }}
+                          className={`h-10 px-3 text-sm rounded-md pr-10 ${
+                            getFieldError(validationErrors, "dateRebouclage")
+                              ? "border-red-500 focus:border-red-500"
+                              : "border-boviclouds-gray-100"
+                          }`}
+                          disabled={modalMode === "view"}
+                        />
+                        <Calendar className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-black" />
+                      </div>
+                      {getFieldError(validationErrors, "dateRebouclage") && (
+                        <p className="text-sm text-red-600">
+                          {getFieldError(validationErrors, "dateRebouclage")}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
 
             {actionError && (
               <div className="p-3 bg-red-50 border border-red-200 rounded-md">
@@ -790,32 +1110,55 @@ const Rebouclage: React.FC = () => {
               </div>
             )}
 
-            <DialogFooter className="flex flex-col sm:flex-row justify-end gap-2 pt-4 border-t border-boviclouds-gray-50">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={handleModalClose}
-                className="w-full sm:w-32 h-10 rounded-lg text-sm font-normal border-boviclouds-gray-300 text-boviclouds-gray-800 hover:bg-boviclouds-gray-50"
-              >
-                {modalMode === "view" ? "Fermer" : "Annuler"}
-              </Button>
-              {modalMode !== "view" && (
-                <Button
-                  type="button"
-                  onClick={handleSubmit}
-                  disabled={actionLoading}
-                  className="w-full sm:w-32 h-10 rounded-lg text-sm font-semibold bg-boviclouds-primary hover:bg-boviclouds-primary/90 text-white disabled:opacity-50"
-                >
-                  {actionLoading ? (
-                    <RefreshCw className="w-4 h-4 animate-spin" />
-                  ) : modalMode === "create" ? (
-                    "Créer"
-                  ) : (
-                    "Mettre à jour"
-                  )}
-                </Button>
-              )}
-            </DialogFooter>
+            {modalStep !== "image-upload" && (
+              <DialogFooter className="flex flex-col sm:flex-row justify-end gap-2 pt-4 border-t border-boviclouds-gray-50">
+                {modalStep === "mode-selection" && (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={handleModalClose}
+                    className="w-full sm:w-24 h-9 rounded-md text-sm border-boviclouds-gray-300 text-boviclouds-gray-800 hover:bg-boviclouds-gray-50"
+                  >
+                    Annuler
+                  </Button>
+                )}
+
+                {modalStep === "form" && (
+                  <>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => {
+                        if (modalMode === "create" && formData.mode === "automatic") {
+                          setModalStep("image-upload");
+                        } else {
+                          handleModalClose();
+                        }
+                      }}
+                      className="w-full sm:w-24 h-9 rounded-md text-sm border-boviclouds-gray-300 text-boviclouds-gray-800 hover:bg-boviclouds-gray-50"
+                    >
+                      {modalMode === "view" ? "Fermer" : modalMode === "create" && formData.mode === "automatic" ? "Retour" : "Annuler"}
+                    </Button>
+                    {modalMode !== "view" && (
+                      <Button
+                        type="button"
+                        onClick={handleSubmit}
+                        disabled={actionLoading}
+                        className="w-full sm:w-24 h-9 rounded-md text-sm bg-boviclouds-primary hover:bg-boviclouds-primary/90 text-white disabled:opacity-50"
+                      >
+                        {actionLoading ? (
+                          <RefreshCw className="w-4 h-4 animate-spin" />
+                        ) : modalMode === "create" ? (
+                          "Créer"
+                        ) : (
+                          "Mettre à jour"
+                        )}
+                      </Button>
+                    )}
+                  </>
+                )}
+              </DialogFooter>
+            )}
           </DialogContent>
         </DialogPortal>
       </Dialog>
