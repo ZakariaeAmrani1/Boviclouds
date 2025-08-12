@@ -76,7 +76,7 @@ interface FormData {
   nouveauNNI: string;
   dateRebouclage: string;
   indentificateur_id: string;
-  mode: 'manual' | 'automatic';
+  mode: "manual" | "automatic";
   selectedImage?: File;
 }
 
@@ -120,7 +120,7 @@ const Rebouclage: React.FC = () => {
     nouveauNNI: "",
     dateRebouclage: "",
     indentificateur_id: "",
-    mode: 'manual',
+    mode: "manual",
     selectedImage: undefined,
   });
 
@@ -196,7 +196,8 @@ const Rebouclage: React.FC = () => {
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
-      if (file.size > 5 * 1024 * 1024) { // 5MB limit
+      if (file.size > 5 * 1024 * 1024) {
+        // 5MB limit
         toast({
           title: "Erreur",
           description: "L'image ne doit pas dépasser 5MB",
@@ -204,7 +205,7 @@ const Rebouclage: React.FC = () => {
         });
         return;
       }
-      if (!file.type.startsWith('image/')) {
+      if (!file.type.startsWith("image/")) {
         toast({
           title: "Erreur",
           description: "Veuillez sélectionner un fichier image",
@@ -220,30 +221,35 @@ const Rebouclage: React.FC = () => {
     setImageProcessing({ loading: true, error: null, extractedNNI: null });
 
     try {
-      const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:8080/api/";
-      const token = localStorage.getItem("access_token");
+      const apiUrl =
+        import.meta.env.VITE_API_URL || "http://192.168.11.30:8000/predict";
 
       const formData = new FormData();
-      formData.append('image', image);
+      formData.append("image", image);
 
-      const response = await fetch(`${apiUrl}rebouclage/extract-nni`, {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+      // const response = await fetch(`${apiUrl}rebouclage/extract-nni`, {
+      //   method: "POST",
+      //   body: formData,
+      // });
+
+      const response = await fetch(`http://192.168.11.30:8000/predict`, {
+        method: "POST",
         body: formData,
       });
-
+      console.log(response);
       const data = await response.json();
-
-      if (data.success) {
-        setImageProcessing({ loading: false, error: null, extractedNNI: data.extractedNNI });
-        setFormData((prev) => ({ ...prev, ancienNNI: data.extractedNNI }));
+      if (data.prediction) {
+        setImageProcessing({
+          loading: false,
+          error: null,
+          extractedNNI: data.prediction,
+        });
+        setFormData((prev) => ({ ...prev, ancienNNI: data.prediction }));
         setModalStep("form");
 
         toast({
           title: "Succès",
-          description: `NNI extrait avec succès: ${data.extractedNNI}`,
+          description: `NNI extrait avec succès: ${data.prediction}`,
         });
       } else {
         throw new Error(data.message || "Erreur lors de l'extraction du NNI");
@@ -252,7 +258,7 @@ const Rebouclage: React.FC = () => {
       setImageProcessing({
         loading: false,
         error: error.message || "Erreur lors du traitement de l'image",
-        extractedNNI: null
+        extractedNNI: null,
       });
 
       toast({
@@ -269,7 +275,7 @@ const Rebouclage: React.FC = () => {
       nouveauNNI: "",
       dateRebouclage: "",
       indentificateur_id: "",
-      mode: 'manual',
+      mode: "manual",
       selectedImage: undefined,
     });
     setImageProcessing({ loading: false, error: null, extractedNNI: null });
@@ -283,10 +289,10 @@ const Rebouclage: React.FC = () => {
     setIsModalOpen(true);
   };
 
-  const handleModeSelection = (mode: 'manual' | 'automatic') => {
+  const handleModeSelection = (mode: "manual" | "automatic") => {
     setFormData((prev) => ({ ...prev, mode }));
 
-    if (mode === 'manual') {
+    if (mode === "manual") {
       setModalStep("form");
     } else {
       setModalStep("image-upload");
@@ -301,7 +307,7 @@ const Rebouclage: React.FC = () => {
         nouveauNNI: fullRecord.nouveauNNI,
         dateRebouclage: fullRecord.dateRebouclage,
         indentificateur_id: fullRecord.identificateur_id,
-        mode: 'manual', // Edit mode always uses manual
+        mode: "manual", // Edit mode always uses manual
         selectedImage: undefined,
       });
       setModalMode("edit");
@@ -319,7 +325,7 @@ const Rebouclage: React.FC = () => {
         nouveauNNI: fullRecord.nouveauNNI,
         dateRebouclage: fullRecord.dateRebouclage,
         indentificateur_id: fullRecord.identificateur_id,
-        mode: 'manual', // Default to manual for viewing
+        mode: "manual", // Default to manual for viewing
         selectedImage: undefined,
       });
       setModalMode("view");
@@ -339,12 +345,13 @@ const Rebouclage: React.FC = () => {
 
     try {
       if (modalMode === "create") {
-        if (formData.mode === 'automatic') {
+        if (formData.mode === "automatic") {
           // Automatic mode - ancien NNI should already be extracted and filled
           if (!formData.ancienNNI.trim()) {
             toast({
               title: "Erreur de validation",
-              description: "L'ancien NNI est requis. Veuillez d'abord extraire le NNI depuis l'image.",
+              description:
+                "L'ancien NNI est requis. Veuillez d'abord extraire le NNI depuis l'image.",
               variant: "destructive",
             });
             return;
@@ -372,14 +379,15 @@ const Rebouclage: React.FC = () => {
             nouveauNNI: formData.nouveauNNI.trim(),
             dateRebouclage: formData.dateRebouclage || undefined,
             identificateur_id: formData.indentificateur_id.trim(),
-            mode: 'automatic',
+            mode: "automatic",
           };
 
           const result = await createRecord(input);
           if (result) {
             toast({
               title: "Succès",
-              description: "Le rebouclage a été créé avec succès en mode automatique.",
+              description:
+                "Le rebouclage a été créé avec succès en mode automatique.",
             });
             refresh();
             setIsModalOpen(false);
@@ -391,7 +399,7 @@ const Rebouclage: React.FC = () => {
             nouveauNNI: formData.nouveauNNI.trim(),
             dateRebouclage: formData.dateRebouclage || undefined,
             identificateur_id: formData.indentificateur_id.trim(),
-            mode: 'manual',
+            mode: "manual",
           };
 
           const validation = validateCreateInput(input);
@@ -826,9 +834,15 @@ const Rebouclage: React.FC = () => {
           <DialogContent className="w-[95vw] max-w-2xl max-h-[90vh] overflow-y-auto mx-4">
             <DialogHeader>
               <DialogTitle className="text-lg font-medium text-black">
-                {modalMode === "create" && modalStep === "mode-selection" && "Choisir le mode de saisie"}
-                {modalMode === "create" && modalStep === "image-upload" && "Télécharger l'image"}
-                {modalMode === "create" && modalStep === "form" && "Ajouter un rebouclage"}
+                {modalMode === "create" &&
+                  modalStep === "mode-selection" &&
+                  "Choisir le mode de saisie"}
+                {modalMode === "create" &&
+                  modalStep === "image-upload" &&
+                  "Télécharger l'image"}
+                {modalMode === "create" &&
+                  modalStep === "form" &&
+                  "Ajouter un rebouclage"}
                 {modalMode === "edit" && "Modifier le rebouclage"}
                 {modalMode === "view" && "Détails du rebouclage"}
               </DialogTitle>
@@ -858,7 +872,9 @@ const Rebouclage: React.FC = () => {
                   >
                     <div className="flex flex-col items-center space-y-2">
                       <FileText className="w-6 h-6 text-boviclouds-primary" />
-                      <span className="text-base font-medium text-gray-900">Manuel</span>
+                      <span className="text-base font-medium text-gray-900">
+                        Manuel
+                      </span>
                       <span className="text-xs text-gray-600 text-center">
                         Saisir l'ancien NNI manuellement
                       </span>
@@ -871,7 +887,9 @@ const Rebouclage: React.FC = () => {
                   >
                     <div className="flex flex-col items-center space-y-2">
                       <Camera className="w-6 h-6 text-boviclouds-primary" />
-                      <span className="text-base font-medium text-gray-900">Automatique</span>
+                      <span className="text-base font-medium text-gray-900">
+                        Automatique
+                      </span>
                       <span className="text-xs text-gray-600 text-center">
                         Extraire depuis une image
                       </span>
@@ -894,7 +912,9 @@ const Rebouclage: React.FC = () => {
                   <div className="p-3 bg-red-50 border border-red-200 rounded-md">
                     <div className="flex items-center space-x-2">
                       <AlertTriangle className="w-4 h-4 text-red-500" />
-                      <p className="text-sm text-red-700">{imageProcessing.error}</p>
+                      <p className="text-sm text-red-700">
+                        {imageProcessing.error}
+                      </p>
                     </div>
                   </div>
                 )}
@@ -945,7 +965,9 @@ const Rebouclage: React.FC = () => {
                   {formData.selectedImage && (
                     <div className="mt-3 space-y-2">
                       <Button
-                        onClick={() => processImageForNNI(formData.selectedImage!)}
+                        onClick={() =>
+                          processImageForNNI(formData.selectedImage!)
+                        }
                         disabled={imageProcessing.loading}
                         className="w-full h-10 bg-boviclouds-primary hover:bg-boviclouds-primary/90 text-white"
                       >
@@ -979,16 +1001,21 @@ const Rebouclage: React.FC = () => {
             {/* Form Step */}
             {modalStep === "form" && (
               <div className="space-y-4 py-4">
-                {modalMode === "create" && formData.mode === "automatic" && imageProcessing.extractedNNI && (
-                  <div className="p-3 bg-green-50 border border-green-200 rounded-md">
-                    <div className="flex items-center space-x-2">
-                      <Camera className="w-4 h-4 text-green-600" />
-                      <p className="text-sm text-green-700">
-                        NNI extrait: <span className="font-medium">{imageProcessing.extractedNNI}</span>
-                      </p>
+                {modalMode === "create" &&
+                  formData.mode === "automatic" &&
+                  imageProcessing.extractedNNI && (
+                    <div className="p-3 bg-green-50 border border-green-200 rounded-md">
+                      <div className="flex items-center space-x-2">
+                        <Camera className="w-4 h-4 text-green-600" />
+                        <p className="text-sm text-green-700">
+                          NNI extrait:{" "}
+                          <span className="font-medium">
+                            {imageProcessing.extractedNNI}
+                          </span>
+                        </p>
+                      </div>
                     </div>
-                  </div>
-                )}
+                  )}
 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                   {/* Left Column */}
@@ -1016,18 +1043,24 @@ const Rebouclage: React.FC = () => {
                             : "border-boviclouds-gray-100"
                         }`}
                         placeholder="Ex: FR1234567890"
-                        disabled={modalMode === "view" || (modalMode === "create" && formData.mode === "automatic")}
+                        disabled={
+                          modalMode === "view" ||
+                          (modalMode === "create" &&
+                            formData.mode === "automatic")
+                        }
                       />
                       {getFieldError(validationErrors, "ancienNNI") && (
                         <p className="text-sm text-red-600">
                           {getFieldError(validationErrors, "ancienNNI")}
                         </p>
                       )}
-                      {modalMode === "create" && formData.mode === "automatic" && (
-                        <p className="text-xs text-gray-500">
-                          Ce champ a été rempli automatiquement à partir de l'image
-                        </p>
-                      )}
+                      {modalMode === "create" &&
+                        formData.mode === "automatic" && (
+                          <p className="text-xs text-gray-500">
+                            Ce champ a été rempli automatiquement à partir de
+                            l'image
+                          </p>
+                        )}
                     </div>
 
                     {/* Nouveau NNI */}
@@ -1081,7 +1114,9 @@ const Rebouclage: React.FC = () => {
                           onChange={(e) => {
                             handleFormChange("dateRebouclage", e.target.value);
                             setValidationErrors((prev) =>
-                              prev.filter((err) => err.field !== "dateRebouclage"),
+                              prev.filter(
+                                (err) => err.field !== "dateRebouclage",
+                              ),
                             );
                           }}
                           className={`h-10 px-3 text-sm rounded-md pr-10 ${
@@ -1129,7 +1164,10 @@ const Rebouclage: React.FC = () => {
                       type="button"
                       variant="outline"
                       onClick={() => {
-                        if (modalMode === "create" && formData.mode === "automatic") {
+                        if (
+                          modalMode === "create" &&
+                          formData.mode === "automatic"
+                        ) {
                           setModalStep("image-upload");
                         } else {
                           handleModalClose();
@@ -1137,7 +1175,12 @@ const Rebouclage: React.FC = () => {
                       }}
                       className="w-full sm:w-24 h-9 rounded-md text-sm border-boviclouds-gray-300 text-boviclouds-gray-800 hover:bg-boviclouds-gray-50"
                     >
-                      {modalMode === "view" ? "Fermer" : modalMode === "create" && formData.mode === "automatic" ? "Retour" : "Annuler"}
+                      {modalMode === "view"
+                        ? "Fermer"
+                        : modalMode === "create" &&
+                            formData.mode === "automatic"
+                          ? "Retour"
+                          : "Annuler"}
                     </Button>
                     {modalMode !== "view" && (
                       <Button

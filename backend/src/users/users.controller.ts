@@ -20,16 +20,17 @@ import { Roles } from 'src/auth/roles.decorator';
 import { UserRole } from './schemas/users/user.role';
 
 @Controller('api/v1/users')
-@UseGuards(JwtAuthGuard, RolesGuard)
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Get('me')
+  @UseGuards(JwtAuthGuard, RolesGuard)
   async getCurrentUser(@CurrentUser() user) {
     return this.getUser(user.userId);
   }
 
   @Patch('change-password')
+  @UseGuards(JwtAuthGuard, RolesGuard)
   async changePassword(
     @CurrentUser() user,
     @Body() changePwdDto: ChangePwdDto,
@@ -41,17 +42,20 @@ export class UsersController {
     return this.usersService.findAll();
   }
   @Roles(UserRole.ADMIN)
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Get(':id')
   async getUser(@Param('id') id: string) {
     return this.usersService.findById(id);
   }
 
   @Patch(':id')
+  @UseGuards(JwtAuthGuard, RolesGuard)
   async updateUser(@Param('id') id: string, @Body() updateUserDto: any) {
     console.log('Update User DTO:', updateUserDto);
     return await this.usersService.updateUser(id, updateUserDto);
   }
   @Roles(UserRole.ADMIN)
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Delete(':id')
   async deleteUser(@Param('id') id: string) {
     return this.usersService.deleteUser(id);
@@ -71,6 +75,7 @@ export class UsersController {
   }
 
   @Post('demande')
+  @UseGuards(JwtAuthGuard, RolesGuard)
   async requestAccount(@Body() dto: CreateUserDto) {
     return this.usersService.requestAccount(dto);
   }
