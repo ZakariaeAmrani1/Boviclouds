@@ -316,11 +316,11 @@ export const useIdentifications = () => {
       const result = await LactationService.getIdentifications();
       setIdentifications(result);
     } catch (err) {
-      setError(
-        err instanceof Error
-          ? err.message
-          : "Erreur lors du chargement des identifications",
-      );
+      console.error("Error fetching identifications:", err);
+      const errorMessage = err instanceof Error
+        ? err.message
+        : "Erreur lors du chargement des identifications";
+      setError(errorMessage);
       setIdentifications([]);
     } finally {
       setLoading(false);
