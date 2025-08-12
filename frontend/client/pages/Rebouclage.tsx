@@ -844,36 +844,36 @@ const Rebouclage: React.FC = () => {
 
             {/* Mode Selection Step */}
             {modalMode === "create" && modalStep === "mode-selection" && (
-              <div className="space-y-6 py-6">
-                <div className="text-center space-y-2">
+              <div className="space-y-4 py-4">
+                <div className="text-center">
                   <p className="text-sm text-gray-600">
                     Choisissez comment vous souhaitez saisir l'ancien NNI
                   </p>
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                   <button
                     type="button"
                     onClick={() => handleModeSelection("manual")}
-                    className="p-6 rounded-xl border-2 border-boviclouds-gray-200 hover:border-boviclouds-primary hover:bg-boviclouds-green-light transition-all group"
+                    className="p-4 rounded-lg border border-boviclouds-gray-200 hover:border-boviclouds-primary hover:bg-boviclouds-green-light transition-all group"
                   >
-                    <div className="flex flex-col items-center space-y-3">
-                      <FileText className="w-12 h-12 text-boviclouds-primary group-hover:scale-110 transition-transform" />
-                      <span className="text-lg font-semibold text-gray-900">Manuel</span>
-                      <span className="text-sm text-gray-600 text-center">
-                        Saisir l'ancien NNI manuellement dans le formulaire
+                    <div className="flex flex-col items-center space-y-2">
+                      <FileText className="w-6 h-6 text-boviclouds-primary" />
+                      <span className="text-base font-medium text-gray-900">Manuel</span>
+                      <span className="text-xs text-gray-600 text-center">
+                        Saisir l'ancien NNI manuellement
                       </span>
                     </div>
                   </button>
                   <button
                     type="button"
                     onClick={() => handleModeSelection("automatic")}
-                    className="p-6 rounded-xl border-2 border-boviclouds-gray-200 hover:border-boviclouds-primary hover:bg-boviclouds-green-light transition-all group"
+                    className="p-4 rounded-lg border border-boviclouds-gray-200 hover:border-boviclouds-primary hover:bg-boviclouds-green-light transition-all group"
                   >
-                    <div className="flex flex-col items-center space-y-3">
-                      <Camera className="w-12 h-12 text-boviclouds-primary group-hover:scale-110 transition-transform" />
-                      <span className="text-lg font-semibold text-gray-900">Automatique</span>
-                      <span className="text-sm text-gray-600 text-center">
-                        Extraire l'ancien NNI automatiquement depuis une image
+                    <div className="flex flex-col items-center space-y-2">
+                      <Camera className="w-6 h-6 text-boviclouds-primary" />
+                      <span className="text-base font-medium text-gray-900">Automatique</span>
+                      <span className="text-xs text-gray-600 text-center">
+                        Extraire depuis une image
                       </span>
                     </div>
                   </button>
@@ -883,24 +883,24 @@ const Rebouclage: React.FC = () => {
 
             {/* Image Upload Step */}
             {modalMode === "create" && modalStep === "image-upload" && (
-              <div className="space-y-6 py-6">
-                <div className="text-center space-y-2">
+              <div className="space-y-4 py-4">
+                <div className="text-center">
                   <p className="text-sm text-gray-600">
                     Téléchargez une image contenant le NNI à extraire
                   </p>
                 </div>
 
                 {imageProcessing.error && (
-                  <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
+                  <div className="p-3 bg-red-50 border border-red-200 rounded-md">
                     <div className="flex items-center space-x-2">
-                      <AlertTriangle className="w-5 h-5 text-red-500" />
+                      <AlertTriangle className="w-4 h-4 text-red-500" />
                       <p className="text-sm text-red-700">{imageProcessing.error}</p>
                     </div>
                   </div>
                 )}
 
-                <div className="max-w-md mx-auto">
-                  <div className="border-2 border-dashed border-boviclouds-gray-300 rounded-xl p-8 text-center hover:border-boviclouds-primary transition-colors">
+                <div className="max-w-sm mx-auto">
+                  <div className="border-2 border-dashed border-boviclouds-gray-300 rounded-md p-6 text-center hover:border-boviclouds-primary transition-colors">
                     <input
                       type="file"
                       accept="image/*"
@@ -911,26 +911,26 @@ const Rebouclage: React.FC = () => {
                     />
                     <label htmlFor="imageUpload" className="cursor-pointer">
                       {formData.selectedImage ? (
-                        <div className="space-y-4">
+                        <div className="space-y-3">
                           <img
                             src={URL.createObjectURL(formData.selectedImage)}
                             alt="Image sélectionnée"
-                            className="max-h-48 mx-auto rounded-lg shadow-md"
+                            className="max-h-32 mx-auto rounded-md shadow-sm"
                           />
-                          <div className="space-y-2">
+                          <div className="space-y-1">
                             <p className="text-sm font-medium text-green-600">
                               {formData.selectedImage.name}
                             </p>
                             <p className="text-xs text-gray-500">
-                              Cliquez pour changer l'image
+                              Cliquez pour changer
                             </p>
                           </div>
                         </div>
                       ) : (
-                        <div className="space-y-4">
-                          <Upload className="w-16 h-16 mx-auto text-boviclouds-gray-400" />
+                        <div className="space-y-3">
+                          <Upload className="w-8 h-8 mx-auto text-boviclouds-gray-400" />
                           <div className="space-y-1">
-                            <p className="text-lg font-medium text-gray-700">
+                            <p className="text-base font-medium text-gray-700">
                               Sélectionner une image
                             </p>
                             <p className="text-sm text-gray-500">
@@ -943,11 +943,11 @@ const Rebouclage: React.FC = () => {
                   </div>
 
                   {formData.selectedImage && (
-                    <div className="mt-4 space-y-3">
+                    <div className="mt-3 space-y-2">
                       <Button
                         onClick={() => processImageForNNI(formData.selectedImage!)}
                         disabled={imageProcessing.loading}
-                        className="w-full h-12 bg-boviclouds-primary hover:bg-boviclouds-primary/90 text-white font-semibold"
+                        className="w-full h-10 bg-boviclouds-primary hover:bg-boviclouds-primary/90 text-white"
                       >
                         {imageProcessing.loading ? (
                           <>
@@ -966,7 +966,7 @@ const Rebouclage: React.FC = () => {
                         variant="outline"
                         onClick={() => setModalStep("mode-selection")}
                         disabled={imageProcessing.loading}
-                        className="w-full"
+                        className="w-full h-10"
                       >
                         Retour
                       </Button>
@@ -978,21 +978,21 @@ const Rebouclage: React.FC = () => {
 
             {/* Form Step */}
             {modalStep === "form" && (
-              <div className="space-y-4 sm:space-y-6 py-4 sm:py-6">
+              <div className="space-y-4 py-4">
                 {modalMode === "create" && formData.mode === "automatic" && imageProcessing.extractedNNI && (
-                  <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
+                  <div className="p-3 bg-green-50 border border-green-200 rounded-md">
                     <div className="flex items-center space-x-2">
-                      <Camera className="w-5 h-5 text-green-600" />
+                      <Camera className="w-4 h-4 text-green-600" />
                       <p className="text-sm text-green-700">
-                        NNI extrait automatiquement: <span className="font-medium">{imageProcessing.extractedNNI}</span>
+                        NNI extrait: <span className="font-medium">{imageProcessing.extractedNNI}</span>
                       </p>
                     </div>
                   </div>
                 )}
 
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                   {/* Left Column */}
-                  <div className="space-y-3 sm:space-y-4">
+                  <div className="space-y-3">
                     {/* Ancien NNI */}
                     <div className="space-y-2">
                       <Label
@@ -1010,7 +1010,7 @@ const Rebouclage: React.FC = () => {
                             prev.filter((err) => err.field !== "ancienNNI"),
                           );
                         }}
-                        className={`h-10 sm:h-12 px-3 sm:px-4 text-sm rounded-xl ${
+                        className={`h-10 px-3 text-sm rounded-md ${
                           getFieldError(validationErrors, "ancienNNI")
                             ? "border-red-500 focus:border-red-500"
                             : "border-boviclouds-gray-100"
@@ -1047,7 +1047,7 @@ const Rebouclage: React.FC = () => {
                             prev.filter((err) => err.field !== "nouveauNNI"),
                           );
                         }}
-                        className={`h-10 sm:h-12 px-3 sm:px-4 text-sm rounded-xl ${
+                        className={`h-10 px-3 text-sm rounded-md ${
                           getFieldError(validationErrors, "nouveauNNI")
                             ? "border-red-500 focus:border-red-500"
                             : "border-boviclouds-gray-100"
@@ -1064,7 +1064,7 @@ const Rebouclage: React.FC = () => {
                   </div>
 
                   {/* Right Column */}
-                  <div className="space-y-3 sm:space-y-4">
+                  <div className="space-y-3">
                     {/* Date du rebouclage */}
                     <div className="space-y-2">
                       <Label
@@ -1084,14 +1084,14 @@ const Rebouclage: React.FC = () => {
                               prev.filter((err) => err.field !== "dateRebouclage"),
                             );
                           }}
-                          className={`h-10 sm:h-12 px-3 sm:px-4 text-sm rounded-xl pr-10 sm:pr-12 ${
+                          className={`h-10 px-3 text-sm rounded-md pr-10 ${
                             getFieldError(validationErrors, "dateRebouclage")
                               ? "border-red-500 focus:border-red-500"
                               : "border-boviclouds-gray-100"
                           }`}
                           disabled={modalMode === "view"}
                         />
-                        <Calendar className="absolute right-3 sm:right-4 top-1/2 transform -translate-y-1/2 w-4 h-4 text-black" />
+                        <Calendar className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-black" />
                       </div>
                       {getFieldError(validationErrors, "dateRebouclage") && (
                         <p className="text-sm text-red-600">
