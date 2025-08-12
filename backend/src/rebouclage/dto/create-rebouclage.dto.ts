@@ -56,5 +56,5 @@ export class CreateRebouclageAutomaticDto {
   date_creation?: string;
 
   @IsEnum(RebouclageMode)
-  mode: RebouclageMode.AUTOMATIC;
+  mode: RebouclageMode;
 }
