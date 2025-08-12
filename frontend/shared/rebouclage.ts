@@ -80,6 +80,15 @@ export interface RebouclageResponse {
   message?: string;
 }
 
+export interface RebouclageAutomaticResponse {
+  success: boolean;
+  data?: RebouclageRecord & {
+    extractedAncienNNI: string;
+    mode: 'automatic';
+  };
+  message?: string;
+}
+
 export interface RebouclageListResponse {
   success: boolean;
   data?: PaginatedResponse<RebouclageRecord>;
