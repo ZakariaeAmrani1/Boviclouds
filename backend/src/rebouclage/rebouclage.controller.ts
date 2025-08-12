@@ -1,12 +1,13 @@
-import { Body, Controller, Delete, Get, Param, Post, Query, Res, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Query, Res, UseGuards, UseInterceptors, UploadedFile } from '@nestjs/common';
 import { Response } from 'express';
-import { Roles } from '../auth/roles.decorator'; 
+import { FileInterceptor } from '@nestjs/platform-express';
+import { Roles } from '../auth/roles.decorator';
 import { RolesGuard } from '../auth/roles.guard';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { RebouclageService } from './rebouclage.service';
 
 import { UserRole } from 'src/users/schemas/users/user.role';
-import { CreateRebouclageDto } from './dto/create-rebouclage.dto';
+import { CreateRebouclageDto, CreateRebouclageAutomaticDto } from './dto/create-rebouclage.dto';
 
 
 
@@ -59,4 +60,3 @@ export class RebouclageController {
     }
 
 }
-
