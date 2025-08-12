@@ -1,11 +1,13 @@
 import {
   RebouclageRecord,
   CreateRebouclageInput,
+  CreateRebouclageAutomaticInput,
   UpdateRebouclageInput,
   RebouclageFilters,
   PaginationParams,
   PaginatedResponse,
   RebouclageStatus,
+  RebouclageAutomaticResponse,
 } from "@shared/rebouclage";
 import axios from "axios";
 
@@ -138,26 +140,65 @@ export class RebouclageService {
   }
 
   /**
-   * Create a new rebouclage record
+   * Create a new rebouclage record (manual mode)
    */
   static async create(input: CreateRebouclageInput): Promise<RebouclageRecord> {
-    // Simulate API delay
-    await new Promise((resolve) => setTimeout(resolve, 200));
+    try {
+      const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:8080/api/";
+      const token = localStorage.getItem("access_token");
 
-    const now = new Date().toISOString();
-    const newRecord: RebouclageRecord = {
-      id: generateId(),
-      identificateur_id: input.identificateur_id,
-      CréePar: "",
-      ancienNNI: input.ancienNNI,
-      nouveauNNI: input.nouveauNNI,
-      dateRebouclage: input.dateRebouclage || now,
-      dateCreation: now,
-      dateModification: now,
-    };
+      const response = await axios.post(`${apiUrl}rebouclage`, input, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
 
-    rebouclageData.unshift(newRecord);
-    return newRecord;
+      if (response.data.success) {
+        return response.data.data;
+      } else {
+        throw new Error(response.data.message || "Erreur lors de la création");
+      }
+    } catch (error: any) {
+      console.error("Error creating rebouclage:", error);
+      throw new Error(error.response?.data?.message || "Erreur lors de la création du rebouclage");
+    }
+  }
+
+  /**
+   * Create a new rebouclage record (automatic mode with image)
+   */
+  static async createAutomatic(input: CreateRebouclageAutomaticInput): Promise<RebouclageRecord> {
+    try {
+      const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:8080/api/";
+      const token = localStorage.getItem("access_token");
+
+      // Create FormData for file upload
+      const formData = new FormData();
+      formData.append('image', input.image);
+      formData.append('data', JSON.stringify({
+        nouveauNNI: input.nouveauNNI,
+        identificateur_id: input.identificateur_id,
+        dateRebouclage: input.dateRebouclage,
+        mode: 'automatic'
+      }));
+
+      const response = await axios.post(`${apiUrl}rebouclage/automatic`, formData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
+      if (response.data.success) {
+        return response.data.data;
+      } else {
+        throw new Error(response.data.message || "Erreur lors de la création automatique");
+      }
+    } catch (error: any) {
+      console.error("Error creating automatic rebouclage:", error);
+      throw new Error(error.response?.data?.message || "Erreur lors de la création automatique du rebouclage");
+    }
   }
 
   /**
