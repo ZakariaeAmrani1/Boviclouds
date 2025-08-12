@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Rebouclage } from './schemas/rebouclage.schema';
-import { CreateRebouclageDto } from './dto/create-rebouclage.dto';
+import { CreateRebouclageDto, CreateRebouclageAutomaticDto } from './dto/create-rebouclage.dto';
 import { Model } from 'mongoose';
 import * as ExcelJS from 'exceljs';
 import { Parser as Json2CsvParser } from 'json2csv';
@@ -15,6 +15,55 @@ export class RebouclageService {
 
   async create(dto: CreateRebouclageDto): Promise<Rebouclage> {
     return this.rebouclageModel.create(dto);
+  }
+
+  async createAutomatic(dto: CreateRebouclageAutomaticDto, image: Express.Multer.File): Promise<Rebouclage> {
+    try {
+      // Mock OCR processing - in real implementation, you would use an OCR service
+      // like Google Vision API, AWS Textract, or a custom OCR solution
+      const extractedNNI = await this.processImageForNNI(image);
+
+      // Create the full DTO with extracted NNI
+      const fullDto: CreateRebouclageDto = {
+        operation_id: dto.identificateur_id,
+        id_sujet: 'placeholder', // This should be derived from the ancien_nni
+        ancien_nni: extractedNNI,
+        nouveau_nni: dto.nouveau_nni,
+        date_creation: dto.date_creation || new Date().toISOString(),
+        identificateur_id: dto.identificateur_id,
+        mode: 'automatic' as any
+      };
+
+      return this.rebouclageModel.create(fullDto);
+    } catch (error) {
+      throw new Error(`Error processing automatic rebouclage: ${error.message}`);
+    }
+  }
+
+  private async processImageForNNI(image: Express.Multer.File): Promise<string> {
+    // Mock OCR implementation
+    // In a real application, you would:
+    // 1. Use an OCR service (Google Vision, AWS Textract, etc.)
+    // 2. Process the image buffer
+    // 3. Extract the NNI using pattern recognition
+    // 4. Validate the extracted NNI format
+
+    // Simulate processing delay
+    await new Promise(resolve => setTimeout(resolve, 1000));
+
+    // Mock extracted NNI - in real implementation, this would come from OCR
+    const mockNNI = `FR${Date.now().toString().slice(-10)}`;
+
+    // You could also validate the image quality, size, etc.
+    if (image.size > 5 * 1024 * 1024) {
+      throw new Error('Image size too large');
+    }
+
+    if (!image.mimetype.startsWith('image/')) {
+      throw new Error('Invalid file type - must be an image');
+    }
+
+    return mockNNI;
   }
 
   async findAll(): Promise<Rebouclage[]> {

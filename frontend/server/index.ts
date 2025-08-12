@@ -90,6 +90,17 @@ import {
   getExploitationStats,
   exportExploitations,
 } from "./routes/exploitation";
+import {
+  handleGetRebouclages,
+  handleGetRebouclage,
+  handleCreateRebouclage,
+  handleCreateRebouclageAutomatic,
+  handleUpdateRebouclage,
+  handleDeleteRebouclage,
+  handleExportRebouclages,
+  handleGetRebouclageStats,
+  handleExtractNNI,
+} from "./routes/rebouclage";
 
 // Configure multer for file uploads
 const storage = multer.memoryStorage();
@@ -218,6 +229,17 @@ export function createServer() {
   app.post("/api/exploitation", createExploitation);
   app.put("/api/exploitation/:id", updateExploitation);
   app.delete("/api/exploitation/:id", deleteExploitation);
+
+  // Rebouclage API routes
+  app.get("/api/rebouclage/stats", handleGetRebouclageStats);
+  app.get("/api/rebouclage/export", handleExportRebouclages);
+  app.get("/api/rebouclage/:id", handleGetRebouclage);
+  app.get("/api/rebouclage", handleGetRebouclages);
+  app.post("/api/rebouclage", handleCreateRebouclage);
+  app.post("/api/rebouclage/automatic", upload.single('image'), handleCreateRebouclageAutomatic);
+  app.post("/api/rebouclage/extract-nni", upload.single('image'), handleExtractNNI);
+  app.put("/api/rebouclage/:id", handleUpdateRebouclage);
+  app.delete("/api/rebouclage/:id", handleDeleteRebouclage);
 
   return app;
 }
