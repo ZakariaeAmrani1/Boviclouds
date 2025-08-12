@@ -340,11 +340,11 @@ const Rebouclage: React.FC = () => {
     try {
       if (modalMode === "create") {
         if (formData.mode === 'automatic') {
-          // Automatic mode validation
-          if (!formData.selectedImage) {
+          // Automatic mode - ancien NNI should already be extracted and filled
+          if (!formData.ancienNNI.trim()) {
             toast({
               title: "Erreur de validation",
-              description: "Veuillez sélectionner une image pour le mode automatique.",
+              description: "L'ancien NNI est requis. Veuillez d'abord extraire le NNI depuis l'image.",
               variant: "destructive",
             });
             return;
@@ -366,15 +366,16 @@ const Rebouclage: React.FC = () => {
             return;
           }
 
-          const automaticInput: CreateRebouclageAutomaticInput = {
+          // For automatic mode, we now use the regular create flow since NNI is already extracted
+          const input: CreateRebouclageInput = {
+            ancienNNI: formData.ancienNNI.trim(),
             nouveauNNI: formData.nouveauNNI.trim(),
-            identificateur_id: formData.indentificateur_id.trim(),
             dateRebouclage: formData.dateRebouclage || undefined,
+            identificateur_id: formData.indentificateur_id.trim(),
             mode: 'automatic',
-            image: formData.selectedImage,
           };
 
-          const result = await createRecord(automaticInput);
+          const result = await createRecord(input);
           if (result) {
             toast({
               title: "Succès",
