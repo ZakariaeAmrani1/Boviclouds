@@ -1,30 +1,15 @@
 import React, { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
+import { getCurrentUserRole, getMenuItemsForRole } from "../lib/roleNavigation";
 import {
-  Home,
-  BarChart3,
-  Users,
-  FileText,
-  Settings,
-  HelpCircle,
   ChevronDown,
   Bell,
-  Search,
   LogOut,
-  Calendar,
-  Shield,
-  Zap,
-  Activity,
   X,
   ChevronLeft,
   ChevronRight,
-  Camera,
-  Stethoscope,
-  FileSearch,
-  FlaskConical,
-  Milk,
-  Building2,
+  Settings,
 } from "lucide-react";
 
 interface SidebarProps {
@@ -39,92 +24,9 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, onToggle }) => {
   const location = useLocation();
   const { logout } = useAuth();
 
-  const menuItems = [
-    {
-      icon: Home,
-      label: "Dashboard",
-      path: "/",
-      badge: null,
-    },
-    {
-      icon: Activity,
-      label: "Rebouclage",
-      path: "/rebouclage",
-      badge: "12",
-    },
-    {
-      icon: FileSearch,
-      label: "Identification",
-      path: "/identification",
-      badge: null,
-    },
-    {
-      icon: Zap,
-      label: "Insémination",
-      path: "/insemination",
-      badge: null,
-    },
-    {
-      icon: FlaskConical,
-      label: "Semences",
-      path: "/semences",
-      badge: null,
-    },
-    {
-      icon: Milk,
-      label: "Lactations",
-      path: "/lactations",
-      badge: null,
-    },
-    {
-      icon: Building2,
-      label: "Exploitations",
-      path: "/exploitations",
-      badge: null,
-    },
-    {
-      icon: Users,
-      label: "Utilisateurs",
-      path: "/utilisateurs",
-      badge: null,
-    },
-    {
-      icon: Camera,
-      label: "CCTV",
-      path: "/cctv",
-      badge: null,
-    },
-    {
-      icon: Stethoscope,
-      label: "Traitement",
-      path: "/traitement",
-      badge: null,
-    },
-    {
-      icon: Calendar,
-      label: "Planning",
-      path: "/planning",
-      badge: null,
-    },
-    {
-      icon: Shield,
-      label: "Health",
-      path: "/health",
-      badge: "5",
-    },
-    {
-      icon: FileText,
-      label: "Documents",
-      path: "/documents",
-      badge: null,
-    },
-    {
-      icon: Settings,
-      label: "Settings",
-      path: "/settings",
-      badge: null,
-    },
-  ];
+  // Get menu items based on current user role
+  const currentRole = getCurrentUserRole();
+  const menuItems = getMenuItemsForRole(currentRole);
 
   const handleMenuClick = (path: string) => {
     console.log(isOpen);
