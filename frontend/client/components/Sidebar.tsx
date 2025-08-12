@@ -26,6 +26,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, onToggle }) => {
 
   // Get menu items based on current user role
   const currentRole = getCurrentUserRole();
+  console.log(currentRole);
   const menuItems = getMenuItemsForRole(currentRole);
 
   const handleMenuClick = (path: string) => {

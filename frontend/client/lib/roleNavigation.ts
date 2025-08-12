@@ -18,7 +18,13 @@ export interface MenuItem {
   badge?: string | null;
 }
 
-export type UserRole = 'ADMIN' | 'INSEMINATEUR' | 'IDENTIFICATEUR' | 'CONTROLEUR_LAITIER' | 'RESPONSABLE_LOCAL' | 'ELEVEUR';
+export type UserRole =
+  | "ADMIN"
+  | "INSEMINATEUR"
+  | "IDENTIFICATEUR"
+  | "CONTROLEUR_LAITIER"
+  | "RESPONSABLE_LOCAL"
+  | "ELEVEUR";
 
 // Define all available menu items
 const allMenuItems: MenuItem[] = [
@@ -98,20 +104,9 @@ const rolePermissions: Record<UserRole, string[]> = {
     "/cctv",
     "/traitement",
   ],
-  INSEMINATEUR: [
-    "/",
-    "/insemination",
-    "/semences",
-  ],
-  IDENTIFICATEUR: [
-    "/",
-    "/identification",
-    "/rebouclage",
-  ],
-  CONTROLEUR_LAITIER: [
-    "/",
-    "/lactations",
-  ],
+  INSEMINATEUR: ["/", "/insemination", "/semences"],
+  IDENTIFICATEUR: ["/", "/identification", "/rebouclage"],
+  CONTROLEUR_LAITIER: ["/", "/lactations"],
   RESPONSABLE_LOCAL: [
     "/",
     "/rebouclage",
@@ -124,43 +119,45 @@ const rolePermissions: Record<UserRole, string[]> = {
     "/cctv",
     "/traitement",
   ],
-  ELEVEUR: [
-    "/",
-    "/cctv",
-  ],
+  ELEVEUR: ["/", "/cctv"],
 };
 
 // Simple function to get current user role from localStorage without JWT interference
 export const getCurrentUserRole = (): UserRole => {
   try {
-    // For testing, check if there's a test role set
-    const testRole = localStorage.getItem('test_role');
-    if (testRole && ['ADMIN', 'INSEMINATEUR', 'IDENTIFICATEUR', 'CONTROLEUR_LAITIER', 'RESPONSABLE_LOCAL', 'ELEVEUR'].includes(testRole)) {
-      return testRole as UserRole;
-    }
-
     // Try to get role from user object in localStorage
-    const savedUser = localStorage.getItem('user');
+    const savedUser = localStorage.getItem("user");
     if (savedUser) {
       try {
         const user = JSON.parse(savedUser);
-        if (user.role && ['ADMIN', 'INSEMINATEUR', 'IDENTIFICATEUR', 'CONTROLEUR_LAITIER', 'RESPONSABLE_LOCAL', 'ELEVEUR'].includes(user.role)) {
-          return user.role as UserRole;
+
+        console.log(user);
+        if (
+          user.role &&
+          [
+            "ADMIN",
+            "INSEMINATEUR",
+            "IDENTIFICATEUR",
+            "CONTROLEUR_LAITIER",
+            "RESPONSABLE_LOCAL",
+            "ELEVEUR",
+          ].includes(user.role[0])
+        ) {
+          return user.role[0] as UserRole;
         }
       } catch (error) {
-        console.error('Error parsing saved user for role:', error);
+        console.error("Error parsing saved user for role:", error);
       }
     }
 
-    // Default to ADMIN for now until backend provides role
-    return 'ADMIN';
+    return "ADMIN";
   } catch (error) {
-    console.error('Error getting current user role:', error);
-    return 'ADMIN';
+    console.error("Error getting current user role:", error);
+    return "ADMIN";
   }
 };
 
 export const getMenuItemsForRole = (role: UserRole): MenuItem[] => {
   const allowedPaths = rolePermissions[role] || ["/"];
-  return allMenuItems.filter(item => allowedPaths.includes(item.path));
+  return allMenuItems.filter((item) => allowedPaths.includes(item.path));
 };
