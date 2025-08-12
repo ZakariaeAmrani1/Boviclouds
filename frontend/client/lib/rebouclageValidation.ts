@@ -194,3 +194,57 @@ export const getFieldError = (
 export const formatValidationErrors = (errors: ValidationError[]): string => {
   return errors.map((error) => error.message).join(", ");
 };
+
+// Validate automatic create input
+export const validateAutomaticInput = (
+  input: CreateRebouclageAutomaticInput,
+): ValidationResult => {
+  const errors: ValidationError[] = [];
+
+  // Required fields
+  if (!input.nouveauNNI?.trim()) {
+    errors.push({ field: "nouveauNNI", message: "Le nouveau NNI est requis" });
+  } else if (!validateNNI(input.nouveauNNI)) {
+    errors.push({
+      field: "nouveauNNI",
+      message: "Format NNI invalide (ex: FR1234567890)",
+    });
+  }
+
+  if (!input.identificateur_id?.trim()) {
+    errors.push({ field: "identificateur_id", message: "L'identificateur est requis" });
+  }
+
+  if (!input.image) {
+    errors.push({ field: "image", message: "Une image est requise pour le mode automatique" });
+  } else {
+    // Validate image size and type
+    if (input.image.size > 5 * 1024 * 1024) {
+      errors.push({ field: "image", message: "L'image ne doit pas dépasser 5MB" });
+    }
+
+    if (!input.image.type.startsWith('image/')) {
+      errors.push({ field: "image", message: "Le fichier doit être une image" });
+    }
+  }
+
+  // Validate date if provided
+  if (input.dateRebouclage) {
+    const date = new Date(input.dateRebouclage);
+    const now = new Date();
+
+    if (isNaN(date.getTime())) {
+      errors.push({ field: "dateRebouclage", message: "Date invalide" });
+    } else if (date > now) {
+      errors.push({
+        field: "dateRebouclage",
+        message: "La date ne peut pas être dans le futur",
+      });
+    }
+  }
+
+  return {
+    isValid: errors.length === 0,
+    errors,
+  };
+};
