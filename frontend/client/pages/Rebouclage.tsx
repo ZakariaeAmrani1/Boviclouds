@@ -305,6 +305,7 @@ const Rebouclage: React.FC = () => {
         selectedImage: undefined,
       });
       setModalMode("edit");
+      setModalStep("form"); // Go directly to form for edit
       setSelectedRecord(fullRecord);
       setIsModalOpen(true);
     }
@@ -322,6 +323,7 @@ const Rebouclage: React.FC = () => {
         selectedImage: undefined,
       });
       setModalMode("view");
+      setModalStep("form"); // Go directly to form for view
       setSelectedRecord(fullRecord);
       setIsModalOpen(true);
     }
