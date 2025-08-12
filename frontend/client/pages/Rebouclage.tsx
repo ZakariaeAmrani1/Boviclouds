@@ -475,6 +475,7 @@ const Rebouclage: React.FC = () => {
 
   const handleModalClose = () => {
     setIsModalOpen(false);
+    setModalStep("mode-selection");
     setSelectedRecord(null);
     setValidationErrors([]);
     resetForm();
