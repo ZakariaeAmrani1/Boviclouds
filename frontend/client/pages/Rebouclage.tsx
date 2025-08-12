@@ -244,6 +244,8 @@ const Rebouclage: React.FC = () => {
         nouveauNNI: fullRecord.nouveauNNI,
         dateRebouclage: fullRecord.dateRebouclage,
         indentificateur_id: fullRecord.identificateur_id,
+        mode: 'manual', // Default to manual for viewing
+        selectedImage: undefined,
       });
       setModalMode("view");
       setSelectedRecord(fullRecord);
