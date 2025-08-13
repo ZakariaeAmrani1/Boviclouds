@@ -789,12 +789,12 @@ const Morphology: React.FC = () => {
 
       {/* Add Morphology Modal */}
       <Dialog open={isAddModalOpen} onOpenChange={setIsAddModalOpen}>
-        <DialogContent className="max-w-2xl">
+        <DialogContent className="max-w-2xl max-h-[90vh] flex flex-col">
           <DialogHeader>
             <DialogTitle>Ajouter une Morphologie</DialogTitle>
           </DialogHeader>
 
-          <div className="py-4">
+          <div className="flex-1 overflow-y-auto py-4">
             {/* Step indicators */}
             <div className="flex items-center justify-center mb-8">
               <div className="flex items-center space-x-4">
@@ -804,18 +804,18 @@ const Morphology: React.FC = () => {
                   </div>
                   <span className="ml-2 text-sm font-medium">Identification</span>
                 </div>
-                
+
                 <ArrowRight className="w-4 h-4 text-gray-400" />
-                
+
                 <div className={`flex items-center ${currentStep === "morphology" ? "text-boviclouds-primary" : currentStep === "results" ? "text-green-500" : "text-gray-400"}`}>
                   <div className={`w-8 h-8 rounded-full flex items-center justify-center border-2 ${currentStep === "morphology" ? "border-boviclouds-primary bg-boviclouds-primary text-white" : currentStep === "results" ? "border-green-500 bg-green-500 text-white" : "border-gray-300"}`}>
                     2
                   </div>
                   <span className="ml-2 text-sm font-medium">Morphologie</span>
                 </div>
-                
+
                 <ArrowRight className="w-4 h-4 text-gray-400" />
-                
+
                 <div className={`flex items-center ${currentStep === "results" ? "text-boviclouds-primary" : "text-gray-400"}`}>
                   <div className={`w-8 h-8 rounded-full flex items-center justify-center border-2 ${currentStep === "results" ? "border-boviclouds-primary bg-boviclouds-primary text-white" : "border-gray-300"}`}>
                     3
@@ -828,7 +828,7 @@ const Morphology: React.FC = () => {
             {renderStepContent()}
           </div>
 
-          <DialogFooter>
+          <DialogFooter className="flex-shrink-0">
             <div className="flex justify-between w-full">
               <Button
                 onClick={handleStepBack}
