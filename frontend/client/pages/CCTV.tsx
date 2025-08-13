@@ -283,7 +283,7 @@ const CCTV: React.FC = () => {
       await cctvService.updateCamera(id, data);
       toast({
         title: "Succès",
-        description: "Cam��ra mise à jour avec succès",
+        description: "Caméra mise à jour avec succès",
       });
       await loadCameras();
     } catch (error) {
@@ -391,10 +391,9 @@ const CCTV: React.FC = () => {
       <Breadcrumb items={[{ label: "CCTV", href: "/cctv" }]} />
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-        <TabsList className="grid w-full grid-cols-3">
+        <TabsList className="grid w-full grid-cols-2">
           <TabsTrigger value="live">Streaming Live</TabsTrigger>
           <TabsTrigger value="setup">Configuration Caméras</TabsTrigger>
-          <TabsTrigger value="manage">Gestion Caméras</TabsTrigger>
         </TabsList>
 
         {/* Live Streaming Tab */}
