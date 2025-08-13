@@ -455,11 +455,22 @@ const ViewIdentificationModal: React.FC<ViewIdentificationModalProps> = ({
             </InfoCard>
           </div>
 
-          <DialogFooter className="flex justify-end pt-4 border-t border-boviclouds-gray-50">
+          <DialogFooter className="flex justify-between pt-4 border-t border-boviclouds-gray-50">
+            <Button
+              onClick={() => {
+                navigate(`/identification/${identification.id}/details`);
+                onClose();
+              }}
+              variant="outline"
+              className="gap-2"
+            >
+              <ExternalLink className="w-4 h-4" />
+              Voir tous les détails
+            </Button>
             <Button
               type="button"
               onClick={onClose}
-              className="w-full sm:w-32 h-10 rounded-lg text-sm font-normal bg-boviclouds-primary hover:bg-boviclouds-primary/90 text-white"
+              className="w-32 h-10 rounded-lg text-sm font-normal bg-boviclouds-primary hover:bg-boviclouds-primary/90 text-white"
             >
               Fermer
             </Button>
