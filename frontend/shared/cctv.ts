@@ -91,6 +91,12 @@ export const CAMERA_STATUS_COLORS = {
   maintenance: "#F97316",
 } as const;
 
+export const CAMERA_TYPE_COLORS = {
+  [CameraType.BEHAVIOR]: "#3B82F6",
+  [CameraType.IDENTIFICATION]: "#8B5CF6",
+  [CameraType.MORPHOLOGY]: "#F59E0B",
+} as const;
+
 export const BEHAVIOR_COLORS = {
   standing: "#21DB69",
   eating: "#F97316",
