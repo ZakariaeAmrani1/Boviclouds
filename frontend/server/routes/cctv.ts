@@ -293,3 +293,92 @@ export const getBehaviorDetections: RequestHandler = (req, res) => {
     res.status(500).json({ error: "Failed to fetch behavior detections" });
   }
 };
+
+// Get online cameras (network discovery simulation)
+export const getOnlineCameras: RequestHandler = (req, res) => {
+  try {
+    // Simulate network camera discovery
+    const mockOnlineCameras = [
+      {
+        id: "network-cam-1",
+        name: "IP Camera 192.168.1.101",
+        isOnline: true,
+        ipAddress: "192.168.1.101",
+        streamUrl: "rtsp://192.168.1.101:554/stream1",
+        lastSeen: new Date(),
+      },
+      {
+        id: "network-cam-2",
+        name: "IP Camera 192.168.1.102",
+        isOnline: true,
+        ipAddress: "192.168.1.102",
+        streamUrl: "rtsp://192.168.1.102:554/stream1",
+        lastSeen: new Date(),
+      },
+      {
+        id: "network-cam-3",
+        name: "IP Camera 192.168.1.103",
+        isOnline: true,
+        ipAddress: "192.168.1.103",
+        streamUrl: "rtsp://192.168.1.103:554/stream1",
+        lastSeen: new Date(),
+      },
+      {
+        id: "network-cam-4",
+        name: "IP Camera 192.168.1.104",
+        isOnline: false,
+        ipAddress: "192.168.1.104",
+        streamUrl: "rtsp://192.168.1.104:554/stream1",
+        lastSeen: new Date(Date.now() - 30 * 60 * 1000), // 30 minutes ago
+      },
+    ];
+
+    const response = {
+      cameras: mockOnlineCameras,
+      total: mockOnlineCameras.length,
+      lastRefresh: new Date(),
+    };
+
+    res.json(response);
+  } catch (error) {
+    console.error("Error fetching online cameras:", error);
+    res.status(500).json({ error: "Failed to fetch online cameras" });
+  }
+};
+
+// Assign camera type
+export const assignCameraType: RequestHandler = (req, res) => {
+  try {
+    const { cameraId } = req.params;
+    const { type } = req.body;
+
+    // Validate camera type
+    const validTypes = ["Caméra de comportement", "Caméra d'identification", "Caméra de morphologie"];
+    if (!validTypes.includes(type)) {
+      return res.status(400).json({
+        error: "Type de caméra invalide",
+        validTypes,
+      });
+    }
+
+    // Find and update camera
+    const cameraIndex = cameras.findIndex((c) => c.id === cameraId);
+    if (cameraIndex === -1) {
+      return res.status(404).json({ error: "Camera not found" });
+    }
+
+    cameras[cameraIndex].type = type as any;
+    cameras[cameraIndex].updatedAt = new Date();
+
+    res.json({
+      success: true,
+      message: "Type de caméra assigné avec succès",
+      cameraId,
+      type,
+      camera: cameras[cameraIndex],
+    });
+  } catch (error) {
+    console.error("Error assigning camera type:", error);
+    res.status(500).json({ error: "Failed to assign camera type" });
+  }
+};
