@@ -133,13 +133,6 @@ const CCTV: React.FC = () => {
   const [selectedCameraForStream, setSelectedCameraForStream] = useState<Camera | null>(null);
   const [activeTab, setActiveTab] = useState("live");
 
-  // Modal states
-  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [isViewModalOpen, setIsViewModalOpen] = useState(false);
-  const [selectedCamera, setSelectedCamera] = useState<Camera | null>(null);
-  const [isModalLoading, setIsModalLoading] = useState(false);
 
   const { toast } = useToast();
 
