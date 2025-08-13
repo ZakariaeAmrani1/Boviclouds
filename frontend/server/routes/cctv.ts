@@ -16,6 +16,8 @@ let cameras: Camera[] = [
     zone: "Main Entrance",
     createdBy: "Achraf",
     status: "active",
+    type: "Caméra de comportement" as any,
+    isOnline: true,
     streamUrl:
       "https://api.builder.io/api/v1/image/assets/TEMP/e3d5926eba868b25fa3539c0743b7826f1625545?width=1398",
     isRecording: true,
@@ -29,6 +31,8 @@ let cameras: Camera[] = [
     zone: "Back Door",
     createdBy: "Achraf",
     status: "active",
+    type: "Caméra d'identification" as any,
+    isOnline: true,
     streamUrl:
       "https://api.builder.io/api/v1/image/assets/TEMP/0a30a7645d8b7271df6e3b207b010180a52317c9?width=658",
     isRecording: true,
@@ -42,6 +46,8 @@ let cameras: Camera[] = [
     zone: "Eating Place",
     createdBy: "Achraf",
     status: "active",
+    type: "Caméra de morphologie" as any,
+    isOnline: false,
     streamUrl:
       "https://api.builder.io/api/v1/image/assets/TEMP/76353da281306292cb39952a5d6ab02c4bedf82b?width=658",
     isRecording: true,
