@@ -1,9 +1,17 @@
+export enum CameraType {
+  BEHAVIOR = "Caméra de comportement",
+  IDENTIFICATION = "Caméra d'identification",
+  MORPHOLOGY = "Caméra de morphologie"
+}
+
 export interface Camera {
   id: string;
   name: string;
   zone: string;
   createdBy: string;
   status: "active" | "inactive" | "maintenance";
+  type?: CameraType;
+  isOnline: boolean;
   streamUrl?: string;
   isRecording: boolean;
   lastActivity?: Date;
@@ -21,12 +29,14 @@ export interface CameraListResponse {
 export interface CreateCameraRequest {
   name: string;
   zone: string;
+  type?: CameraType;
   streamUrl?: string;
 }
 
 export interface UpdateCameraRequest {
   name?: string;
   zone?: string;
+  type?: CameraType;
   status?: "active" | "inactive" | "maintenance";
   streamUrl?: string;
   isRecording?: boolean;
@@ -53,6 +63,21 @@ export interface BehaviorDetection {
   };
 }
 
+export interface OnlineCamera {
+  id: string;
+  name: string;
+  isOnline: boolean;
+  ipAddress: string;
+  streamUrl: string;
+  lastSeen: Date;
+}
+
+export interface OnlineCamerasResponse {
+  cameras: OnlineCamera[];
+  total: number;
+  lastRefresh: Date;
+}
+
 export interface LiveFeedData {
   cameraId: string;
   streamUrl: string;
@@ -64,6 +89,12 @@ export const CAMERA_STATUS_COLORS = {
   active: "#21DB69",
   inactive: "#6B7280",
   maintenance: "#F97316",
+} as const;
+
+export const CAMERA_TYPE_COLORS = {
+  [CameraType.BEHAVIOR]: "#3B82F6",
+  [CameraType.IDENTIFICATION]: "#8B5CF6",
+  [CameraType.MORPHOLOGY]: "#F59E0B",
 } as const;
 
 export const BEHAVIOR_COLORS = {
