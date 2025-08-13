@@ -476,41 +476,6 @@ const CCTV: React.FC = () => {
 
       </Tabs>
 
-      {/* Modals */}
-      <AddCameraModal
-        isOpen={isAddModalOpen}
-        onClose={() => setIsAddModalOpen(false)}
-        onSubmit={handleAddCameraSubmit}
-        isLoading={isModalLoading}
-      />
-
-      <EditCameraModal
-        isOpen={isEditModalOpen}
-        onClose={() => setIsEditModalOpen(false)}
-        onSubmit={handleEditCameraSubmit}
-        camera={selectedCamera}
-        isLoading={isModalLoading}
-      />
-
-      <DeleteConfirmModal
-        isOpen={isDeleteModalOpen}
-        onClose={() => setIsDeleteModalOpen(false)}
-        onConfirm={handleDeleteConfirm}
-        camera={selectedCamera}
-        isLoading={isModalLoading}
-      />
-
-      <ViewCameraModal
-        isOpen={isViewModalOpen}
-        onClose={() => setIsViewModalOpen(false)}
-        camera={selectedCamera}
-        behaviors={
-          selectedCamera
-            ? behaviors.filter((b) => b.cameraId === selectedCamera.id)
-            : []
-        }
-        onDownloadRecording={handleDownloadRecording}
-      />
     </div>
   );
 };
