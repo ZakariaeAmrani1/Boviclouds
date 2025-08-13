@@ -39,7 +39,6 @@ import { StatsModule } from './stats/stats.module';
     ExploitationsModule,
     SemencesModule,
     RebouclageModule,
-    IdentificationModule,
     LactationModule,
     RacesModule,
     StatsModule,
