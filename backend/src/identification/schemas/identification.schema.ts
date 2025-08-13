@@ -5,7 +5,7 @@ import { UserRole } from 'src/users/schemas/users/user.role';
 
 // ----- Sous-schemas -----
 
-@Schema()
+@Schema({_id:false})
 export class InfosSujet {
   @Prop({ required: true }) nni: string;
   @Prop() date_naissance: Date;
@@ -21,15 +21,15 @@ export class InfosSujet {
 }
 export const InfosSujetSchema = SchemaFactory.createForClass(InfosSujet);
 
-@Schema()
+@Schema({ _id: false })
 export class InfosMere {
-  @Prop({required:true}) nni: string;
+  @Prop({ required: true }) nni: string;
   @Prop() date_naissance: Date;
   @Prop() race: string;
 }
 export const InfosMereSchema = SchemaFactory.createForClass(InfosMere);
 
-@Schema()
+@Schema({ _id: false })
 export class AnimalParent {
   @Prop({ required: true }) nni: string;
   @Prop() nom: string;
@@ -38,7 +38,7 @@ export class AnimalParent {
 }
 export const AnimalParentSchema = SchemaFactory.createForClass(AnimalParent);
 
-@Schema()
+@Schema({ _id: false })
 export class GrandMere {
   @Prop({ required: true }) nni: string;
   @Prop() date_naissance: Date;
@@ -46,7 +46,7 @@ export class GrandMere {
 }
 export const GrandMereSchema = SchemaFactory.createForClass(GrandMere);
 
-@Schema()
+@Schema({ _id: false })
 export class ComplementIds {
   @Prop({ type: Types.ObjectId, ref: 'User' })
   eleveur_id: Types.ObjectId;
