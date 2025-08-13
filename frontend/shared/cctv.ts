@@ -1,9 +1,17 @@
+export enum CameraType {
+  BEHAVIOR = "Caméra de comportement",
+  IDENTIFICATION = "Caméra d'identification",
+  MORPHOLOGY = "Caméra de morphologie"
+}
+
 export interface Camera {
   id: string;
   name: string;
   zone: string;
   createdBy: string;
   status: "active" | "inactive" | "maintenance";
+  type?: CameraType;
+  isOnline: boolean;
   streamUrl?: string;
   isRecording: boolean;
   lastActivity?: Date;
