@@ -101,6 +101,7 @@ import {
   handleGetRebouclageStats,
   handleExtractNNI,
 } from "./routes/rebouclage";
+import { getCowDetails } from "./routes/cow-details";
 
 // Configure multer for file uploads
 const storage = multer.memoryStorage();
