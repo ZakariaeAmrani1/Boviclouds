@@ -7,7 +7,8 @@ import {
 import { IdentificationService } from './identification.service';
 import { IdentificationController } from './identification.controller';
 import { S3Module } from 'src/common/s3/s3.module';
-import { HttpModule, HttpService } from '@nestjs/axios';
+import { HttpModule } from '@nestjs/axios';
+import { AIModule } from 'src/common/ai/ai.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { HttpModule, HttpService } from '@nestjs/axios';
     ]),
     S3Module,
     HttpModule,
+    AIModule
   ],
   controllers: [IdentificationController],
   providers: [IdentificationService],
