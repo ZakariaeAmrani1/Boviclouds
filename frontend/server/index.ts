@@ -104,6 +104,16 @@ import {
   handleExtractNNI,
 } from "./routes/rebouclage";
 import { getCowDetails } from "./routes/cow-details";
+import {
+  getMorphologies,
+  getMorphology,
+  createMorphology,
+  deleteMorphology,
+  processIdentificationImage,
+  processMorphologyImage,
+  getMorphologyStats,
+  exportMorphologyData,
+} from "./routes/morphology";
 
 // Configure multer for file uploads
 const storage = multer.memoryStorage();
