@@ -191,6 +191,8 @@ const Morphology: React.FC = () => {
       cow_id: "",
       source_detection: "Caméra automatique",
     });
+    setCapturedIdentificationImage(null);
+    setCapturedMorphologyImage(null);
     setIsAddModalOpen(true);
   };
 
