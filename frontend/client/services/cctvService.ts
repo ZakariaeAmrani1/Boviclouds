@@ -156,6 +156,27 @@ class CCTVService {
     document.body.removeChild(a);
   }
 
+  async getOnlineCameras(): Promise<OnlineCamerasResponse> {
+    const response = await fetch(`${this.baseUrl}/online-cameras`);
+    if (!response.ok) {
+      throw new Error("Failed to fetch online cameras");
+    }
+    return response.json();
+  }
+
+  async assignCameraType(cameraId: string, type: CameraType): Promise<void> {
+    const response = await fetch(`${this.baseUrl}/cameras/${cameraId}/type`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ type }),
+    });
+    if (!response.ok) {
+      throw new Error("Failed to assign camera type");
+    }
+  }
+
   async refreshCameraList(): Promise<CameraListResponse> {
     // Force a fresh fetch by adding a cache-busting parameter
     const timestamp = new Date().getTime();
