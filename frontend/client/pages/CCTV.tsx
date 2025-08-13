@@ -405,44 +405,23 @@ const CCTV: React.FC = () => {
                             </div>
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
-                            {camera.type ? (
-                              <div className="flex items-center gap-2">
-                                <Badge className={getCameraTypeColor(camera.type)}>
-                                  {camera.type}
-                                </Badge>
-                                <Button
-                                  variant="outline"
-                                  size="sm"
-                                  onClick={() => {
-                                    // Reset type to allow reassignment
-                                    setCameras(prev => prev.map(cam =>
-                                      cam.id === camera.id ? { ...cam, type: undefined } : cam
-                                    ));
-                                  }}
-                                >
-                                  Modifier
-                                </Button>
-                              </div>
-                            ) : (
-                              <Select
-                                onValueChange={(value) => handleAssignCameraType(camera.id, value as CameraType)}
+                            <div className="flex items-center gap-2">
+                              <Badge className={camera.type ? getCameraTypeColor(camera.type) : "bg-gray-100 text-gray-800"}>
+                                {camera.type || "Non assigné"}
+                              </Badge>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => {
+                                  // Reset type to allow reassignment
+                                  setCameras(prev => prev.map(cam =>
+                                    cam.id === camera.id ? { ...cam, type: undefined } : cam
+                                  ));
+                                }}
                               >
-                                <SelectTrigger className="w-48">
-                                  <SelectValue placeholder="Assigner un type" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  <SelectItem value={CameraType.BEHAVIOR}>
-                                    {CameraType.BEHAVIOR}
-                                  </SelectItem>
-                                  <SelectItem value={CameraType.IDENTIFICATION}>
-                                    {CameraType.IDENTIFICATION}
-                                  </SelectItem>
-                                  <SelectItem value={CameraType.MORPHOLOGY}>
-                                    {CameraType.MORPHOLOGY}
-                                  </SelectItem>
-                                </SelectContent>
-                              </Select>
-                            )}
+                                Modifier
+                              </Button>
+                            </div>
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
                             <Badge
