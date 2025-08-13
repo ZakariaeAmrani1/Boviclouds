@@ -124,6 +124,7 @@ const CCTV: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedCameraForStream, setSelectedCameraForStream] = useState<Camera | null>(null);
   const [activeTab, setActiveTab] = useState("live");
+  const [editingCameraId, setEditingCameraId] = useState<string | null>(null);
 
 
   const { toast } = useToast();
