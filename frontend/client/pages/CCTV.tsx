@@ -235,7 +235,6 @@ const CCTV: React.FC = () => {
     );
   }
 
-  const onlineCamerasToAssign = onlineCameras.filter(cam => cam.isOnline);
 
   return (
     <div className="space-y-6">
