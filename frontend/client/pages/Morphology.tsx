@@ -139,7 +139,7 @@ const Morphology: React.FC = () => {
   const handleReset = () => {
     setSearchForm({
       cow_id: "",
-      source_detection: "",
+      source_detection: "all",
       dateFrom: "",
       dateTo: "",
     });
