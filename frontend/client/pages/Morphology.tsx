@@ -230,10 +230,10 @@ const Morphology: React.FC = () => {
 
   const handleStepNext = async () => {
     if (currentStep === "identification") {
-      if (!formData.identification_image) {
+      if (!capturedIdentificationImage) {
         toast({
           title: "Erreur",
-          description: "Veuillez sélectionner une image d'identification",
+          description: "Veuillez capturer une image d'identification",
           variant: "destructive",
         });
         return;
@@ -241,8 +241,10 @@ const Morphology: React.FC = () => {
 
       try {
         setStepLoading(true);
-        const response = await morphologyService.processIdentificationImage(formData.identification_image);
-        
+        // Use the camera capture method instead of file upload
+        const identificationCamera = identificationCameras[0];
+        const response = await morphologyService.captureFromCamera(identificationCamera.id);
+
         if (response.success && response.data) {
           setFormData(prev => ({ ...prev, cow_id: response.data!.cow_id }));
           setCurrentStep("morphology");
@@ -263,10 +265,10 @@ const Morphology: React.FC = () => {
         setStepLoading(false);
       }
     } else if (currentStep === "morphology") {
-      if (!formData.morphology_image) {
+      if (!capturedMorphologyImage) {
         toast({
           title: "Erreur",
-          description: "Veuillez sélectionner une image de morphologie",
+          description: "Veuillez capturer une image de morphologie",
           variant: "destructive",
         });
         return;
@@ -274,11 +276,13 @@ const Morphology: React.FC = () => {
 
       try {
         setStepLoading(true);
-        const response = await morphologyService.processMorphologyImage(
-          formData.cow_id,
-          formData.morphology_image
+        // Use the camera capture method for morphology
+        const morphologyCamera = morphologyCameras[0];
+        const response = await morphologyService.captureMorphologyFromCamera(
+          morphologyCamera.id,
+          formData.cow_id
         );
-        
+
         if (response.success && response.data) {
           setFormData(prev => ({ ...prev, measurements: response.data }));
           setCurrentStep("results");
