@@ -9,6 +9,7 @@ import {
   Users,
   Camera,
   Stethoscope,
+  Ruler,
 } from "lucide-react";
 
 export interface MenuItem {
