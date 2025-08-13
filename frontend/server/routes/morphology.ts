@@ -201,7 +201,7 @@ export const processMorphologyImage: RequestHandler = (req, res) => {
       const baseHeight = 120;
       const baseWidth = 55;
       const baseLength = 140;
-      
+
       const variance = () => (Math.random() - 0.5) * 10; // ±5 units variance
 
       res.json({
@@ -229,6 +229,56 @@ export const processMorphologyImage: RequestHandler = (req, res) => {
     res.status(500).json({
       success: false,
       message: "Failed to process morphology image",
+    });
+  }
+};
+
+// Capture morphology from camera (Step 2 - Camera version)
+export const captureMorphologyFromCamera: RequestHandler = (req, res) => {
+  try {
+    const { cameraId, cow_id } = req.body;
+
+    if (!cameraId || !cow_id) {
+      return res.status(400).json({
+        success: false,
+        message: "cameraId and cow_id are required",
+      });
+    }
+
+    // Simulate camera capture and processing delay
+    setTimeout(() => {
+      // Mock morphology measurements with some variance based on cow_id
+      const baseHeight = cow_id.includes("FR123") ? 125 : 120;
+      const baseWidth = cow_id.includes("FR123") ? 58 : 55;
+      const baseLength = cow_id.includes("FR123") ? 145 : 140;
+
+      const variance = () => (Math.random() - 0.5) * 8; // ±4 units variance
+
+      res.json({
+        success: true,
+        data: {
+          hauteur_au_garrot: {
+            valeur: Math.round((baseHeight + variance()) * 10) / 10,
+            unite: "cm",
+          },
+          largeur_du_corps: {
+            valeur: Math.round((baseWidth + variance()) * 10) / 10,
+            unite: "cm",
+          },
+          longueur_du_corps: {
+            valeur: Math.round((baseLength + variance()) * 10) / 10,
+            unite: "cm",
+          },
+          confidence: 0.94,
+        },
+        message: `Analyse morphologique terminée depuis la caméra ${cameraId} pour la vache ${cow_id}`,
+      });
+    }, 2000); // Simulate processing time
+  } catch (error) {
+    console.error("Error capturing morphology from camera:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to capture morphology from camera",
     });
   }
 };
