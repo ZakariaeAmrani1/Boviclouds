@@ -128,7 +128,7 @@ export const processIdentificationImage: RequestHandler = (req, res) => {
       // Mock cow identification
       const mockCowIds = ["FR1234567890", "FR0987654321", "FR1122334455", "FR5566778899"];
       const randomCowId = mockCowIds[Math.floor(Math.random() * mockCowIds.length)];
-      
+
       res.json({
         success: true,
         data: {
@@ -143,6 +143,42 @@ export const processIdentificationImage: RequestHandler = (req, res) => {
     res.status(500).json({
       success: false,
       message: "Failed to process identification image",
+    });
+  }
+};
+
+// Capture from identification camera (Step 1 - Camera version)
+export const captureFromCamera: RequestHandler = (req, res) => {
+  try {
+    const { cameraId } = req.body;
+
+    if (!cameraId) {
+      return res.status(400).json({
+        success: false,
+        message: "cameraId is required",
+      });
+    }
+
+    // Simulate camera capture and processing delay
+    setTimeout(() => {
+      // Mock cow identification from camera feed
+      const mockCowIds = ["FR1234567890", "FR0987654321", "FR1122334455", "FR5566778899"];
+      const randomCowId = mockCowIds[Math.floor(Math.random() * mockCowIds.length)];
+
+      res.json({
+        success: true,
+        data: {
+          cow_id: randomCowId,
+          confidence: 0.92,
+        },
+        message: `Vache identifiée avec succès depuis la caméra ${cameraId}`,
+      });
+    }, 1500); // Simulate processing time
+  } catch (error) {
+    console.error("Error capturing from camera:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to capture from camera",
     });
   }
 };
