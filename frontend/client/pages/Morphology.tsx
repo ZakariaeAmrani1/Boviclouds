@@ -149,7 +149,11 @@ const Morphology: React.FC = () => {
 
   const handleExport = async () => {
     try {
-      await morphologyService.exportData("csv", searchForm);
+      const exportFilters = {
+        ...searchForm,
+        source_detection: searchForm.source_detection === "all" ? "" : searchForm.source_detection,
+      };
+      await morphologyService.exportData("csv", exportFilters);
       toast({
         title: "Succès",
         description: "Export des données commencé",
