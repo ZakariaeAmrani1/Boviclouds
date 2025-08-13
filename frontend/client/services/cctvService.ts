@@ -223,6 +223,8 @@ class CCTVService {
         zone: "Main Entrance",
         createdBy: "Achraf",
         status: "active",
+        type: CameraType.BEHAVIOR,
+        isOnline: true,
         streamUrl:
           "https://api.builder.io/api/v1/image/assets/TEMP/e3d5926eba868b25fa3539c0743b7826f1625545?width=1398",
         isRecording: true,
@@ -236,6 +238,8 @@ class CCTVService {
         zone: "Back Door",
         createdBy: "Achraf",
         status: "active",
+        type: CameraType.IDENTIFICATION,
+        isOnline: true,
         streamUrl:
           "https://api.builder.io/api/v1/image/assets/TEMP/0a30a7645d8b7271df6e3b207b010180a52317c9?width=658",
         isRecording: true,
@@ -249,12 +253,51 @@ class CCTVService {
         zone: "Eating Place",
         createdBy: "Achraf",
         status: "active",
+        type: CameraType.MORPHOLOGY,
+        isOnline: false,
         streamUrl:
           "https://api.builder.io/api/v1/image/assets/TEMP/76353da281306292cb39952a5d6ab02c4bedf82b?width=658",
         isRecording: true,
         lastActivity: new Date(),
         createdAt: new Date("2024-01-25"),
         updatedAt: new Date(),
+      },
+    ];
+  }
+
+  getMockOnlineCameras(): OnlineCamera[] {
+    return [
+      {
+        id: "online-cam-1",
+        name: "Network Camera 01",
+        isOnline: true,
+        ipAddress: "192.168.1.101",
+        streamUrl: "rtsp://192.168.1.101:554/stream",
+        lastSeen: new Date(),
+      },
+      {
+        id: "online-cam-2",
+        name: "Network Camera 02",
+        isOnline: true,
+        ipAddress: "192.168.1.102",
+        streamUrl: "rtsp://192.168.1.102:554/stream",
+        lastSeen: new Date(),
+      },
+      {
+        id: "online-cam-3",
+        name: "Network Camera 03",
+        isOnline: true,
+        ipAddress: "192.168.1.103",
+        streamUrl: "rtsp://192.168.1.103:554/stream",
+        lastSeen: new Date(),
+      },
+      {
+        id: "online-cam-4",
+        name: "Network Camera 04",
+        isOnline: false,
+        ipAddress: "192.168.1.104",
+        streamUrl: "rtsp://192.168.1.104:554/stream",
+        lastSeen: new Date(Date.now() - 30 * 60 * 1000), // 30 minutes ago
       },
     ];
   }
