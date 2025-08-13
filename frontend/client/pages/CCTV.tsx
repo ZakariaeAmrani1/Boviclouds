@@ -398,60 +398,87 @@ const CCTV: React.FC = () => {
 
         {/* Live Streaming Tab */}
         <TabsContent value="live" className="space-y-6">
-          <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-            {/* Main Camera Feed */}
-            <div className="lg:col-span-3">
-              {selectedCameraForStream ? (
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <h3 className="text-lg font-semibold">Caméra Principale</h3>
-                    <div className="flex items-center gap-2">
-                      <Badge className={getCameraTypeColor(selectedCameraForStream.type)}>
-                        {selectedCameraForStream.type || "Non assigné"}
-                      </Badge>
-                      <Badge variant={selectedCameraForStream.isOnline ? "default" : "secondary"}>
-                        {selectedCameraForStream.isOnline ? "En ligne" : "Hors ligne"}
-                      </Badge>
-                    </div>
+          <div className="space-y-4">
+            {/* Camera Controls */}
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <h3 className="text-lg font-semibold">
+                  {selectedCameraForStream ? selectedCameraForStream.name : "Aucune caméra"}
+                </h3>
+                {selectedCameraForStream && (
+                  <div className="flex items-center gap-2">
+                    <Badge className={getCameraTypeColor(selectedCameraForStream.type)}>
+                      {selectedCameraForStream.type || "Non assigné"}
+                    </Badge>
+                    <Badge variant={selectedCameraForStream.isOnline ? "default" : "secondary"}>
+                      {selectedCameraForStream.isOnline ? "En ligne" : "Hors ligne"}
+                    </Badge>
                   </div>
-                  <CameraFeed
-                    camera={selectedCameraForStream}
-                    behaviors={behaviors.filter((b) => b.cameraId === selectedCameraForStream.id)}
-                    className="h-[400px]"
-                    isSelected={true}
-                  />
-                </div>
-              ) : (
-                <Card className="h-[400px] flex items-center justify-center">
-                  <div className="text-center">
-                    <MonitorPlay className="w-16 h-16 mx-auto mb-4 text-gray-400" />
-                    <h3 className="text-lg font-medium text-gray-900 mb-2">
-                      Aucune caméra sélectionnée
-                    </h3>
-                    <p className="text-gray-600">
-                      Sélectionnez une caméra dans la liste pour commencer le streaming
-                    </p>
-                  </div>
-                </Card>
-              )}
-            </div>
+                )}
+              </div>
 
-            {/* Camera Selection Sidebar */}
-            <div className="space-y-4">
-              <h3 className="text-lg font-semibold">Caméras Disponibles</h3>
-              <div className="space-y-3">
-                {cameras.filter(cam => cam.isOnline).map((camera) => (
-                  <CameraFeed
-                    key={camera.id}
-                    camera={camera}
-                    behaviors={behaviors.filter((b) => b.cameraId === camera.id)}
-                    className="h-[120px]"
-                    isSelected={selectedCameraForStream?.id === camera.id}
-                    onSelect={() => setSelectedCameraForStream(camera)}
-                  />
-                ))}
+              {/* Camera Navigation */}
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    const onlineCameras = cameras.filter(cam => cam.isOnline);
+                    const currentIndex = onlineCameras.findIndex(cam => cam.id === selectedCameraForStream?.id);
+                    const prevIndex = currentIndex <= 0 ? onlineCameras.length - 1 : currentIndex - 1;
+                    setSelectedCameraForStream(onlineCameras[prevIndex]);
+                  }}
+                  disabled={cameras.filter(cam => cam.isOnline).length <= 1}
+                >
+                  <ChevronLeft className="w-4 h-4" />
+                  Précédent
+                </Button>
+
+                <span className="px-3 py-1 bg-gray-100 rounded text-sm">
+                  {selectedCameraForStream ?
+                    `${cameras.filter(cam => cam.isOnline).findIndex(cam => cam.id === selectedCameraForStream.id) + 1} / ${cameras.filter(cam => cam.isOnline).length}`
+                    : "0 / 0"
+                  }
+                </span>
+
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    const onlineCameras = cameras.filter(cam => cam.isOnline);
+                    const currentIndex = onlineCameras.findIndex(cam => cam.id === selectedCameraForStream?.id);
+                    const nextIndex = currentIndex >= onlineCameras.length - 1 ? 0 : currentIndex + 1;
+                    setSelectedCameraForStream(onlineCameras[nextIndex]);
+                  }}
+                  disabled={cameras.filter(cam => cam.isOnline).length <= 1}
+                >
+                  Suivant
+                  <ChevronRight className="w-4 h-4" />
+                </Button>
               </div>
             </div>
+
+            {/* Single Camera Feed */}
+            {selectedCameraForStream ? (
+              <CameraFeed
+                camera={selectedCameraForStream}
+                behaviors={behaviors.filter((b) => b.cameraId === selectedCameraForStream.id)}
+                className="h-[500px] w-full"
+                isSelected={true}
+              />
+            ) : (
+              <Card className="h-[500px] flex items-center justify-center">
+                <div className="text-center">
+                  <MonitorPlay className="w-16 h-16 mx-auto mb-4 text-gray-400" />
+                  <h3 className="text-lg font-medium text-gray-900 mb-2">
+                    Aucune caméra disponible
+                  </h3>
+                  <p className="text-gray-600">
+                    Assurez-vous qu'au moins une caméra est en ligne pour commencer le streaming
+                  </p>
+                </div>
+              </Card>
+            )}
           </div>
 
           {/* Behavior Legend */}
