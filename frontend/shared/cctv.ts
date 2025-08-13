@@ -29,12 +29,14 @@ export interface CameraListResponse {
 export interface CreateCameraRequest {
   name: string;
   zone: string;
+  type?: CameraType;
   streamUrl?: string;
 }
 
 export interface UpdateCameraRequest {
   name?: string;
   zone?: string;
+  type?: CameraType;
   status?: "active" | "inactive" | "maintenance";
   streamUrl?: string;
   isRecording?: boolean;
