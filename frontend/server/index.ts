@@ -13,6 +13,8 @@ import {
   getLiveFeed,
   toggleRecording,
   getBehaviorDetections,
+  getOnlineCameras,
+  assignCameraType,
 } from "./routes/cctv";
 import { getHealth } from "./routes/health";
 import { getDocuments, getDocument } from "./routes/documents";
