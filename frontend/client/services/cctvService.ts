@@ -6,6 +6,9 @@ import {
   CameraStats,
   LiveFeedData,
   BehaviorDetection,
+  OnlineCamera,
+  OnlineCamerasResponse,
+  CameraType,
 } from "@shared/cctv";
 
 class CCTVService {
