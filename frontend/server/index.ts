@@ -173,6 +173,8 @@ export function createServer() {
   app.get("/api/cctv/live/:cameraId", getLiveFeed);
   app.put("/api/cctv/cameras/:cameraId/recording", toggleRecording);
   app.get("/api/cctv/behaviors", getBehaviorDetections);
+  app.get("/api/cctv/online-cameras", getOnlineCameras);
+  app.put("/api/cctv/cameras/:cameraId/type", assignCameraType);
 
   // Traitement API routes
   app.get("/api/traitement/sujets", getSujets);
