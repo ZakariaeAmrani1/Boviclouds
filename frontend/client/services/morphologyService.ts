@@ -58,6 +58,21 @@ class MorphologyService {
     return response.json();
   }
 
+  async captureFromCamera(cameraId: string): Promise<IdentificationImageResponse> {
+    const response = await fetch(`${this.baseUrl}/capture-from-camera`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ cameraId }),
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to capture from camera");
+    }
+    return response.json();
+  }
+
   async processMorphologyImage(
     cow_id: string,
     image: File
