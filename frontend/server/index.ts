@@ -268,6 +268,8 @@ export function createServer() {
   app.delete("/api/morphology/:id", deleteMorphology);
   app.post("/api/morphology/process-identification", upload.single('image'), processIdentificationImage);
   app.post("/api/morphology/process-morphology", upload.single('image'), processMorphologyImage);
+  app.post("/api/morphology/capture-from-camera", captureFromCamera);
+  app.post("/api/morphology/capture-morphology-from-camera", captureMorphologyFromCamera);
 
   return app;
 }
