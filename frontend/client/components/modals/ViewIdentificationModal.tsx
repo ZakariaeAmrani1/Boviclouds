@@ -26,6 +26,7 @@ const ViewIdentificationModal: React.FC<ViewIdentificationModalProps> = ({
   onClose,
   identification,
 }) => {
+  const navigate = useNavigate();
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString("fr-FR", {
       year: "numeric",
