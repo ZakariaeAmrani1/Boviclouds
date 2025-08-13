@@ -31,10 +31,6 @@ import {
   MonitorPlay,
 } from "lucide-react";
 import Breadcrumb from "@/components/Breadcrumb";
-import AddCameraModal from "@/components/modals/AddCameraModal";
-import EditCameraModal from "@/components/modals/EditCameraModal";
-import DeleteConfirmModal from "@/components/modals/DeleteConfirmModal";
-import ViewCameraModal from "@/components/modals/ViewCameraModal";
 import { useToast } from "@/hooks/use-toast";
 
 interface CameraFeedProps {
@@ -207,7 +203,7 @@ const CCTV: React.FC = () => {
       ));
       
       toast({
-        title: "Succ��s",
+        title: "Succès",
         description: "Type de caméra assigné avec succès",
       });
     } catch (error) {
