@@ -72,6 +72,12 @@ const allMenuItems: MenuItem[] = [
     badge: null,
   },
   {
+    icon: Ruler,
+    label: "Morphologie",
+    path: "/morphology",
+    badge: null,
+  },
+  {
     icon: Users,
     label: "Utilisateurs",
     path: "/utilisateurs",
