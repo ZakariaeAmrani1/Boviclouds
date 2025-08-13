@@ -385,40 +385,21 @@ const Morphology: React.FC = () => {
               <Camera className="w-12 h-12 mx-auto mb-4 text-boviclouds-primary" />
               <h3 className="text-lg font-semibold mb-2">Identification de la vache</h3>
               <p className="text-gray-600">
-                Prenez une photo du museau de la vache pour l'identifier
+                Utilisez la caméra d'identification pour capturer une image du museau de la vache
               </p>
             </div>
 
             {identificationCameras.length > 0 ? (
-              <div className="space-y-4">
-                <div>
-                  <Label>Caméra d'identification disponible:</Label>
-                  <div className="mt-2 p-3 bg-green-50 rounded-lg border border-green-200">
-                    <div className="flex items-center gap-2">
-                      <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                      <span className="font-medium">{identificationCameras[0].name}</span>
-                      <Badge className="bg-green-100 text-green-800">En ligne</Badge>
-                    </div>
-                  </div>
-                </div>
-
-                <div>
-                  <Label htmlFor="identification-image">Image d'identification</Label>
-                  <div className="mt-2">
-                    <Input
-                      id="identification-image"
-                      type="file"
-                      accept="image/*"
-                      onChange={(e) => {
-                        const file = e.target.files?.[0];
-                        if (file) {
-                          setFormData(prev => ({ ...prev, identification_image: file }));
-                        }
-                      }}
-                    />
-                  </div>
-                </div>
-              </div>
+              <CameraCapture
+                camera={identificationCameras[0]}
+                onCapture={(imageData) => {
+                  setCapturedIdentificationImage(imageData);
+                }}
+                capturing={stepLoading}
+                captured={!!capturedIdentificationImage}
+                title="Caméra d'Identification"
+                description="Capturez une image claire du museau de la vache"
+              />
             ) : (
               <div className="text-center p-6 bg-red-50 rounded-lg border border-red-200">
                 <AlertTriangle className="w-8 h-8 mx-auto mb-2 text-red-500" />
