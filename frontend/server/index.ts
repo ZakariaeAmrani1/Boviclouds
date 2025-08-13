@@ -189,6 +189,7 @@ export function createServer() {
   app.post("/api/identification", upload.array('images', 5), createIdentification);
   app.put("/api/identification/:id", upload.array('images', 5), updateIdentification);
   app.delete("/api/identification/:id", deleteIdentification);
+  app.get("/api/identification/:id/details", getCowDetails);
 
   // Insemination API routes
   app.get("/api/insemination/stats", handleGetInseminationStats);
