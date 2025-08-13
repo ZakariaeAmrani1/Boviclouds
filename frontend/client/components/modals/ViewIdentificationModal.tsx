@@ -243,16 +243,32 @@ const ViewIdentificationModal: React.FC<ViewIdentificationModalProps> = ({
         <DialogOverlay className="bg-black/20" />
         <DialogContent className="w-[95vw] max-w-6xl max-h-[90vh] overflow-y-auto mx-4">
           <DialogHeader>
-            <DialogTitle className="text-lg font-medium text-black flex items-center gap-2">
-              <User className="w-5 h-5" />
-              Identification - {identification.infos_sujet.nni}
-            </DialogTitle>
-            <button
-              onClick={onClose}
-              className="absolute right-4 top-4 p-1 rounded-full hover:bg-gray-100"
-            >
-              <X className="w-4 h-4" />
-            </button>
+            <div className="flex items-center justify-between">
+              <DialogTitle className="text-lg font-medium text-black flex items-center gap-2">
+                <User className="w-5 h-5" />
+                Identification - {identification.infos_sujet.nni}
+              </DialogTitle>
+              <div className="flex items-center gap-2">
+                <Button
+                  onClick={() => {
+                    navigate(`/identification/${identification.id}/details`);
+                    onClose();
+                  }}
+                  variant="outline"
+                  size="sm"
+                  className="gap-2"
+                >
+                  <ExternalLink className="w-4 h-4" />
+                  Vue détaillée
+                </Button>
+                <button
+                  onClick={onClose}
+                  className="p-1 rounded-full hover:bg-gray-100"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
           </DialogHeader>
 
           <div className="space-y-6 py-4">
