@@ -142,6 +142,8 @@ export const createCamera: RequestHandler = (req, res) => {
       zone: data.zone,
       createdBy: "System", // In a real app, this would come from authentication
       status: "active",
+      type: data.type,
+      isOnline: true,
       streamUrl: data.streamUrl,
       isRecording: false,
       lastActivity: new Date(),
