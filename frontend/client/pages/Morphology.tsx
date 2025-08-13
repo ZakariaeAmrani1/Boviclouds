@@ -86,9 +86,9 @@ const Morphology: React.FC = () => {
   const [morphologyCameras, setMorphologyCameras] = useState<CameraType[]>([]);
 
   // Search and filter states
-  const [searchForm, setSearchForm] = useState<MorphologyFilters>({
+  const [searchForm, setSearchForm] = useState({
     cow_id: "",
-    source_detection: "",
+    source_detection: "all",
     dateFrom: "",
     dateTo: "",
   });
