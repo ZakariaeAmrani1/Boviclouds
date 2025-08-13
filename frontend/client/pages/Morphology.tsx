@@ -862,9 +862,9 @@ const Morphology: React.FC = () => {
                 ) : (
                   <Button
                     onClick={handleStepNext}
-                    disabled={stepLoading || 
-                      (currentStep === "identification" && !formData.identification_image) ||
-                      (currentStep === "morphology" && !formData.morphology_image)
+                    disabled={stepLoading ||
+                      (currentStep === "identification" && !capturedIdentificationImage) ||
+                      (currentStep === "morphology" && !capturedMorphologyImage)
                     }
                     className="bg-boviclouds-primary hover:bg-boviclouds-primary/90"
                   >
