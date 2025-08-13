@@ -503,7 +503,7 @@ const CCTV: React.FC = () => {
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <h2 className="text-xl font-semibold">Configuration des Caméras</h2>
-              <Button 
+              <Button
                 onClick={loadOnlineCameras}
                 disabled={onlineCamerasLoading}
                 className="bg-emerald-500 hover:bg-emerald-600"
@@ -517,96 +517,10 @@ const CCTV: React.FC = () => {
               </Button>
             </div>
 
-            {/* Online Cameras Grid */}
-            {onlineCamerasToAssign.length > 0 && (
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <CameraIcon className="w-5 h-5" />
-                    Caméras Réseau Détectées ({onlineCamerasToAssign.length})
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {onlineCamerasToAssign.map((onlineCamera) => (
-                      <Card key={onlineCamera.id} className="border border-gray-200">
-                        <CardContent className="p-4">
-                          <div className="space-y-3">
-                            <div className="flex items-center justify-between">
-                              <h4 className="font-medium">{onlineCamera.name}</h4>
-                              <div className="flex items-center gap-1">
-                                <Wifi className="w-4 h-4 text-green-500" />
-                                <span className="text-xs text-green-600">En ligne</span>
-                              </div>
-                            </div>
-                            
-                            <div className="text-sm text-gray-600">
-                              <p>IP: {onlineCamera.ipAddress}</p>
-                              <p>Stream: {onlineCamera.streamUrl}</p>
-                            </div>
-
-                            <div className="space-y-2">
-                              <label className="text-sm font-medium">Type de caméra:</label>
-                              <Select
-                                onValueChange={(value) => handleAssignCameraType(onlineCamera.id, value as CameraType)}
-                              >
-                                <SelectTrigger>
-                                  <SelectValue placeholder="Sélectionner un type" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  <SelectItem value={CameraType.BEHAVIOR}>
-                                    {CameraType.BEHAVIOR}
-                                  </SelectItem>
-                                  <SelectItem value={CameraType.IDENTIFICATION}>
-                                    {CameraType.IDENTIFICATION}
-                                  </SelectItem>
-                                  <SelectItem value={CameraType.MORPHOLOGY}>
-                                    {CameraType.MORPHOLOGY}
-                                  </SelectItem>
-                                </SelectContent>
-                              </Select>
-                            </div>
-
-                            <Button
-                              size="sm"
-                              className="w-full bg-emerald-500 hover:bg-emerald-600"
-                              onClick={() => {
-                                // Add camera to main list
-                                const newCamera: Camera = {
-                                  id: onlineCamera.id,
-                                  name: onlineCamera.name,
-                                  zone: "Zone assignée",
-                                  createdBy: "Système",
-                                  status: "active",
-                                  isOnline: true,
-                                  streamUrl: onlineCamera.streamUrl,
-                                  isRecording: false,
-                                  createdAt: new Date(),
-                                  updatedAt: new Date(),
-                                };
-                                setCameras(prev => [...prev, newCamera]);
-                                toast({
-                                  title: "Succès",
-                                  description: "Caméra ajoutée au système",
-                                });
-                              }}
-                            >
-                              <Plus className="w-4 h-4 mr-2" />
-                              Ajouter au Système
-                            </Button>
-                          </div>
-                        </CardContent>
-                      </Card>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-            )}
-
-            {/* Current Cameras with Types */}
+            {/* Current Cameras with Type Assignment */}
             <Card>
               <CardHeader>
-                <CardTitle>Caméras Configurées</CardTitle>
+                <CardTitle>Caméras Détectées</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="overflow-x-auto">
@@ -624,9 +538,6 @@ const CCTV: React.FC = () => {
                         </th>
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                           Statut
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          Actions
                         </th>
                       </tr>
                     </thead>
@@ -652,9 +563,23 @@ const CCTV: React.FC = () => {
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
                             {camera.type ? (
-                              <Badge className={getCameraTypeColor(camera.type)}>
-                                {camera.type}
-                              </Badge>
+                              <div className="flex items-center gap-2">
+                                <Badge className={getCameraTypeColor(camera.type)}>
+                                  {camera.type}
+                                </Badge>
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => {
+                                    // Reset type to allow reassignment
+                                    setCameras(prev => prev.map(cam =>
+                                      cam.id === camera.id ? { ...cam, type: undefined } : cam
+                                    ));
+                                  }}
+                                >
+                                  Modifier
+                                </Button>
+                              </div>
                             ) : (
                               <Select
                                 onValueChange={(value) => handleAssignCameraType(camera.id, value as CameraType)}
@@ -687,24 +612,6 @@ const CCTV: React.FC = () => {
                             >
                               {camera.isOnline ? "En ligne" : "Hors ligne"}
                             </Badge>
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <div className="flex items-center gap-2">
-                              <button
-                                onClick={() => handleEdit(camera.id)}
-                                className="text-emerald-600 hover:text-emerald-800 p-1"
-                                title="Modifier"
-                              >
-                                <Settings className="w-4 h-4" />
-                              </button>
-                              <button
-                                onClick={() => setSelectedCameraForStream(camera)}
-                                className="text-blue-600 hover:text-blue-800 p-1"
-                                title="Sélectionner pour streaming"
-                              >
-                                <MonitorPlay className="w-4 h-4" />
-                              </button>
-                            </div>
                           </td>
                         </tr>
                       ))}
