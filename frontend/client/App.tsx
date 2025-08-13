@@ -104,6 +104,7 @@ const App = () => (
                 <Route path="cctv" element={<CCTV />} />
                 <Route path="traitement" element={<Traitement />} />
                 <Route path="profile" element={<EditProfile />} />
+                <Route path="identification/:id/details" element={<CowDetails />} />
               </Route>
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
