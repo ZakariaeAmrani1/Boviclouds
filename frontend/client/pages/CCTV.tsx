@@ -111,14 +111,6 @@ const CameraFeed: React.FC<CameraFeedProps> = ({
         </button>
       </div>
 
-      {/* Selection indicator */}
-      {isSelected && (
-        <div className="absolute inset-0 bg-boviclouds-primary/20 pointer-events-none">
-          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-boviclouds-primary text-white px-3 py-1 rounded-full text-sm font-medium">
-            Sélectionnée
-          </div>
-        </div>
-      )}
     </div>
   );
 };
