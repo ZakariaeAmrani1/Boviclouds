@@ -257,5 +257,15 @@ export function createServer() {
   app.put("/api/rebouclage/:id", handleUpdateRebouclage);
   app.delete("/api/rebouclage/:id", handleDeleteRebouclage);
 
+  // Morphology API routes
+  app.get("/api/morphology/stats", getMorphologyStats);
+  app.get("/api/morphology/export", exportMorphologyData);
+  app.get("/api/morphology/:id", getMorphology);
+  app.get("/api/morphology", getMorphologies);
+  app.post("/api/morphology", createMorphology);
+  app.delete("/api/morphology/:id", deleteMorphology);
+  app.post("/api/morphology/process-identification", upload.single('image'), processIdentificationImage);
+  app.post("/api/morphology/process-morphology", upload.single('image'), processMorphologyImage);
+
   return app;
 }
