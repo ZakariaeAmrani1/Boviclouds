@@ -80,6 +80,8 @@ const Morphology: React.FC = () => {
     source_detection: "Caméra automatique",
   });
   const [stepLoading, setStepLoading] = useState(false);
+  const [capturedIdentificationImage, setCapturedIdentificationImage] = useState<string | null>(null);
+  const [capturedMorphologyImage, setCapturedMorphologyImage] = useState<string | null>(null);
 
   // Camera states
   const [cameras, setCameras] = useState<CameraType[]>([]);
