@@ -400,9 +400,6 @@ export const getMorphologyStats: RequestHandler = (req, res) => {
   }
 };
 
-// Export camera capture functions
-export { captureFromCamera, captureMorphologyFromCamera };
-
 // Export morphology data
 export const exportMorphologyData: RequestHandler = (req, res) => {
   try {
