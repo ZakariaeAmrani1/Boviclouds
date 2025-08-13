@@ -21,21 +21,14 @@ import {
 } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
-  Plus,
-  Download,
   RotateCcw,
-  Edit,
-  Eye,
-  Trash2,
   ChevronLeft,
   ChevronRight,
   Play,
   Pause,
-  Settings,
   Wifi,
   WifiOff,
   MonitorPlay,
-  Camera as CameraIcon,
 } from "lucide-react";
 import Breadcrumb from "@/components/Breadcrumb";
 import AddCameraModal from "@/components/modals/AddCameraModal";
@@ -214,7 +207,7 @@ const CCTV: React.FC = () => {
       ));
       
       toast({
-        title: "Succès",
+        title: "Succ��s",
         description: "Type de caméra assigné avec succès",
       });
     } catch (error) {
