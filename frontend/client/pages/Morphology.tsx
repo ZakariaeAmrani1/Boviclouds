@@ -562,14 +562,17 @@ const Morphology: React.FC = () => {
               Source
             </Label>
             <Select
-              value={searchForm.source_detection || ""}
-              onValueChange={(value) => setSearchForm(prev => ({ ...prev, source_detection: value }))}
+              value={searchForm.source_detection || "all"}
+              onValueChange={(value) => setSearchForm(prev => ({
+                ...prev,
+                source_detection: value === "all" ? "" : value
+              }))}
             >
               <SelectTrigger>
                 <SelectValue placeholder="Toutes les sources" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">Toutes</SelectItem>
+                <SelectItem value="all">Toutes</SelectItem>
                 <SelectItem value="Caméra automatique">Caméra automatique</SelectItem>
                 <SelectItem value="Mesure manuelle">Mesure manuelle</SelectItem>
                 <SelectItem value="Inspection vétérinaire">Inspection vétérinaire</SelectItem>
