@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   ConflictException,
   Injectable,
   NotFoundException,
@@ -12,7 +13,6 @@ import { CreateIdentificationDto } from './dto/create-identification.dto';
 import { Express } from 'express';
 import { S3Service } from 'src/common/s3/s3.service';
 import { IDENTIFICATION_BUCKET } from './constants/identification.constants';
-import { HttpService } from '@nestjs/axios';
 import { AIService } from 'src/common/ai/ai.service';
 export class IndentificationNotFoundException extends NotFoundException {
   constructor(id: string) {
@@ -31,7 +31,6 @@ export class IdentificationService {
     @InjectModel(Identification.name)
     private readonly identificationModel: Model<Identification>,
     private readonly s3Service: S3Service,
-    private readonly httpService: HttpService,
     private readonly aiService:AIService
   ) {}
 
@@ -69,8 +68,6 @@ export class IdentificationService {
       createDto.infos_sujet.nni,
     );
     createDto.infos_sujet.photos = imagePaths;
-    // console.log('Image paths:', imagePaths);
-    // console.log('Create DTO:', createDto);
     const created = await this.identificationModel.create(createDto);
     await this.aiService.sendCowNNIToMuzzleModel(createDto.infos_sujet.nni);
     return await created.save();
@@ -176,5 +173,16 @@ export class IdentificationService {
       throw new IndentificationNotFoundException(id);
     }
     return result;
+  }
+
+  async predict(image:Express.Multer.File){
+    const prediction = await this.aiService.predictCow(image)
+    if(!prediction) throw new NotFoundException("Couldn't found cow with coresponding image!");
+    return prediction;
+  }
+
+  async getMorphology(cowNNI:string,image:Express.Multer.File){
+    const prediction = await this.aiService.getCowMorphology(image);
+    if(!prediction) throw new BadRequestException("Couldn't get cow morphology with coresponding image!");
   }
 }

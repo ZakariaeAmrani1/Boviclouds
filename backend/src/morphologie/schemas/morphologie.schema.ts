@@ -6,28 +6,16 @@ class Mesure {
   @Prop({ type: Number, required: true })
   valeur: number;
 
-  @Prop({ type: String, required: true })
+  @Prop({ type: String, required: true, default:'px'})
   unite: string;
-
-  @Prop({ type: Number, required: false })
-  confiance?: number;
-
-  @Prop({ type: String, required: false })
-  etat?: string;
-
-  @Prop({ type: String, required: false })
-  notes?: string;
 }
 
 export type DetectionMorphologiqueDocument = HydratedDocument<DetectionMorphologique>;
 
-@Schema()
+@Schema({ timestamps: { createdAt: 'timestamp' } })
 export class DetectionMorphologique {
   @Prop({ type: Date, required: true })
   timestamp: Date;
-
-  @Prop({ type: String, required: false })
-  image_url?: string;
 
   @Prop({
     type: String,
@@ -44,11 +32,9 @@ export class DetectionMorphologique {
     },
     required: true,
   })
-  donnees_morphologiques: {
-    hauteur_au_garrot: Mesure;
-    largeur_du_corps: Mesure;
-    longueur_du_corps: Mesure;
-  };
+  hauteur_au_garrot: Mesure;
+  largeur_du_corps: Mesure;
+  longueur_du_corps: Mesure;
 }
 
 export const MesureSchema = SchemaFactory.createForClass(Mesure);
