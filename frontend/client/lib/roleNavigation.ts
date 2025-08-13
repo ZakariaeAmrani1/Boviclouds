@@ -123,6 +123,7 @@ const rolePermissions: Record<UserRole, string[]> = {
     "/semences",
     "/lactations",
     "/exploitations",
+    "/morphology",
     "/utilisateurs",
     "/cctv",
     "/traitement",
