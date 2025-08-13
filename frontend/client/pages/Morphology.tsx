@@ -418,7 +418,7 @@ const Morphology: React.FC = () => {
               <Camera className="w-12 h-12 mx-auto mb-4 text-boviclouds-primary" />
               <h3 className="text-lg font-semibold mb-2">Analyse morphologique</h3>
               <p className="text-gray-600">
-                Prenez une photo complète de la vache pour analyser sa morphologie
+                Utilisez la caméra de morphologie pour capturer une image complète de la vache
               </p>
             </div>
 
@@ -430,35 +430,16 @@ const Morphology: React.FC = () => {
             </div>
 
             {morphologyCameras.length > 0 ? (
-              <div className="space-y-4">
-                <div>
-                  <Label>Caméra de morphologie disponible:</Label>
-                  <div className="mt-2 p-3 bg-green-50 rounded-lg border border-green-200">
-                    <div className="flex items-center gap-2">
-                      <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                      <span className="font-medium">{morphologyCameras[0].name}</span>
-                      <Badge className="bg-green-100 text-green-800">En ligne</Badge>
-                    </div>
-                  </div>
-                </div>
-
-                <div>
-                  <Label htmlFor="morphology-image">Image de morphologie</Label>
-                  <div className="mt-2">
-                    <Input
-                      id="morphology-image"
-                      type="file"
-                      accept="image/*"
-                      onChange={(e) => {
-                        const file = e.target.files?.[0];
-                        if (file) {
-                          setFormData(prev => ({ ...prev, morphology_image: file }));
-                        }
-                      }}
-                    />
-                  </div>
-                </div>
-              </div>
+              <CameraCapture
+                camera={morphologyCameras[0]}
+                onCapture={(imageData) => {
+                  setCapturedMorphologyImage(imageData);
+                }}
+                capturing={stepLoading}
+                captured={!!capturedMorphologyImage}
+                title="Caméra de Morphologie"
+                description="Capturez une image complète de la vache en position debout"
+              />
             ) : (
               <div className="text-center p-6 bg-red-50 rounded-lg border border-red-200">
                 <AlertTriangle className="w-8 h-8 mx-auto mb-2 text-red-500" />
