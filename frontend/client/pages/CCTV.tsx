@@ -416,7 +416,7 @@ const CCTV: React.FC = () => {
                                       setEditingCameraId(null);
                                     }}
                                   >
-                                    <SelectTrigger className="w-48">
+                                    <SelectTrigger className="w-64">
                                       <SelectValue placeholder="Sélectionner un type" />
                                     </SelectTrigger>
                                     <SelectContent>
