@@ -113,6 +113,8 @@ import {
   processMorphologyImage,
   getMorphologyStats,
   exportMorphologyData,
+  captureFromCamera,
+  captureMorphologyFromCamera,
 } from "./routes/morphology";
 
 // Configure multer for file uploads
