@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { X, Calendar, User, Building, MapPin, Images, Eye, ChevronLeft, ChevronRight } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { X, Calendar, User, Building, MapPin, Images, Eye, ChevronLeft, ChevronRight, ExternalLink } from "lucide-react";
 import {
   Dialog,
   DialogContent,
