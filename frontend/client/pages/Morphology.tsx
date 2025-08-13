@@ -101,7 +101,14 @@ const Morphology: React.FC = () => {
   const loadMorphologies = async () => {
     try {
       setLoading(true);
-      // Use mock data for now
+      // Convert "all" to empty string for API call
+      const apiFilters = {
+        ...searchForm,
+        source_detection: searchForm.source_detection === "all" ? "" : searchForm.source_detection,
+      };
+
+      // Use mock data for now - in real implementation use:
+      // const response = await morphologyService.getMorphologies(apiFilters, { page: currentPage, limit: 10 });
       const mockData = morphologyService.getMockMorphologies();
       setMorphologies(mockData);
       setTotalPages(1);
