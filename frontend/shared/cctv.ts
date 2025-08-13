@@ -63,6 +63,21 @@ export interface BehaviorDetection {
   };
 }
 
+export interface OnlineCamera {
+  id: string;
+  name: string;
+  isOnline: boolean;
+  ipAddress: string;
+  streamUrl: string;
+  lastSeen: Date;
+}
+
+export interface OnlineCamerasResponse {
+  cameras: OnlineCamera[];
+  total: number;
+  lastRefresh: Date;
+}
+
 export interface LiveFeedData {
   cameraId: string;
   streamUrl: string;
