@@ -236,7 +236,6 @@ const Rebouclage: React.FC = () => {
         method: "POST",
         body: formData,
       });
-      console.log(response);
       const data = await response.json();
       if (data.prediction) {
         setImageProcessing({
@@ -342,6 +341,7 @@ const Rebouclage: React.FC = () => {
 
   const handleSubmit = async () => {
     setValidationErrors([]);
+    console.log("aalo");
 
     try {
       if (modalMode === "create") {
@@ -404,6 +404,8 @@ const Rebouclage: React.FC = () => {
 
           const validation = validateCreateInput(input);
           if (!validation.isValid) {
+            console.log("aaaa");
+            console.log(validation.errors);
             setValidationErrors(validation.errors);
             toast({
               title: "Erreur de validation",
