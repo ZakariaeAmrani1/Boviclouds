@@ -48,6 +48,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card"
 import { useToast } from "../hooks/use-toast";
 import { morphologyService } from "../services/morphologyService";
 import { cctvService } from "../services/cctvService";
+import CameraCapture from "../components/CameraCapture";
 import {
   MorphologyRecord,
   MorphologyFormStep,
