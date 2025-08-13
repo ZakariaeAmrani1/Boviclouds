@@ -24,6 +24,7 @@ import Lactations from "./pages/Lactations";
 import Exploitations from "./pages/Exploitations";
 import EditProfile from "./pages/EditProfile";
 import CowDetails from "./pages/CowDetails";
+import Morphology from "./pages/Morphology";
 import NotFound from "./pages/NotFound";
 import Index from "./pages/Index";
 
