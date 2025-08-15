@@ -5,19 +5,16 @@ import { HydratedDocument } from 'mongoose';
 class Mesure {
   @Prop({ type: Number, required: true })
   valeur: number;
-
-  @Prop({ type: String, required: true,default:'px' })
+  
+  @Prop({ type: String, default:'px' })
   unite: string;
 
 }
 
 @Schema({ timestamps: { createdAt: 'timestamp' } })
 export class DetectionMorphologique {
-  @Prop({ type: Date })
+  @Prop({ type: Date})
   timestamp: Date;
-
-  @Prop({ type: String, required: false })
-  image_url?: string;
 
   @Prop({
     type: String,
