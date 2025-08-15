@@ -13,6 +13,8 @@ import {
   getLiveFeed,
   toggleRecording,
   getBehaviorDetections,
+  getOnlineCameras,
+  assignCameraType,
 } from "./routes/cctv";
 import { getHealth } from "./routes/health";
 import { getDocuments, getDocument } from "./routes/documents";
@@ -101,6 +103,19 @@ import {
   handleGetRebouclageStats,
   handleExtractNNI,
 } from "./routes/rebouclage";
+import { getCowDetails } from "./routes/cow-details";
+import {
+  getMorphologies,
+  getMorphology,
+  createMorphology,
+  deleteMorphology,
+  processIdentificationImage,
+  processMorphologyImage,
+  getMorphologyStats,
+  exportMorphologyData,
+  captureFromCamera,
+  captureMorphologyFromCamera,
+} from "./routes/morphology";
 
 // Configure multer for file uploads
 const storage = multer.memoryStorage();
@@ -170,6 +185,8 @@ export function createServer() {
   app.get("/api/cctv/live/:cameraId", getLiveFeed);
   app.put("/api/cctv/cameras/:cameraId/recording", toggleRecording);
   app.get("/api/cctv/behaviors", getBehaviorDetections);
+  app.get("/api/cctv/online-cameras", getOnlineCameras);
+  app.put("/api/cctv/cameras/:cameraId/type", assignCameraType);
 
   // Traitement API routes
   app.get("/api/traitement/sujets", getSujets);
@@ -188,6 +205,7 @@ export function createServer() {
   app.post("/api/identification", upload.array('images', 5), createIdentification);
   app.put("/api/identification/:id", upload.array('images', 5), updateIdentification);
   app.delete("/api/identification/:id", deleteIdentification);
+  app.get("/api/identification/:id/details", getCowDetails);
 
   // Insemination API routes
   app.get("/api/insemination/stats", handleGetInseminationStats);
@@ -240,6 +258,18 @@ export function createServer() {
   app.post("/api/rebouclage/extract-nni", upload.single('image'), handleExtractNNI);
   app.put("/api/rebouclage/:id", handleUpdateRebouclage);
   app.delete("/api/rebouclage/:id", handleDeleteRebouclage);
+
+  // Morphology API routes
+  app.get("/api/morphology/stats", getMorphologyStats);
+  app.get("/api/morphology/export", exportMorphologyData);
+  app.get("/api/morphology/:id", getMorphology);
+  app.get("/api/morphology", getMorphologies);
+  app.post("/api/morphology", createMorphology);
+  app.delete("/api/morphology/:id", deleteMorphology);
+  app.post("/api/morphology/process-identification", upload.single('image'), processIdentificationImage);
+  app.post("/api/morphology/process-morphology", upload.single('image'), processMorphologyImage);
+  app.post("/api/morphology/capture-from-camera", captureFromCamera);
+  app.post("/api/morphology/capture-morphology-from-camera", captureMorphologyFromCamera);
 
   return app;
 }
