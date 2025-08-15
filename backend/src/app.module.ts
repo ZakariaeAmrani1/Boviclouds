@@ -16,6 +16,7 @@ import { IdentificationModule } from './identification/identification.module';
 import { LactationModule } from './lactation/lactation.module';
 import { RacesModule } from './races/races.module';
 import { StatsModule } from './stats/stats.module';
+import { MorphologieModule } from './morphologie/morphologie.module';
 
 @Module({
   imports: [
@@ -42,6 +43,7 @@ import { StatsModule } from './stats/stats.module';
     LactationModule,
     RacesModule,
     StatsModule,
+    MorphologieModule,
   ],
   controllers: [AppController],
   providers: [AppService],
