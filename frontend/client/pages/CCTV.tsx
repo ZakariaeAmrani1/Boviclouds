@@ -53,7 +53,7 @@ const CameraFeed: React.FC<CameraFeedProps> = ({
   return (
     <div
       className={`relative bg-black rounded-lg overflow-hidden cursor-pointer ${className} ${
-        isSelected ? 'ring-4 ring-boviclouds-primary' : ''
+        isSelected ? "ring-4 ring-boviclouds-primary" : ""
       }`}
       onClick={onSelect}
     >
@@ -65,7 +65,9 @@ const CameraFeed: React.FC<CameraFeedProps> = ({
 
       {/* Camera overlay */}
       <div className="absolute top-3 left-3 bg-black/70 text-white px-2 py-1 rounded text-xs font-medium flex items-center gap-2">
-        <div className={`w-2 h-2 rounded-full ${camera.isOnline ? 'bg-green-500 animate-pulse' : 'bg-red-500'}`}></div>
+        <div
+          className={`w-2 h-2 rounded-full ${camera.isOnline ? "bg-green-500 animate-pulse" : "bg-red-500"}`}
+        ></div>
         Camera {camera.id.slice(-1)} ({camera.zone})
       </div>
 
@@ -95,7 +97,7 @@ const CameraFeed: React.FC<CameraFeedProps> = ({
       ))}
 
       {/* Play/Pause overlay */}
-      <div className="absolute inset-0 bg-black/20 opacity-0 hover:opacity-100 transition-opacity flex items-center justify-center">
+      {/* <div className="absolute inset-0 bg-black/20 opacity-0 hover:opacity-100 transition-opacity flex items-center justify-center">
         <button
           onClick={(e) => {
             e.stopPropagation();
@@ -109,8 +111,7 @@ const CameraFeed: React.FC<CameraFeedProps> = ({
             <Play className="w-6 h-6" />
           )}
         </button>
-      </div>
-
+      </div> */}
     </div>
   );
 };
@@ -122,10 +123,10 @@ const CCTV: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [onlineCamerasLoading, setOnlineCamerasLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const [selectedCameraForStream, setSelectedCameraForStream] = useState<Camera | null>(null);
+  const [selectedCameraForStream, setSelectedCameraForStream] =
+    useState<Camera | null>(null);
   const [activeTab, setActiveTab] = useState("live");
   const [editingCameraId, setEditingCameraId] = useState<string | null>(null);
-
 
   const { toast } = useToast();
 
@@ -136,13 +137,13 @@ const CCTV: React.FC = () => {
   const loadCameras = async () => {
     try {
       setLoading(true);
-      const mockCameras = cctvService.getMockCameras();
+      const mockCameras = await cctvService.getMockCameras();
       const mockBehaviors = cctvService.getMockBehaviorDetections();
       setCameras(mockCameras);
       setBehaviors(mockBehaviors);
-      
+
       // Auto-select first online camera for streaming
-      const firstOnlineCamera = mockCameras.find(cam => cam.isOnline);
+      const firstOnlineCamera = mockCameras.find((cam) => cam.isOnline);
       if (firstOnlineCamera) {
         setSelectedCameraForStream(firstOnlineCamera);
       }
@@ -165,7 +166,7 @@ const CCTV: React.FC = () => {
       setOnlineCameras(mockOnlineCameras);
       toast({
         title: "Succès",
-        description: `${mockOnlineCameras.filter(cam => cam.isOnline).length} caméras en ligne détectées`,
+        description: `${mockOnlineCameras.filter((cam) => cam.isOnline).length} caméras en ligne détectées`,
       });
     } catch (error) {
       toast({
@@ -182,12 +183,17 @@ const CCTV: React.FC = () => {
     try {
       // In real implementation, this would call the API
       // await cctvService.assignCameraType(cameraId, type);
-      
-      // Update local state for demo
-      setCameras(prev => prev.map(cam => 
-        cam.id === cameraId ? { ...cam, type } : cam
-      ));
-      
+      const camType =
+        type === CameraType.BEHAVIOR
+          ? "comportement"
+          : type === CameraType.IDENTIFICATION
+            ? "identification"
+            : "morphologie";
+      await cctvService.updateCameraType(cameraId, camType);
+      setCameras((prev) =>
+        prev.map((cam) => (cam.index === cameraId ? { ...cam, type } : cam)),
+      );
+
       toast({
         title: "Succès",
         description: "Type de caméra assigné avec succès",
@@ -201,10 +207,9 @@ const CCTV: React.FC = () => {
     }
   };
 
-
   const getCameraTypeColor = (type?: CameraType) => {
     if (!type) return "bg-gray-100 text-gray-800";
-    
+
     switch (type) {
       case CameraType.BEHAVIOR:
         return "bg-blue-100 text-blue-800";
@@ -228,13 +233,16 @@ const CCTV: React.FC = () => {
     );
   }
 
-
   return (
     <div className="space-y-6">
       {/* Breadcrumb */}
       <Breadcrumb items={[{ label: "CCTV", href: "/cctv" }]} />
 
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+      <Tabs
+        value={activeTab}
+        onValueChange={setActiveTab}
+        className="space-y-6"
+      >
         <TabsList className="grid w-full grid-cols-2">
           <TabsTrigger value="live">Streaming Live</TabsTrigger>
           <TabsTrigger value="setup">Configuration Caméras</TabsTrigger>
@@ -247,15 +255,29 @@ const CCTV: React.FC = () => {
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-4">
                 <h3 className="text-lg font-semibold">
-                  {selectedCameraForStream ? selectedCameraForStream.name : "Aucune caméra"}
+                  {selectedCameraForStream
+                    ? selectedCameraForStream.name
+                    : "Aucune caméra"}
                 </h3>
                 {selectedCameraForStream && (
                   <div className="flex items-center gap-2">
-                    <Badge className={getCameraTypeColor(selectedCameraForStream.type)}>
+                    <Badge
+                      className={getCameraTypeColor(
+                        selectedCameraForStream.type,
+                      )}
+                    >
                       {selectedCameraForStream.type || "Non assigné"}
                     </Badge>
-                    <Badge variant={selectedCameraForStream.isOnline ? "default" : "secondary"}>
-                      {selectedCameraForStream.isOnline ? "En ligne" : "Hors ligne"}
+                    <Badge
+                      variant={
+                        selectedCameraForStream.isOnline
+                          ? "default"
+                          : "secondary"
+                      }
+                    >
+                      {selectedCameraForStream.isOnline
+                        ? "En ligne"
+                        : "Hors ligne"}
                     </Badge>
                   </div>
                 )}
@@ -267,34 +289,43 @@ const CCTV: React.FC = () => {
                   variant="outline"
                   size="sm"
                   onClick={() => {
-                    const onlineCameras = cameras.filter(cam => cam.isOnline);
-                    const currentIndex = onlineCameras.findIndex(cam => cam.id === selectedCameraForStream?.id);
-                    const prevIndex = currentIndex <= 0 ? onlineCameras.length - 1 : currentIndex - 1;
+                    const onlineCameras = cameras.filter((cam) => cam.isOnline);
+                    const currentIndex = onlineCameras.findIndex(
+                      (cam) => cam.id === selectedCameraForStream?.id,
+                    );
+                    const prevIndex =
+                      currentIndex <= 0
+                        ? onlineCameras.length - 1
+                        : currentIndex - 1;
                     setSelectedCameraForStream(onlineCameras[prevIndex]);
                   }}
-                  disabled={cameras.filter(cam => cam.isOnline).length <= 1}
+                  disabled={cameras.filter((cam) => cam.isOnline).length <= 1}
                 >
                   <ChevronLeft className="w-4 h-4" />
                   Précédent
                 </Button>
 
                 <span className="px-3 py-1 bg-gray-100 rounded text-sm">
-                  {selectedCameraForStream ?
-                    `${cameras.filter(cam => cam.isOnline).findIndex(cam => cam.id === selectedCameraForStream.id) + 1} / ${cameras.filter(cam => cam.isOnline).length}`
-                    : "0 / 0"
-                  }
+                  {selectedCameraForStream
+                    ? `${cameras.filter((cam) => cam.isOnline).findIndex((cam) => cam.id === selectedCameraForStream.id) + 1} / ${cameras.filter((cam) => cam.isOnline).length}`
+                    : "0 / 0"}
                 </span>
 
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={() => {
-                    const onlineCameras = cameras.filter(cam => cam.isOnline);
-                    const currentIndex = onlineCameras.findIndex(cam => cam.id === selectedCameraForStream?.id);
-                    const nextIndex = currentIndex >= onlineCameras.length - 1 ? 0 : currentIndex + 1;
+                    const onlineCameras = cameras.filter((cam) => cam.isOnline);
+                    const currentIndex = onlineCameras.findIndex(
+                      (cam) => cam.id === selectedCameraForStream?.id,
+                    );
+                    const nextIndex =
+                      currentIndex >= onlineCameras.length - 1
+                        ? 0
+                        : currentIndex + 1;
                     setSelectedCameraForStream(onlineCameras[nextIndex]);
                   }}
-                  disabled={cameras.filter(cam => cam.isOnline).length <= 1}
+                  disabled={cameras.filter((cam) => cam.isOnline).length <= 1}
                 >
                   Suivant
                   <ChevronRight className="w-4 h-4" />
@@ -306,7 +337,9 @@ const CCTV: React.FC = () => {
             {selectedCameraForStream ? (
               <CameraFeed
                 camera={selectedCameraForStream}
-                behaviors={behaviors.filter((b) => b.cameraId === selectedCameraForStream.id)}
+                behaviors={behaviors.filter(
+                  (b) => b.cameraId === selectedCameraForStream.id,
+                )}
                 className="h-[500px] w-full"
                 isSelected={true}
               />
@@ -318,7 +351,8 @@ const CCTV: React.FC = () => {
                     Aucune caméra disponible
                   </h3>
                   <p className="text-gray-600">
-                    Assurez-vous qu'au moins une caméra est en ligne pour commencer le streaming
+                    Assurez-vous qu'au moins une caméra est en ligne pour
+                    commencer le streaming
                   </p>
                 </div>
               </Card>
@@ -346,7 +380,9 @@ const CCTV: React.FC = () => {
         <TabsContent value="setup" className="space-y-6">
           <div className="space-y-4">
             <div className="flex items-center justify-between">
-              <h2 className="text-xl font-semibold">Configuration des Caméras</h2>
+              <h2 className="text-xl font-semibold">
+                Configuration des Caméras
+              </h2>
               <Button
                 onClick={loadOnlineCameras}
                 disabled={onlineCamerasLoading}
@@ -412,7 +448,10 @@ const CCTV: React.FC = () => {
                                   <Select
                                     defaultValue={camera.type}
                                     onValueChange={(value) => {
-                                      handleAssignCameraType(camera.id, value as CameraType);
+                                      handleAssignCameraType(
+                                        camera.index,
+                                        value as CameraType,
+                                      );
                                       setEditingCameraId(null);
                                     }}
                                   >
@@ -423,7 +462,9 @@ const CCTV: React.FC = () => {
                                       <SelectItem value={CameraType.BEHAVIOR}>
                                         {CameraType.BEHAVIOR}
                                       </SelectItem>
-                                      <SelectItem value={CameraType.IDENTIFICATION}>
+                                      <SelectItem
+                                        value={CameraType.IDENTIFICATION}
+                                      >
                                         {CameraType.IDENTIFICATION}
                                       </SelectItem>
                                       <SelectItem value={CameraType.MORPHOLOGY}>
@@ -441,13 +482,21 @@ const CCTV: React.FC = () => {
                                 </>
                               ) : (
                                 <>
-                                  <Badge className={camera.type ? getCameraTypeColor(camera.type) : "bg-gray-100 text-gray-800"}>
+                                  <Badge
+                                    className={
+                                      camera.type
+                                        ? getCameraTypeColor(camera.type)
+                                        : "bg-gray-100 text-gray-800"
+                                    }
+                                  >
                                     {camera.type || "Non assigné"}
                                   </Badge>
                                   <Button
                                     variant="outline"
                                     size="sm"
-                                    onClick={() => setEditingCameraId(camera.id)}
+                                    onClick={() =>
+                                      setEditingCameraId(camera.id)
+                                    }
                                   >
                                     Modifier
                                   </Button>
@@ -457,7 +506,9 @@ const CCTV: React.FC = () => {
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
                             <Badge
-                              variant={camera.isOnline ? "default" : "secondary"}
+                              variant={
+                                camera.isOnline ? "default" : "secondary"
+                              }
                               className={
                                 camera.isOnline
                                   ? "bg-green-100 text-green-800 hover:bg-green-100"
@@ -476,9 +527,7 @@ const CCTV: React.FC = () => {
             </Card>
           </div>
         </TabsContent>
-
       </Tabs>
-
     </div>
   );
 };
