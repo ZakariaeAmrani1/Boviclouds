@@ -1,16 +1,4 @@
-import {
-  IsString,
-  IsDateString,
-  IsNotEmpty,
-  IsMongoId,
-  IsOptional,
-  IsEnum,
-} from 'class-validator';
-
-export enum RebouclageMode {
-  MANUAL = 'manual',
-  AUTOMATIC = 'automatic'
-}
+import { IsString, IsDateString, IsNotEmpty, IsMongoId } from 'class-validator';
 
 export class CreateRebouclageDto {
   @IsString()
@@ -36,25 +24,4 @@ export class CreateRebouclageDto {
   @IsMongoId()
   @IsNotEmpty()
   identificateur_id: string;
-
-  @IsOptional()
-  @IsEnum(RebouclageMode)
-  mode?: RebouclageMode;
-}
-
-export class CreateRebouclageAutomaticDto {
-  @IsString()
-  @IsNotEmpty()
-  nouveau_nni: string;
-
-  @IsMongoId()
-  @IsNotEmpty()
-  identificateur_id: string;
-
-  @IsOptional()
-  @IsDateString()
-  date_creation?: string;
-
-  @IsEnum(RebouclageMode)
-  mode: RebouclageMode;
 }
