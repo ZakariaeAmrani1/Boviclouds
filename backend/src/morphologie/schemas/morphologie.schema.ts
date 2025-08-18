@@ -52,7 +52,7 @@ DetectionMorphologiqueSchema.pre(
   /^find/,
   function (this: Query<any, DetectionMorphologique>, next) {
     this.populate({
-      path: 'Identification',
+      path: 'cow_id',
       select: 'infos_sujet',
     });
     next();
