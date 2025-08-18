@@ -1,5 +1,6 @@
 import { Type } from 'class-transformer';
 import {
+  IsMongoId,
   IsNotEmpty,
   IsNumber,
   IsOptional,
@@ -10,32 +11,34 @@ import {
 class MesureDto {
   @IsNumber()
   @IsNotEmpty()
-  valeur: number;
+  readonly valeur: number;
 
   @IsString()
   @IsNotEmpty()
-  unite: string;
+  readonly unite: string;
 }
 
 export class CreateDetectionMorphologiqueDto {
 
   @IsString()
   @IsOptional()
-  image_url?: string;
+  readonly image_url?: string;
 
   @IsString()
   @IsNotEmpty()
-  source_detection: string;
+  readonly source_detection: string;
 
   @ValidateNested()
   @Type(() => MesureDto)
-  hauteur_au_garrot: MesureDto;
+  readonly hauteur_au_garrot: MesureDto;
 
   @ValidateNested()
   @Type(() => MesureDto)
-  largeur_du_corps: MesureDto;
+  readonly largeur_du_corps: MesureDto;
 
   @ValidateNested()
   @Type(() => MesureDto)
-  longueur_du_corps: MesureDto;
+  readonly longueur_du_corps: MesureDto;
+  @IsMongoId()
+  readonly cow_id: string;
 }
