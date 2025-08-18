@@ -340,9 +340,9 @@ const Rebouclage: React.FC = () => {
   };
 
   const handleSubmit = async () => {
+    const user = JSON.parse(localStorage.getItem("user"));
+    formData.indentificateur_id = user._id;
     setValidationErrors([]);
-    console.log("aalo");
-
     try {
       if (modalMode === "create") {
         if (formData.mode === "automatic") {
