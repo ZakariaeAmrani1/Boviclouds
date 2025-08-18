@@ -1,19 +1,18 @@
-import { Body, Controller, Delete, Get, Param, Post, Query, Res, UseGuards, UseInterceptors, UploadedFile, BadRequestException } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Query, Res, UseGuards } from '@nestjs/common';
 import { Response } from 'express';
-import { FileInterceptor } from '@nestjs/platform-express';
-import { Roles } from '../auth/roles.decorator';
+import { Roles } from '../auth/roles.decorator'; 
 import { RolesGuard } from '../auth/roles.guard';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { RebouclageService } from './rebouclage.service';
 
 import { UserRole } from 'src/users/schemas/users/user.role';
-import { CreateRebouclageDto, CreateRebouclageAutomaticDto, RebouclageMode } from './dto/create-rebouclage.dto';
+import { CreateRebouclageDto } from './dto/create-rebouclage.dto';
+
+@Roles(UserRole.IDENTIFICATEUR)
 
 
 
 @Controller('api/v1/rebouclages')
-@UseGuards(JwtAuthGuard, RolesGuard)
-@Roles(UserRole.IDENTIFICATEUR, UserRole.ADMIN)
 export class RebouclageController {
   constructor(private readonly rebouclageService: RebouclageService) {}
 
@@ -21,37 +20,6 @@ export class RebouclageController {
   @Post()
   create(@Body() dto: CreateRebouclageDto) {
     return this.rebouclageService.create(dto);
-  }
-
-  @Post('automatic')
-  @UseInterceptors(FileInterceptor('image'))
-  async createAutomatic(
-    @Body() data: string,
-    @UploadedFile() image: Express.Multer.File
-  ) {
-    try {
-      if (!image) {
-        throw new BadRequestException('Image is required for automatic mode');
-      }
-
-      // Parse the JSON data from the request
-      const parsedData = JSON.parse(data);
-      const dto: CreateRebouclageAutomaticDto = {
-        nouveau_nni: parsedData.nouveauNNI,
-        identificateur_id: parsedData.identificateur_id,
-        date_creation: parsedData.dateRebouclage,
-        mode: RebouclageMode.AUTOMATIC
-      };
-
-      const result = await this.rebouclageService.createAutomatic(dto, image);
-      return {
-        success: true,
-        data: result,
-        message: 'Rebouclage automatique créé avec succès'
-      };
-    } catch (error) {
-      throw new BadRequestException(`Error processing automatic rebouclage: ${error.message}`);
-    }
   }
 
   @Get()
@@ -69,6 +37,8 @@ export class RebouclageController {
     return this.rebouclageService.delete(id);
   }
   @Get('export')
+    @Roles(UserRole.IDENTIFICATEUR)
+    @UseGuards(JwtAuthGuard, RolesGuard)
     async export(@Query('format') format: 'csv' | 'excel', @Res() res: Response) {
     const data = await this.rebouclageService.exportRebouclages(format);
     if (format === 'csv') {
@@ -81,6 +51,8 @@ export class RebouclageController {
     return res.send(data);
     }
     @Get()
+    @Roles(UserRole.IDENTIFICATEUR)
+    @UseGuards(JwtAuthGuard, RolesGuard)
     async findAll(
     @Query('ancien_nni') ancien_nni: string,
     @Query('nouveau_nni') nouveau_nni: string,
@@ -91,3 +63,4 @@ export class RebouclageController {
     }
 
 }
+
