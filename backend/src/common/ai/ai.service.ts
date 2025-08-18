@@ -6,7 +6,7 @@ import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class AIService {
-  private modelDomain: string;
+  private readonly modelDomain: string;
 
   constructor(
     private readonly httpService: HttpService,
@@ -21,7 +21,6 @@ export class AIService {
     endpoint: string,
     formFields: Record<string, any>,
   ): Promise<any> {
-    console.log(this.modelDomain);
     if (!this.modelDomain) {
       throw new BadRequestException(
         "Couldn't send data to AI model — missing model domain",
@@ -30,21 +29,22 @@ export class AIService {
 
     try {
       const formData = new FormData();
+
       for (const [key, value] of Object.entries(formFields)) {
-        formData.append(key, value);
+        if (value && (value as Express.Multer.File).buffer) {
+          const file = value as Express.Multer.File;
+          formData.append(key, file.buffer, {
+            filename: file.originalname,
+            contentType: file.mimetype,
+          });
+        } else {
+          formData.append(key, value);
+        }
       }
 
       const response = await firstValueFrom(
         this.httpService.post(`${this.modelDomain}${endpoint}`, formData, {
           headers: formData.getHeaders(),
-          onUploadProgress: (progressEvent) => {
-            const percentCompleted = Math.round(
-              progressEvent.total
-                ? (progressEvent.loaded * 100) / progressEvent.total
-                : 0,
-            );
-            console.log(`Upload Progress: ${percentCompleted}%`);
-          },
         }),
       );
 

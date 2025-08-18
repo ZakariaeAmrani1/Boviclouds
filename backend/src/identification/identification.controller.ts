@@ -137,11 +137,11 @@ export class IdentificationController {
     return await this.identificationService.predict(image);
   }
 
-  @Get('predict')
+  @Get('get-morphology')
   @Roles(UserRole.IDENTIFICATEUR, UserRole.ADMIN)
   @UseInterceptors(FileInterceptor('image'))
   async getMorphology(
-    @UploadedFiles(
+    @UploadedFile(
       new ParseFilePipe({
         validators: [
           new PhotosRequiredValidator({}),
@@ -155,7 +155,7 @@ export class IdentificationController {
       }),
     )
     image: Express.Multer.File,
-    cowNNI: string,
+    @Param('cownni') cowNNI: string,
   ) {
     return await this.identificationService.getMorphology(cowNNI, image);
   }
