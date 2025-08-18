@@ -10,6 +10,7 @@ import {
   Post,
   Query,
   Res,
+  UploadedFile,
   UploadedFiles,
   UseGuards,
   UseInterceptors,
@@ -17,7 +18,7 @@ import {
 import { IdentificationService } from './identification.service';
 import { Roles } from '../auth/roles.decorator';
 import { RolesGuard } from '../auth/roles.guard';
-import {Express, Response } from 'express';
+import { Express, Response } from 'express';
 import { UserRole } from 'src/users/schemas/users/user.role';
 import { CreateIdentificationDto } from './dto/create-identification.dto';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
@@ -115,10 +116,10 @@ export class IdentificationController {
   }
 
   @Post('predict')
-  @Roles(UserRole.IDENTIFICATEUR)
+  @Roles(UserRole.IDENTIFICATEUR, UserRole.ADMIN)
   @UseInterceptors(FileInterceptor('image'))
   async predict(
-    @UploadedFiles(
+    @UploadedFile(
       new ParseFilePipe({
         validators: [
           new PhotosRequiredValidator({}),
@@ -137,7 +138,7 @@ export class IdentificationController {
   }
 
   @Get('predict')
-  @Roles(UserRole.IDENTIFICATEUR)
+  @Roles(UserRole.IDENTIFICATEUR, UserRole.ADMIN)
   @UseInterceptors(FileInterceptor('image'))
   async getMorphology(
     @UploadedFiles(
@@ -154,8 +155,8 @@ export class IdentificationController {
       }),
     )
     image: Express.Multer.File,
-    cowNNI:string
+    cowNNI: string,
   ) {
-    return await this.identificationService.getMorphology(cowNNI,image);
+    return await this.identificationService.getMorphology(cowNNI, image);
   }
 }
