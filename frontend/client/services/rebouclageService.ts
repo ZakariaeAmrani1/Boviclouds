@@ -147,8 +147,6 @@ export class RebouclageService {
       const apiUrl =
         import.meta.env.VITE_API_URL || "http://localhost:8080/api/";
       const token = localStorage.getItem("access_token");
-      console.log(input);
-
       const response = await axios.post(
         `${apiUrl}rebouclages`,
         {
@@ -164,12 +162,8 @@ export class RebouclageService {
           },
         },
       );
-
-      if (response.data.success) {
-        return response.data.data;
-      } else {
-        throw new Error(response.data.message || "Erreur lors de la création");
-      }
+      console.log(response);
+      return response.data;
     } catch (error: any) {
       console.error("Error creating rebouclage:", error);
       throw new Error(
@@ -260,9 +254,14 @@ export class RebouclageService {
    * Delete a rebouclage record
    */
   static async delete(id: string): Promise<boolean> {
-    // Simulate API delay
-    await new Promise((resolve) => setTimeout(resolve, 100));
-
+    const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:8080/api/";
+    console.log(id);
+    const token = localStorage.getItem("access_token");
+    const response = await axios.delete(`${apiUrl}rebouclages/${id}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
     const initialLength = rebouclageData.length;
     rebouclageData = rebouclageData.filter((r) => r.id !== id);
     return rebouclageData.length < initialLength;
