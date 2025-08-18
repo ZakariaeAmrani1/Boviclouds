@@ -144,15 +144,26 @@ export class RebouclageService {
    */
   static async create(input: CreateRebouclageInput): Promise<RebouclageRecord> {
     try {
-      const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:8080/api/";
+      const apiUrl =
+        import.meta.env.VITE_API_URL || "http://localhost:8080/api/";
       const token = localStorage.getItem("access_token");
+      console.log(input);
 
-      const response = await axios.post(`${apiUrl}rebouclage`, input, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
+      const response = await axios.post(
+        `${apiUrl}rebouclages`,
+        {
+          ancien_nni: input.ancienNNI,
+          nouveau_nni: input.nouveauNNI,
+          date_creation: input.dateRebouclage,
+          identificateur_id: input.identificateur_id,
         },
-      });
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        },
+      );
 
       if (response.data.success) {
         return response.data.data;
@@ -161,43 +172,61 @@ export class RebouclageService {
       }
     } catch (error: any) {
       console.error("Error creating rebouclage:", error);
-      throw new Error(error.response?.data?.message || "Erreur lors de la création du rebouclage");
+      throw new Error(
+        error.response?.data?.message ||
+          "Erreur lors de la création du rebouclage",
+      );
     }
   }
 
   /**
    * Create a new rebouclage record (automatic mode with image)
    */
-  static async createAutomatic(input: CreateRebouclageAutomaticInput): Promise<RebouclageRecord> {
+  static async createAutomatic(
+    input: CreateRebouclageAutomaticInput,
+  ): Promise<RebouclageRecord> {
     try {
-      const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:8080/api/";
+      const apiUrl =
+        import.meta.env.VITE_API_URL || "http://localhost:8080/api/";
       const token = localStorage.getItem("access_token");
 
       // Create FormData for file upload
       const formData = new FormData();
-      formData.append('image', input.image);
-      formData.append('data', JSON.stringify({
-        nouveauNNI: input.nouveauNNI,
-        identificateur_id: input.identificateur_id,
-        dateRebouclage: input.dateRebouclage,
-        mode: 'automatic'
-      }));
+      formData.append("image", input.image);
+      formData.append(
+        "data",
+        JSON.stringify({
+          nouveauNNI: input.nouveauNNI,
+          identificateur_id: input.identificateur_id,
+          dateRebouclage: input.dateRebouclage,
+          mode: "automatic",
+        }),
+      );
 
-      const response = await axios.post(`${apiUrl}rebouclage/automatic`, formData, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "multipart/form-data",
+      const response = await axios.post(
+        `${apiUrl}rebouclage/automatic`,
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "multipart/form-data",
+          },
         },
-      });
+      );
 
       if (response.data.success) {
         return response.data.data;
       } else {
-        throw new Error(response.data.message || "Erreur lors de la création automatique");
+        throw new Error(
+          response.data.message || "Erreur lors de la création automatique",
+        );
       }
     } catch (error: any) {
       console.error("Error creating automatic rebouclage:", error);
-      throw new Error(error.response?.data?.message || "Erreur lors de la création automatique du rebouclage");
+      throw new Error(
+        error.response?.data?.message ||
+          "Erreur lors de la création automatique du rebouclage",
+      );
     }
   }
 
