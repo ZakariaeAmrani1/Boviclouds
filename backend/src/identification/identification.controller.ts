@@ -114,4 +114,10 @@ export class IdentificationController {
   async deleteIdentification(@Param('id') id: string) {
     return this.identificationService.delete(id);
   }
+
+  @Get(':id')
+  @Roles(UserRole.IDENTIFICATEUR, UserRole.ADMIN)
+  async getIdentification(@Param('id') id: string) {
+    return this.identificationService.findById(id);
+  }
 }
