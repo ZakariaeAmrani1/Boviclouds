@@ -5,11 +5,11 @@ import { User } from 'src/users/schemas/users/user.schema';
 
 @Schema({ timestamps: true })
 export class Rebouclage extends Document {
-  @Prop({ required: true })
-  operation_id: string;
+  // @Prop({ required: true })
+  // operation_id: string;
 
-  @Prop({ required: true })
-  id_sujet: string;
+  // @Prop({ required: true })
+  // id_sujet: string;
 
   @Prop({ required: true })
   ancien_nni: string;
@@ -24,13 +24,15 @@ export class Rebouclage extends Document {
     type: Types.ObjectId,
     ref: 'User',
     required: true,
-    validate: {
-      validator: async function (value: Types.ObjectId) {
-        const user = (await this.model('User').findById(value)) as User;
-        return !!user && user.role.includes(UserRole.INSEMINATEUR);
-      },
-      message: 'Inseminator user not found.',
-    },
+    // validate: {
+    //   validator: async function (value: Types.ObjectId) {
+    //     const user = (await this.model('User').findById(value)) as User;
+    //     return (
+    //       !!user && user.role.includes(UserRole.INSEMINATEUR || UserRole.ADMIN)
+    //     );
+    //   },
+    //   message: 'Inseminator user not found.',
+    // },
   })
   identificateur_id: Types.ObjectId;
 }
