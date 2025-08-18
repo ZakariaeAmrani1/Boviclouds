@@ -23,25 +23,25 @@ const CameraCapture: React.FC<CameraCaptureProps> = ({
   description,
 }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
+  const imgRef = useRef(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [streamActive, setStreamActive] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    // In a real implementation, this would connect to the actual camera stream
-    // For now, we'll simulate it with the camera's stream URL
-    if (videoRef.current && camera.streamUrl) {
-      videoRef.current.src = camera.streamUrl;
+    if (imgRef.current && camera.streamUrl) {
+      console.log(camera.streamUrl);
+      imgRef.current.src = camera.streamUrl;
       setStreamActive(true);
     }
   }, [camera.streamUrl]);
 
   const captureImage = () => {
-    if (!videoRef.current || !canvasRef.current) return;
+    // if (!videoRef.current || !canvasRef.current) return;
 
     const video = videoRef.current;
     const canvas = canvasRef.current;
-    const context = canvas.getContext('2d');
+    const context = canvas.getContext("2d");
 
     if (!context) return;
 
@@ -53,7 +53,26 @@ const CameraCapture: React.FC<CameraCaptureProps> = ({
     context.drawImage(video, 0, 0, canvas.width, canvas.height);
 
     // Convert canvas to base64 image data
-    const imageData = canvas.toDataURL('image/jpeg', 0.9);
+    const imageData = canvas.toDataURL("image/jpeg", 0.9);
+    onCapture(imageData);
+  };
+
+  const captureImageFromImg = () => {
+    const img = imgRef.current; // reference to your <img>
+    const canvas = canvasRef.current;
+    const context = canvas.getContext("2d");
+
+    if (!img || !context) return;
+
+    // Set canvas dimensions to match the image
+    canvas.width = img.naturalWidth || img.width;
+    canvas.height = img.naturalHeight || img.height;
+
+    // Draw the current image to the canvas
+    context.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+    // Convert canvas to base64 image data
+    const imageData = canvas.toDataURL("image/jpeg", 0.9);
     onCapture(imageData);
   };
 
@@ -80,13 +99,13 @@ const CameraCapture: React.FC<CameraCaptureProps> = ({
         {/* Camera Info */}
         <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
           <div className="flex items-center gap-2">
-            <div className={`w-2 h-2 rounded-full ${camera.isOnline ? 'bg-green-500' : 'bg-red-500'}`}></div>
+            <div
+              className={`w-2 h-2 rounded-full ${camera.isOnline ? "bg-green-500" : "bg-red-500"}`}
+            ></div>
             <span className="font-medium">{camera.name}</span>
           </div>
           <div className="flex items-center gap-2">
-            <Badge className="bg-blue-100 text-blue-800">
-              {camera.type}
-            </Badge>
+            <Badge className="bg-blue-100 text-blue-800">{camera.type}</Badge>
             <Badge variant={camera.isOnline ? "default" : "secondary"}>
               {camera.isOnline ? "En ligne" : "Hors ligne"}
             </Badge>
@@ -94,19 +113,31 @@ const CameraCapture: React.FC<CameraCaptureProps> = ({
         </div>
 
         {/* Camera Feed */}
-        <div className="relative bg-black rounded-lg overflow-hidden" style={{ aspectRatio: '16/9' }}>
+        <div
+          className="relative bg-black rounded-lg overflow-hidden"
+          style={{ aspectRatio: "16/9" }}
+        >
           {camera.isOnline ? (
             <>
-              <video
-                ref={videoRef}
+              {/* <video
+                src={camera.streamUrl}
                 className="w-full h-full object-cover"
                 autoPlay
                 muted
                 playsInline
                 onError={handleVideoError}
                 onLoadedData={handleVideoLoad}
+              /> */}
+              <img
+                ref={imgRef}
+                crossOrigin="anonymous"
+                src={camera.streamUrl}
+                alt={`Camera ${camera.name}`}
+                onError={handleVideoError}
+                onLoadedData={handleVideoLoad}
+                className="w-full h-full object-cover"
               />
-              
+
               {/* Capture Overlay */}
               <div className="absolute inset-0 flex items-center justify-center">
                 {captured && (
@@ -150,7 +181,7 @@ const CameraCapture: React.FC<CameraCaptureProps> = ({
 
         {/* Capture Button */}
         <Button
-          onClick={captureImage}
+          onClick={captureImageFromImg}
           disabled={!camera.isOnline || !streamActive || capturing || captured}
           className="w-full bg-boviclouds-primary hover:bg-boviclouds-primary/90"
         >

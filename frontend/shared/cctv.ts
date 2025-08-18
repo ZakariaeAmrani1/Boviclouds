@@ -1,11 +1,12 @@
 export enum CameraType {
   BEHAVIOR = "Caméra de comportement",
   IDENTIFICATION = "Caméra d'identification",
-  MORPHOLOGY = "Caméra de morphologie"
+  MORPHOLOGY = "Caméra de morphologie",
 }
 
 export interface Camera {
   id: string;
+  index: string;
   name: string;
   zone: string;
   createdBy: string;
@@ -13,6 +14,7 @@ export interface Camera {
   type?: CameraType;
   isOnline: boolean;
   streamUrl?: string;
+  webRTCUrl?: string;
   isRecording: boolean;
   lastActivity?: Date;
   createdAt: Date;

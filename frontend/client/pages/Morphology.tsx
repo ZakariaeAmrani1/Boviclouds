@@ -44,7 +44,12 @@ import {
   SelectValue,
 } from "../components/ui/select";
 import { Badge } from "../components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "../components/ui/card";
 import { useToast } from "../hooks/use-toast";
 import { morphologyService } from "../services/morphologyService";
 import { cctvService } from "../services/cctvService";
@@ -70,22 +75,32 @@ const Morphology: React.FC = () => {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-  const [selectedRecord, setSelectedRecord] = useState<MorphologyRecord | null>(null);
-  const [recordToDelete, setRecordToDelete] = useState<MorphologyRecord | null>(null);
+  const [selectedRecord, setSelectedRecord] = useState<MorphologyRecord | null>(
+    null,
+  );
+  const [recordToDelete, setRecordToDelete] = useState<MorphologyRecord | null>(
+    null,
+  );
 
   // Multi-step form states
-  const [currentStep, setCurrentStep] = useState<MorphologyFormStep>("identification");
+  const [currentStep, setCurrentStep] =
+    useState<MorphologyFormStep>("identification");
   const [formData, setFormData] = useState<MorphologyFormData>({
     cow_id: "",
     source_detection: "Caméra automatique",
   });
   const [stepLoading, setStepLoading] = useState(false);
-  const [capturedIdentificationImage, setCapturedIdentificationImage] = useState<string | null>(null);
-  const [capturedMorphologyImage, setCapturedMorphologyImage] = useState<string | null>(null);
+  const [capturedIdentificationImage, setCapturedIdentificationImage] =
+    useState<string | null>(null);
+  const [capturedMorphologyImage, setCapturedMorphologyImage] = useState<
+    string | null
+  >(null);
 
   // Camera states
   const [cameras, setCameras] = useState<CameraType[]>([]);
-  const [identificationCameras, setIdentificationCameras] = useState<CameraType[]>([]);
+  const [identificationCameras, setIdentificationCameras] = useState<
+    CameraType[]
+  >([]);
   const [morphologyCameras, setMorphologyCameras] = useState<CameraType[]>([]);
 
   // Search and filter states
@@ -107,7 +122,10 @@ const Morphology: React.FC = () => {
       // Convert "all" to empty string for API call
       const apiFilters = {
         ...searchForm,
-        source_detection: searchForm.source_detection === "all" ? "" : searchForm.source_detection,
+        source_detection:
+          searchForm.source_detection === "all"
+            ? ""
+            : searchForm.source_detection,
       };
 
       // Use mock data for now - in real implementation use:
@@ -128,12 +146,16 @@ const Morphology: React.FC = () => {
 
   const loadCameras = async () => {
     try {
-      const mockCameras = cctvService.getMockCameras();
+      const mockCameras = await cctvService.getMockCameras();
       setCameras(mockCameras);
-      
-      const identCams = mockCameras.filter(cam => cam.type === CamType.IDENTIFICATION && cam.isOnline);
-      const morphCams = mockCameras.filter(cam => cam.type === CamType.MORPHOLOGY && cam.isOnline);
-      
+
+      const identCams = mockCameras.filter(
+        (cam) => cam.type === CamType.IDENTIFICATION && cam.isOnline,
+      );
+      const morphCams = mockCameras.filter(
+        (cam) => cam.type === CamType.MORPHOLOGY && cam.isOnline,
+      );
+
       setIdentificationCameras(identCams);
       setMorphologyCameras(morphCams);
     } catch (error) {
@@ -161,7 +183,10 @@ const Morphology: React.FC = () => {
     try {
       const exportFilters = {
         ...searchForm,
-        source_detection: searchForm.source_detection === "all" ? "" : searchForm.source_detection,
+        source_detection:
+          searchForm.source_detection === "all"
+            ? ""
+            : searchForm.source_detection,
       };
       await morphologyService.exportData("csv", exportFilters);
       toast({
@@ -243,10 +268,12 @@ const Morphology: React.FC = () => {
         setStepLoading(true);
         // Use the camera capture method instead of file upload
         const identificationCamera = identificationCameras[0];
-        const response = await morphologyService.captureFromCamera(identificationCamera.id);
+        const response = await morphologyService.captureFromCamera(
+          identificationCamera.id,
+        );
 
         if (response.success && response.data) {
-          setFormData(prev => ({ ...prev, cow_id: response.data!.cow_id }));
+          setFormData((prev) => ({ ...prev, cow_id: response.data!.cow_id }));
           setCurrentStep("morphology");
         } else {
           toast({
@@ -280,16 +307,17 @@ const Morphology: React.FC = () => {
         const morphologyCamera = morphologyCameras[0];
         const response = await morphologyService.captureMorphologyFromCamera(
           morphologyCamera.id,
-          formData.cow_id
+          formData.cow_id,
         );
 
         if (response.success && response.data) {
-          setFormData(prev => ({ ...prev, measurements: response.data }));
+          setFormData((prev) => ({ ...prev, measurements: response.data }));
           setCurrentStep("results");
         } else {
           toast({
             title: "Erreur",
-            description: response.message || "Impossible d'analyser la morphologie",
+            description:
+              response.message || "Impossible d'analyser la morphologie",
             variant: "destructive",
           });
         }
@@ -336,7 +364,8 @@ const Morphology: React.FC = () => {
       } else {
         toast({
           title: "Erreur",
-          description: response.message || "Impossible d'enregistrer la morphologie",
+          description:
+            response.message || "Impossible d'enregistrer la morphologie",
           variant: "destructive",
         });
       }
@@ -383,9 +412,12 @@ const Morphology: React.FC = () => {
           <div className="space-y-6">
             <div className="text-center">
               <Camera className="w-12 h-12 mx-auto mb-4 text-boviclouds-primary" />
-              <h3 className="text-lg font-semibold mb-2">Identification de la vache</h3>
+              <h3 className="text-lg font-semibold mb-2">
+                Identification de la vache
+              </h3>
               <p className="text-gray-600">
-                Utilisez la caméra d'identification pour capturer une image du museau de la vache
+                Utilisez la caméra d'identification pour capturer une image du
+                museau de la vache
               </p>
             </div>
 
@@ -404,7 +436,8 @@ const Morphology: React.FC = () => {
               <div className="text-center p-6 bg-red-50 rounded-lg border border-red-200">
                 <AlertTriangle className="w-8 h-8 mx-auto mb-2 text-red-500" />
                 <p className="text-red-600">
-                  Aucune caméra d'identification en ligne. Veuillez vérifier la configuration des caméras.
+                  Aucune caméra d'identification en ligne. Veuillez vérifier la
+                  configuration des caméras.
                 </p>
               </div>
             )}
@@ -416,16 +449,21 @@ const Morphology: React.FC = () => {
           <div className="space-y-6">
             <div className="text-center">
               <Camera className="w-12 h-12 mx-auto mb-4 text-boviclouds-primary" />
-              <h3 className="text-lg font-semibold mb-2">Analyse morphologique</h3>
+              <h3 className="text-lg font-semibold mb-2">
+                Analyse morphologique
+              </h3>
               <p className="text-gray-600">
-                Utilisez la caméra de morphologie pour capturer une image complète de la vache
+                Utilisez la caméra de morphologie pour capturer une image
+                complète de la vache
               </p>
             </div>
 
             <div className="p-4 bg-green-50 rounded-lg border border-green-200">
               <div className="flex items-center gap-2">
                 <CheckCircle className="w-5 h-5 text-green-500" />
-                <span className="font-medium">Vache identifiée: {formData.cow_id}</span>
+                <span className="font-medium">
+                  Vache identifiée: {formData.cow_id}
+                </span>
               </div>
             </div>
 
@@ -444,7 +482,8 @@ const Morphology: React.FC = () => {
               <div className="text-center p-6 bg-red-50 rounded-lg border border-red-200">
                 <AlertTriangle className="w-8 h-8 mx-auto mb-2 text-red-500" />
                 <p className="text-red-600">
-                  Aucune caméra de morphologie en ligne. Veuillez vérifier la configuration des caméras.
+                  Aucune caméra de morphologie en ligne. Veuillez vérifier la
+                  configuration des caméras.
                 </p>
               </div>
             )}
@@ -456,7 +495,9 @@ const Morphology: React.FC = () => {
           <div className="space-y-6">
             <div className="text-center">
               <CheckCircle className="w-12 h-12 mx-auto mb-4 text-green-500" />
-              <h3 className="text-lg font-semibold mb-2">Résultats de l'analyse</h3>
+              <h3 className="text-lg font-semibold mb-2">
+                Résultats de l'analyse
+              </h3>
               <p className="text-gray-600">
                 Voici les mesures morphologiques détectées
               </p>
@@ -473,7 +514,9 @@ const Morphology: React.FC = () => {
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <Card>
                   <CardHeader className="pb-2">
-                    <CardTitle className="text-sm text-center">Hauteur au garrot</CardTitle>
+                    <CardTitle className="text-sm text-center">
+                      Hauteur au garrot
+                    </CardTitle>
                   </CardHeader>
                   <CardContent className="text-center">
                     <div className="text-2xl font-bold text-boviclouds-primary">
@@ -487,7 +530,9 @@ const Morphology: React.FC = () => {
 
                 <Card>
                   <CardHeader className="pb-2">
-                    <CardTitle className="text-sm text-center">Largeur du corps</CardTitle>
+                    <CardTitle className="text-sm text-center">
+                      Largeur du corps
+                    </CardTitle>
                   </CardHeader>
                   <CardContent className="text-center">
                     <div className="text-2xl font-bold text-boviclouds-primary">
@@ -501,7 +546,9 @@ const Morphology: React.FC = () => {
 
                 <Card>
                   <CardHeader className="pb-2">
-                    <CardTitle className="text-sm text-center">Longueur du corps</CardTitle>
+                    <CardTitle className="text-sm text-center">
+                      Longueur du corps
+                    </CardTitle>
                   </CardHeader>
                   <CardContent className="text-center">
                     <div className="text-2xl font-bold text-boviclouds-primary">
@@ -534,7 +581,9 @@ const Morphology: React.FC = () => {
             <Input
               type="text"
               value={searchForm.cow_id || ""}
-              onChange={(e) => setSearchForm(prev => ({ ...prev, cow_id: e.target.value }))}
+              onChange={(e) =>
+                setSearchForm((prev) => ({ ...prev, cow_id: e.target.value }))
+              }
               className="w-full"
               placeholder="Rechercher par ID..."
             />
@@ -545,19 +594,25 @@ const Morphology: React.FC = () => {
             </Label>
             <Select
               value={searchForm.source_detection || "all"}
-              onValueChange={(value) => setSearchForm(prev => ({
-                ...prev,
-                source_detection: value === "all" ? "" : value
-              }))}
+              onValueChange={(value) =>
+                setSearchForm((prev) => ({
+                  ...prev,
+                  source_detection: value === "all" ? "" : value,
+                }))
+              }
             >
               <SelectTrigger>
                 <SelectValue placeholder="Toutes les sources" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">Toutes</SelectItem>
-                <SelectItem value="Caméra automatique">Caméra automatique</SelectItem>
+                <SelectItem value="Caméra automatique">
+                  Caméra automatique
+                </SelectItem>
                 <SelectItem value="Mesure manuelle">Mesure manuelle</SelectItem>
-                <SelectItem value="Inspection vétérinaire">Inspection vétérinaire</SelectItem>
+                <SelectItem value="Inspection vétérinaire">
+                  Inspection vétérinaire
+                </SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -568,7 +623,9 @@ const Morphology: React.FC = () => {
             <Input
               type="date"
               value={searchForm.dateFrom || ""}
-              onChange={(e) => setSearchForm(prev => ({ ...prev, dateFrom: e.target.value }))}
+              onChange={(e) =>
+                setSearchForm((prev) => ({ ...prev, dateFrom: e.target.value }))
+              }
               className="w-full"
             />
           </div>
@@ -579,7 +636,9 @@ const Morphology: React.FC = () => {
             <Input
               type="date"
               value={searchForm.dateTo || ""}
-              onChange={(e) => setSearchForm(prev => ({ ...prev, dateTo: e.target.value }))}
+              onChange={(e) =>
+                setSearchForm((prev) => ({ ...prev, dateTo: e.target.value }))
+              }
               className="w-full"
             />
           </div>
@@ -613,10 +672,7 @@ const Morphology: React.FC = () => {
             <Plus className="w-4 h-4 mr-2" />
             Ajouter Morphologie
           </Button>
-          <Button
-            onClick={handleExport}
-            variant="outline"
-          >
+          <Button onClick={handleExport} variant="outline">
             <Download className="w-4 h-4 mr-2" />
             Exporter
           </Button>
@@ -688,9 +744,7 @@ const Morphology: React.FC = () => {
                       {record.longueur_du_corps.valeur}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <Badge variant="outline">
-                        {record.source_detection}
-                      </Badge>
+                      <Badge variant="outline">{record.source_detection}</Badge>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                       <div className="flex space-x-2">
@@ -722,14 +776,16 @@ const Morphology: React.FC = () => {
           <div className="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6">
             <div className="flex-1 flex justify-between sm:hidden">
               <Button
-                onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                onClick={() => setCurrentPage((prev) => Math.max(1, prev - 1))}
                 disabled={currentPage === 1}
                 variant="outline"
               >
                 Précédent
               </Button>
               <Button
-                onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                onClick={() =>
+                  setCurrentPage((prev) => Math.min(totalPages, prev + 1))
+                }
                 disabled={currentPage === totalPages}
                 variant="outline"
               >
@@ -747,13 +803,16 @@ const Morphology: React.FC = () => {
                   <span className="font-medium">
                     {Math.min(currentPage * 10, morphologies.length)}
                   </span>{" "}
-                  sur <span className="font-medium">{morphologies.length}</span> résultats
+                  sur <span className="font-medium">{morphologies.length}</span>{" "}
+                  résultats
                 </p>
               </div>
               <div>
                 <nav className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px">
                   <Button
-                    onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                    onClick={() =>
+                      setCurrentPage((prev) => Math.max(1, prev - 1))
+                    }
                     disabled={currentPage === 1}
                     variant="outline"
                     size="sm"
@@ -761,19 +820,23 @@ const Morphology: React.FC = () => {
                     <ChevronLeft className="h-5 w-5" />
                   </Button>
 
-                  {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-                    <Button
-                      key={page}
-                      onClick={() => setCurrentPage(page)}
-                      variant={page === currentPage ? "default" : "outline"}
-                      size="sm"
-                    >
-                      {page}
-                    </Button>
-                  ))}
+                  {Array.from({ length: totalPages }, (_, i) => i + 1).map(
+                    (page) => (
+                      <Button
+                        key={page}
+                        onClick={() => setCurrentPage(page)}
+                        variant={page === currentPage ? "default" : "outline"}
+                        size="sm"
+                      >
+                        {page}
+                      </Button>
+                    ),
+                  )}
 
                   <Button
-                    onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                    onClick={() =>
+                      setCurrentPage((prev) => Math.min(totalPages, prev + 1))
+                    }
                     disabled={currentPage === totalPages}
                     variant="outline"
                     size="sm"
@@ -798,17 +861,27 @@ const Morphology: React.FC = () => {
             {/* Step indicators */}
             <div className="flex items-center justify-center mb-8">
               <div className="flex items-center space-x-4">
-                <div className={`flex items-center ${currentStep === "identification" ? "text-boviclouds-primary" : currentStep === "morphology" || currentStep === "results" ? "text-green-500" : "text-gray-400"}`}>
-                  <div className={`w-8 h-8 rounded-full flex items-center justify-center border-2 ${currentStep === "identification" ? "border-boviclouds-primary bg-boviclouds-primary text-white" : currentStep === "morphology" || currentStep === "results" ? "border-green-500 bg-green-500 text-white" : "border-gray-300"}`}>
+                <div
+                  className={`flex items-center ${currentStep === "identification" ? "text-boviclouds-primary" : currentStep === "morphology" || currentStep === "results" ? "text-green-500" : "text-gray-400"}`}
+                >
+                  <div
+                    className={`w-8 h-8 rounded-full flex items-center justify-center border-2 ${currentStep === "identification" ? "border-boviclouds-primary bg-boviclouds-primary text-white" : currentStep === "morphology" || currentStep === "results" ? "border-green-500 bg-green-500 text-white" : "border-gray-300"}`}
+                  >
                     1
                   </div>
-                  <span className="ml-2 text-sm font-medium">Identification</span>
+                  <span className="ml-2 text-sm font-medium">
+                    Identification
+                  </span>
                 </div>
 
                 <ArrowRight className="w-4 h-4 text-gray-400" />
 
-                <div className={`flex items-center ${currentStep === "morphology" ? "text-boviclouds-primary" : currentStep === "results" ? "text-green-500" : "text-gray-400"}`}>
-                  <div className={`w-8 h-8 rounded-full flex items-center justify-center border-2 ${currentStep === "morphology" ? "border-boviclouds-primary bg-boviclouds-primary text-white" : currentStep === "results" ? "border-green-500 bg-green-500 text-white" : "border-gray-300"}`}>
+                <div
+                  className={`flex items-center ${currentStep === "morphology" ? "text-boviclouds-primary" : currentStep === "results" ? "text-green-500" : "text-gray-400"}`}
+                >
+                  <div
+                    className={`w-8 h-8 rounded-full flex items-center justify-center border-2 ${currentStep === "morphology" ? "border-boviclouds-primary bg-boviclouds-primary text-white" : currentStep === "results" ? "border-green-500 bg-green-500 text-white" : "border-gray-300"}`}
+                  >
                     2
                   </div>
                   <span className="ml-2 text-sm font-medium">Morphologie</span>
@@ -816,8 +889,12 @@ const Morphology: React.FC = () => {
 
                 <ArrowRight className="w-4 h-4 text-gray-400" />
 
-                <div className={`flex items-center ${currentStep === "results" ? "text-boviclouds-primary" : "text-gray-400"}`}>
-                  <div className={`w-8 h-8 rounded-full flex items-center justify-center border-2 ${currentStep === "results" ? "border-boviclouds-primary bg-boviclouds-primary text-white" : "border-gray-300"}`}>
+                <div
+                  className={`flex items-center ${currentStep === "results" ? "text-boviclouds-primary" : "text-gray-400"}`}
+                >
+                  <div
+                    className={`w-8 h-8 rounded-full flex items-center justify-center border-2 ${currentStep === "results" ? "border-boviclouds-primary bg-boviclouds-primary text-white" : "border-gray-300"}`}
+                  >
                     3
                   </div>
                   <span className="ml-2 text-sm font-medium">Résultats</span>
@@ -838,7 +915,7 @@ const Morphology: React.FC = () => {
                 <ArrowLeft className="w-4 h-4 mr-2" />
                 Retour
               </Button>
-              
+
               <div className="flex gap-2">
                 <Button
                   onClick={() => setIsAddModalOpen(false)}
@@ -847,7 +924,7 @@ const Morphology: React.FC = () => {
                 >
                   Annuler
                 </Button>
-                
+
                 {currentStep === "results" ? (
                   <Button
                     onClick={handleSubmitMorphology}
@@ -862,8 +939,10 @@ const Morphology: React.FC = () => {
                 ) : (
                   <Button
                     onClick={handleStepNext}
-                    disabled={stepLoading ||
-                      (currentStep === "identification" && !capturedIdentificationImage) ||
+                    disabled={
+                      stepLoading ||
+                      (currentStep === "identification" &&
+                        !capturedIdentificationImage) ||
                       (currentStep === "morphology" && !capturedMorphologyImage)
                     }
                     className="bg-boviclouds-primary hover:bg-boviclouds-primary/90"
@@ -892,29 +971,49 @@ const Morphology: React.FC = () => {
             <div className="py-4 space-y-6">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <Label className="text-sm font-medium text-gray-700">ID Vache</Label>
-                  <p className="mt-1 text-sm text-gray-900">{selectedRecord.cow_id}</p>
+                  <Label className="text-sm font-medium text-gray-700">
+                    ID Vache
+                  </Label>
+                  <p className="mt-1 text-sm text-gray-900">
+                    {selectedRecord.cow_id}
+                  </p>
                 </div>
                 <div>
-                  <Label className="text-sm font-medium text-gray-700">Date</Label>
-                  <p className="mt-1 text-sm text-gray-900">{formatDateTime(selectedRecord.timestamp)}</p>
+                  <Label className="text-sm font-medium text-gray-700">
+                    Date
+                  </Label>
+                  <p className="mt-1 text-sm text-gray-900">
+                    {formatDateTime(selectedRecord.timestamp)}
+                  </p>
                 </div>
                 <div>
-                  <Label className="text-sm font-medium text-gray-700">Source</Label>
-                  <p className="mt-1 text-sm text-gray-900">{selectedRecord.source_detection}</p>
+                  <Label className="text-sm font-medium text-gray-700">
+                    Source
+                  </Label>
+                  <p className="mt-1 text-sm text-gray-900">
+                    {selectedRecord.source_detection}
+                  </p>
                 </div>
                 <div>
-                  <Label className="text-sm font-medium text-gray-700">Créé par</Label>
-                  <p className="mt-1 text-sm text-gray-900">{selectedRecord.createdBy || "N/A"}</p>
+                  <Label className="text-sm font-medium text-gray-700">
+                    Créé par
+                  </Label>
+                  <p className="mt-1 text-sm text-gray-900">
+                    {selectedRecord.createdBy || "N/A"}
+                  </p>
                 </div>
               </div>
 
               <div>
-                <h4 className="text-sm font-medium text-gray-700 mb-3">Mesures morphologiques</h4>
+                <h4 className="text-sm font-medium text-gray-700 mb-3">
+                  Mesures morphologiques
+                </h4>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <Card>
                     <CardHeader className="pb-2">
-                      <CardTitle className="text-sm text-center">Hauteur au garrot</CardTitle>
+                      <CardTitle className="text-sm text-center">
+                        Hauteur au garrot
+                      </CardTitle>
                     </CardHeader>
                     <CardContent className="text-center">
                       <div className="text-2xl font-bold text-boviclouds-primary">
@@ -928,7 +1027,9 @@ const Morphology: React.FC = () => {
 
                   <Card>
                     <CardHeader className="pb-2">
-                      <CardTitle className="text-sm text-center">Largeur du corps</CardTitle>
+                      <CardTitle className="text-sm text-center">
+                        Largeur du corps
+                      </CardTitle>
                     </CardHeader>
                     <CardContent className="text-center">
                       <div className="text-2xl font-bold text-boviclouds-primary">
@@ -942,7 +1043,9 @@ const Morphology: React.FC = () => {
 
                   <Card>
                     <CardHeader className="pb-2">
-                      <CardTitle className="text-sm text-center">Longueur du corps</CardTitle>
+                      <CardTitle className="text-sm text-center">
+                        Longueur du corps
+                      </CardTitle>
                     </CardHeader>
                     <CardContent className="text-center">
                       <div className="text-2xl font-bold text-boviclouds-primary">
@@ -959,15 +1062,16 @@ const Morphology: React.FC = () => {
           )}
 
           <DialogFooter>
-            <Button onClick={() => setIsViewModalOpen(false)}>
-              Fermer
-            </Button>
+            <Button onClick={() => setIsViewModalOpen(false)}>Fermer</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
 
       {/* Delete Confirmation Dialog */}
-      <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+      <AlertDialog
+        open={isDeleteDialogOpen}
+        onOpenChange={setIsDeleteDialogOpen}
+      >
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle className="flex items-center gap-2">
@@ -979,7 +1083,9 @@ const Morphology: React.FC = () => {
                 <p>Êtes-vous sûr de vouloir supprimer cette morphologie ?</p>
                 {recordToDelete && (
                   <div className="mt-2 p-3 bg-gray-50 rounded-md">
-                    <p className="font-medium">Vache: {recordToDelete.cow_id}</p>
+                    <p className="font-medium">
+                      Vache: {recordToDelete.cow_id}
+                    </p>
                     <p className="text-sm text-gray-600">
                       Date: {formatDate(recordToDelete.timestamp)}
                     </p>
