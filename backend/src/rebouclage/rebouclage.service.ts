@@ -1,7 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Rebouclage } from './schemas/rebouclage.schema';
-import { CreateRebouclageDto, CreateRebouclageAutomaticDto } from './dto/create-rebouclage.dto';
+import {
+  CreateRebouclageDto,
+  CreateRebouclageAutomaticDto,
+} from './dto/create-rebouclage.dto';
 import { Model } from 'mongoose';
 import * as ExcelJS from 'exceljs';
 import { Parser as Json2CsvParser } from 'json2csv';
@@ -14,10 +17,14 @@ export class RebouclageService {
   ) {}
 
   async create(dto: CreateRebouclageDto): Promise<Rebouclage> {
+    console.log(dto);
     return this.rebouclageModel.create(dto);
   }
 
-  async createAutomatic(dto: CreateRebouclageAutomaticDto, image: Express.Multer.File): Promise<Rebouclage> {
+  async createAutomatic(
+    dto: CreateRebouclageAutomaticDto,
+    image: Express.Multer.File,
+  ): Promise<Rebouclage> {
     try {
       // Mock OCR processing - in real implementation, you would use an OCR service
       // like Google Vision API, AWS Textract, or a custom OCR solution
@@ -31,16 +38,20 @@ export class RebouclageService {
         nouveau_nni: dto.nouveau_nni,
         date_creation: dto.date_creation || new Date().toISOString(),
         identificateur_id: dto.identificateur_id,
-        mode: 'automatic' as any
+        mode: 'automatic' as any,
       };
 
       return this.rebouclageModel.create(fullDto);
     } catch (error) {
-      throw new Error(`Error processing automatic rebouclage: ${error.message}`);
+      throw new Error(
+        `Error processing automatic rebouclage: ${error.message}`,
+      );
     }
   }
 
-  private async processImageForNNI(image: Express.Multer.File): Promise<string> {
+  private async processImageForNNI(
+    image: Express.Multer.File,
+  ): Promise<string> {
     // Mock OCR implementation
     // In a real application, you would:
     // 1. Use an OCR service (Google Vision, AWS Textract, etc.)
@@ -49,7 +60,7 @@ export class RebouclageService {
     // 4. Validate the extracted NNI format
 
     // Simulate processing delay
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    await new Promise((resolve) => setTimeout(resolve, 1000));
 
     // Mock extracted NNI - in real implementation, this would come from OCR
     const mockNNI = `FR${Date.now().toString().slice(-10)}`;
