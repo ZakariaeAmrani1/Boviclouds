@@ -9,6 +9,7 @@ import {
   Users,
   Camera,
   Stethoscope,
+  Ruler,
 } from "lucide-react";
 
 export interface MenuItem {
@@ -71,6 +72,12 @@ const allMenuItems: MenuItem[] = [
     badge: null,
   },
   {
+    icon: Ruler,
+    label: "Morphologie",
+    path: "/morphology",
+    badge: null,
+  },
+  {
     icon: Users,
     label: "Utilisateurs",
     path: "/utilisateurs",
@@ -100,6 +107,7 @@ const rolePermissions: Record<UserRole, string[]> = {
     "/semences",
     "/lactations",
     "/exploitations",
+    "/morphology",
     "/utilisateurs",
     "/cctv",
     "/traitement",
@@ -115,6 +123,7 @@ const rolePermissions: Record<UserRole, string[]> = {
     "/semences",
     "/lactations",
     "/exploitations",
+    "/morphology",
     "/utilisateurs",
     "/cctv",
     "/traitement",
