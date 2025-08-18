@@ -221,9 +221,8 @@ const Rebouclage: React.FC = () => {
     setImageProcessing({ loading: true, error: null, extractedNNI: null });
 
     try {
-      const apiUrl =
-        import.meta.env.VITE_API_URL || "http://192.168.11.30:8000/predict";
-
+      const apiUrl = import.meta.env.VITE_API_URL;
+      const token = localStorage.getItem("access_token");
       const formData = new FormData();
       formData.append("image", image);
 
@@ -232,9 +231,12 @@ const Rebouclage: React.FC = () => {
       //   body: formData,
       // });
 
-      const response = await fetch(`http://192.168.11.30:8000/predict`, {
+      const response = await fetch(`${apiUrl}identifications/predict`, {
         method: "POST",
         body: formData,
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       });
       const data = await response.json();
       if (data.prediction) {

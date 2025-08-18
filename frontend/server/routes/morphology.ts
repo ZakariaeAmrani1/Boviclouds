@@ -51,11 +51,10 @@ export const getMorphologies: RequestHandler = async (req, res) => {
         Authorization: `Bearer ${token}`,
       },
     });
-    console.log(result.data);
     result.data.map((morph) => {
       morphologies.push({
         _id: morph._id,
-        cow_id: morph.cow_id,
+        cow_id: morph.cow_id.infos_sujet.nni,
         timestamp: morph.timestamp,
         source_detection: morph.source_detection,
         hauteur_au_garrot: {
