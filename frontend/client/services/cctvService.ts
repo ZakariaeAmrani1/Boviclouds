@@ -6,7 +6,11 @@ import {
   CameraStats,
   LiveFeedData,
   BehaviorDetection,
+  OnlineCamera,
+  OnlineCamerasResponse,
+  CameraType,
 } from "@shared/cctv";
+import axios from "axios";
 
 class CCTVService {
   private baseUrl = "/api/cctv";
@@ -19,6 +23,19 @@ class CCTVService {
       throw new Error("Failed to fetch cameras");
     }
     return response.json();
+  }
+
+  async updateCameraType(index: string, type: string) {
+    try {
+      const apiUrl = import.meta.env.VITE_API_URL1;
+      const response = await axios.put(`${apiUrl}camera/${index}/type`, {
+        type: type,
+      });
+
+      return response;
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   async getCamera(id: string): Promise<Camera> {
@@ -153,6 +170,27 @@ class CCTVService {
     document.body.removeChild(a);
   }
 
+  async getOnlineCameras(): Promise<OnlineCamerasResponse> {
+    const response = await fetch(`${this.baseUrl}/online-cameras`);
+    if (!response.ok) {
+      throw new Error("Failed to fetch online cameras");
+    }
+    return response.json();
+  }
+
+  async assignCameraType(cameraId: string, type: CameraType): Promise<void> {
+    const response = await fetch(`${this.baseUrl}/cameras/${cameraId}/type`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ type }),
+    });
+    if (!response.ok) {
+      throw new Error("Failed to assign camera type");
+    }
+  }
+
   async refreshCameraList(): Promise<CameraListResponse> {
     // Force a fresh fetch by adding a cache-busting parameter
     const timestamp = new Date().getTime();
@@ -191,46 +229,74 @@ class CCTVService {
   }
 
   // Mock data for demonstration purposes
-  getMockCameras(): Camera[] {
+  async getMockCameras(): Promise<Camera[]> {
+    const cameras = [];
+    try {
+      const apiUrl = import.meta.env.VITE_API_URL1;
+      const response = await axios.get(`${apiUrl}cameras`);
+      const data = response.data;
+      data.map((camera) => {
+        cameras.push({
+          id: "cam-" + camera.index,
+          index: camera.index,
+          name: "camera " + camera.index,
+          zone: "Main Entrance",
+          createdBy: "Achraf",
+          status: "active",
+          type:
+            camera.type === "comportement"
+              ? CameraType.BEHAVIOR
+              : camera.type === "identification"
+                ? CameraType.IDENTIFICATION
+                : CameraType.MORPHOLOGY,
+          isOnline: true,
+          streamUrl: `${apiUrl}video/${camera.index}`,
+          webRTCUrl: `${apiUrl}webrtc/${camera.index}`,
+          isRecording: true,
+          lastActivity: new Date(),
+          createdAt: new Date("2024-01-15"),
+          updatedAt: new Date(),
+        });
+      });
+      return cameras;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  getMockOnlineCameras(): OnlineCamera[] {
     return [
       {
-        id: "cam-1",
-        name: "camera 1",
-        zone: "Main Entrance",
-        createdBy: "Achraf",
-        status: "active",
-        streamUrl:
-          "https://api.builder.io/api/v1/image/assets/TEMP/e3d5926eba868b25fa3539c0743b7826f1625545?width=1398",
-        isRecording: true,
-        lastActivity: new Date(),
-        createdAt: new Date("2024-01-15"),
-        updatedAt: new Date(),
+        id: "online-cam-1",
+        name: "Network Camera 01",
+        isOnline: true,
+        ipAddress: "192.168.1.101",
+        streamUrl: "rtsp://192.168.1.101:554/stream",
+        lastSeen: new Date(),
       },
       {
-        id: "cam-2",
-        name: "camera 2",
-        zone: "Back Door",
-        createdBy: "Achraf",
-        status: "active",
-        streamUrl:
-          "https://api.builder.io/api/v1/image/assets/TEMP/0a30a7645d8b7271df6e3b207b010180a52317c9?width=658",
-        isRecording: true,
-        lastActivity: new Date(),
-        createdAt: new Date("2024-01-20"),
-        updatedAt: new Date(),
+        id: "online-cam-2",
+        name: "Network Camera 02",
+        isOnline: true,
+        ipAddress: "192.168.1.102",
+        streamUrl: "rtsp://192.168.1.102:554/stream",
+        lastSeen: new Date(),
       },
       {
-        id: "cam-3",
-        name: "camera 3",
-        zone: "Eating Place",
-        createdBy: "Achraf",
-        status: "active",
-        streamUrl:
-          "https://api.builder.io/api/v1/image/assets/TEMP/76353da281306292cb39952a5d6ab02c4bedf82b?width=658",
-        isRecording: true,
-        lastActivity: new Date(),
-        createdAt: new Date("2024-01-25"),
-        updatedAt: new Date(),
+        id: "online-cam-3",
+        name: "Network Camera 03",
+        isOnline: true,
+        ipAddress: "192.168.1.103",
+        streamUrl: "rtsp://192.168.1.103:554/stream",
+        lastSeen: new Date(),
+      },
+      {
+        id: "online-cam-4",
+        name: "Network Camera 04",
+        isOnline: false,
+        ipAddress: "192.168.1.104",
+        streamUrl: "rtsp://192.168.1.104:554/stream",
+        lastSeen: new Date(Date.now() - 30 * 60 * 1000), // 30 minutes ago
       },
     ];
   }

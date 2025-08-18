@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { X, Calendar, User, Building, MapPin, Images, Eye, ChevronLeft, ChevronRight } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { X, Calendar, User, Building, MapPin, Images, Eye, ChevronLeft, ChevronRight, ExternalLink } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -25,6 +26,7 @@ const ViewIdentificationModal: React.FC<ViewIdentificationModalProps> = ({
   onClose,
   identification,
 }) => {
+  const navigate = useNavigate();
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString("fr-FR", {
       year: "numeric",
@@ -241,16 +243,32 @@ const ViewIdentificationModal: React.FC<ViewIdentificationModalProps> = ({
         <DialogOverlay className="bg-black/20" />
         <DialogContent className="w-[95vw] max-w-6xl max-h-[90vh] overflow-y-auto mx-4">
           <DialogHeader>
-            <DialogTitle className="text-lg font-medium text-black flex items-center gap-2">
-              <User className="w-5 h-5" />
-              Identification - {identification.infos_sujet.nni}
-            </DialogTitle>
-            <button
-              onClick={onClose}
-              className="absolute right-4 top-4 p-1 rounded-full hover:bg-gray-100"
-            >
-              <X className="w-4 h-4" />
-            </button>
+            <div className="flex items-center justify-between">
+              <DialogTitle className="text-lg font-medium text-black flex items-center gap-2">
+                <User className="w-5 h-5" />
+                Identification - {identification.infos_sujet.nni}
+              </DialogTitle>
+              <div className="flex items-center gap-2">
+                <Button
+                  onClick={() => {
+                    navigate(`/identification/${identification.id}/details`);
+                    onClose();
+                  }}
+                  variant="outline"
+                  size="sm"
+                  className="gap-2"
+                >
+                  <ExternalLink className="w-4 h-4" />
+                  Vue détaillée
+                </Button>
+                <button
+                  onClick={onClose}
+                  className="p-1 rounded-full hover:bg-gray-100"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
           </DialogHeader>
 
           <div className="space-y-6 py-4">
@@ -437,11 +455,22 @@ const ViewIdentificationModal: React.FC<ViewIdentificationModalProps> = ({
             </InfoCard>
           </div>
 
-          <DialogFooter className="flex justify-end pt-4 border-t border-boviclouds-gray-50">
+          <DialogFooter className="flex justify-between pt-4 border-t border-boviclouds-gray-50">
+            <Button
+              onClick={() => {
+                navigate(`/identification/${identification.id}/details`);
+                onClose();
+              }}
+              variant="outline"
+              className="gap-2"
+            >
+              <ExternalLink className="w-4 h-4" />
+              Voir tous les détails
+            </Button>
             <Button
               type="button"
               onClick={onClose}
-              className="w-full sm:w-32 h-10 rounded-lg text-sm font-normal bg-boviclouds-primary hover:bg-boviclouds-primary/90 text-white"
+              className="w-32 h-10 rounded-lg text-sm font-normal bg-boviclouds-primary hover:bg-boviclouds-primary/90 text-white"
             >
               Fermer
             </Button>

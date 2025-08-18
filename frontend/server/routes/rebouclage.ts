@@ -11,7 +11,7 @@ export interface RebouclageRecord {
   dateCreation: string;
   dateModification: string;
   CréePar: string;
-  mode?: 'manual' | 'automatic';
+  mode?: "manual" | "automatic";
 }
 
 export interface CreateRebouclageInput {
@@ -19,14 +19,15 @@ export interface CreateRebouclageInput {
   nouveauNNI: string;
   identificateur_id: string;
   dateRebouclage?: string;
-  mode?: 'manual' | 'automatic';
+  mode?: "manual" | "automatic";
 }
 
 export interface AutomaticRebouclageInput {
   nouveauNNI: string;
+  ancienNNI: string;
   identificateur_id: string;
   dateRebouclage?: string;
-  mode: 'automatic';
+  mode: "automatic";
 }
 
 const getAuthHeaders = (req: any) => {
@@ -89,7 +90,7 @@ export const handleCreateRebouclage: RequestHandler = async (req, res) => {
   try {
     const apiUrl = process.env.VITE_API_URL || "http://localhost:3000/api/v1/";
     let data: CreateRebouclageInput & { token?: string };
-    
+
     // Parse JSON data from request body
     if (req.is("application/json")) {
       data = req.body;
@@ -134,43 +135,46 @@ export const handleCreateRebouclage: RequestHandler = async (req, res) => {
 };
 
 // Create rebouclage with automatic image processing
-export const handleCreateRebouclageAutomatic: RequestHandler = async (req, res) => {
+export const handleCreateRebouclageAutomatic: RequestHandler = async (
+  req,
+  res,
+) => {
   try {
     const apiUrl = process.env.VITE_API_URL || "http://localhost:3000/api/v1/";
     let data: AutomaticRebouclageInput & { token?: string };
     let images: Express.Multer.File[] = [];
 
-    // Check if request contains FormData (with images)
-    if (req.is("multipart/form-data")) {
-      // Parse form data
-      try {
-        data = JSON.parse(req.body.data || "{}");
-      } catch (e) {
-        return res.status(400).json({
-          success: false,
-          message: "Invalid JSON data in form",
-        });
-      }
+    // // Check if request contains FormData (with images)
+    // if (req.is("multipart/form-data")) {
+    //   // Parse form data
+    //   try {
+    //     data = JSON.parse(req.body.data || "{}");
+    //   } catch (e) {
+    //     return res.status(400).json({
+    //       success: false,
+    //       message: "Invalid JSON data in form",
+    //     });
+    //   }
 
-      // Get uploaded images
-      if (req.files && Array.isArray(req.files)) {
-        images = req.files;
-      } else if (req.files && "image" in req.files) {
-        images = Array.isArray(req.files.image) ? req.files.image : [req.files.image];
-      }
+    //   // Get uploaded images
+    //   if (req.files && Array.isArray(req.files)) {
+    //     images = req.files;
+    //   } else if (req.files && "image" in req.files) {
+    //     images = Array.isArray(req.files.image) ? req.files.image : [req.files.image];
+    //   }
 
-      if (images.length === 0) {
-        return res.status(400).json({
-          success: false,
-          message: "Au moins une image est requise pour le mode automatique",
-        });
-      }
-    } else {
-      return res.status(400).json({
-        success: false,
-        message: "Content-Type must be multipart/form-data for automatic mode",
-      });
-    }
+    //   if (images.length === 0) {
+    //     return res.status(400).json({
+    //       success: false,
+    //       message: "Au moins une image est requise pour le mode automatique",
+    //     });
+    //   }
+    // } else {
+    //   return res.status(400).json({
+    //     success: false,
+    //     message: "Content-Type must be multipart/form-data for automatic mode",
+    //   });
+    // }
 
     const headers = getAuthHeaders(req);
 
@@ -178,8 +182,8 @@ export const handleCreateRebouclageAutomatic: RequestHandler = async (req, res) 
     // This is a mock implementation - replace with actual image processing service
     const mockProcessImage = async (imageBuffer: Buffer): Promise<string> => {
       // Simulate image processing delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
       // Mock OCR result - in real implementation, this would be actual OCR
       const mockNNI = `FR${Date.now().toString().slice(-10)}`;
       return mockNNI;
@@ -188,12 +192,12 @@ export const handleCreateRebouclageAutomatic: RequestHandler = async (req, res) 
     try {
       // Process the first image to extract ancien NNI
       const ancienNNI = await mockProcessImage(images[0].buffer);
-
+      console.log(data);
       // Create the rebouclage with extracted ancien NNI
       const backendData = {
         operation_id: data.identificateur_id,
         id_sujet: "placeholder", // This should be derived from the ancien_nni
-        ancien_nni: ancienNNI,
+        ancien_nni: data.ancienNNI,
         nouveau_nni: data.nouveauNNI,
         date_creation: data.dateRebouclage || new Date().toISOString(),
         identificateur_id: data.identificateur_id,
@@ -211,7 +215,7 @@ export const handleCreateRebouclageAutomatic: RequestHandler = async (req, res) 
         data: {
           ...response.data,
           extractedAncienNNI: ancienNNI,
-          mode: 'automatic'
+          mode: "automatic",
         },
         message: "Rebouclage créé avec succès en mode automatique",
       });
@@ -226,7 +230,8 @@ export const handleCreateRebouclageAutomatic: RequestHandler = async (req, res) 
     console.error("Error creating automatic rebouclage:", error);
     res.status(error.response?.status || 500).json({
       success: false,
-      message: error.response?.data?.message || "Error creating automatic rebouclage",
+      message:
+        error.response?.data?.message || "Error creating automatic rebouclage",
     });
   }
 };
@@ -288,19 +293,22 @@ export const handleExportRebouclages: RequestHandler = async (req, res) => {
   try {
     const apiUrl = process.env.VITE_API_URL || "http://localhost:3000/api/v1/";
     const headers = getAuthHeaders(req);
-    const format = req.query.format as string || 'csv';
+    const format = (req.query.format as string) || "csv";
 
     const response = await axios.get(`${apiUrl}rebouclages/export`, {
       headers,
       params: { format },
-      responseType: 'arraybuffer'
+      responseType: "arraybuffer",
     });
 
-    const contentType = format === 'csv' ? 'text/csv' : 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
-    const fileName = `rebouclages.${format === 'csv' ? 'csv' : 'xlsx'}`;
+    const contentType =
+      format === "csv"
+        ? "text/csv"
+        : "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+    const fileName = `rebouclages.${format === "csv" ? "csv" : "xlsx"}`;
 
-    res.setHeader('Content-Type', contentType);
-    res.setHeader('Content-Disposition', `attachment; filename=${fileName}`);
+    res.setHeader("Content-Type", contentType);
+    res.setHeader("Content-Disposition", `attachment; filename=${fileName}`);
     res.send(response.data);
   } catch (error: any) {
     console.error("Error exporting rebouclages:", error);
@@ -320,7 +328,9 @@ export const handleExtractNNI: RequestHandler = async (req, res) => {
     if (req.files && Array.isArray(req.files)) {
       image = req.files[0];
     } else if (req.files && "image" in req.files) {
-      image = Array.isArray(req.files.image) ? req.files.image[0] : req.files.image;
+      image = Array.isArray(req.files.image)
+        ? req.files.image[0]
+        : req.files.image;
     } else if (req.file) {
       image = req.file;
     }
@@ -337,7 +347,7 @@ export const handleExtractNNI: RequestHandler = async (req, res) => {
       // like Google Vision API, AWS Textract, or a custom OCR solution
       const mockProcessImage = async (imageBuffer: Buffer): Promise<string> => {
         // Simulate processing delay
-        await new Promise(resolve => setTimeout(resolve, 1500));
+        await new Promise((resolve) => setTimeout(resolve, 1500));
 
         // Mock OCR result - in real implementation, this would be actual OCR
         // You could also implement some basic pattern recognition here
@@ -346,7 +356,9 @@ export const handleExtractNNI: RequestHandler = async (req, res) => {
         // Simulate some potential errors
         const shouldError = Math.random() < 0.1; // 10% chance of error for demo
         if (shouldError) {
-          throw new Error("NNI non détecté dans l'image. Veuillez essayer avec une image plus claire.");
+          throw new Error(
+            "NNI non détecté dans l'image. Veuillez essayer avec une image plus claire.",
+          );
         }
 
         return mockNNI;
@@ -363,7 +375,9 @@ export const handleExtractNNI: RequestHandler = async (req, res) => {
       console.error("Error processing image:", imageProcessingError);
       res.status(400).json({
         success: false,
-        message: imageProcessingError.message || "Erreur lors du traitement de l'image",
+        message:
+          imageProcessingError.message ||
+          "Erreur lors du traitement de l'image",
       });
     }
   } catch (error: any) {
@@ -387,7 +401,7 @@ export const handleGetRebouclageStats: RequestHandler = async (req, res) => {
       thisMonth: 12,
       automatic: 45,
       manual: 105,
-      success_rate: 98.5
+      success_rate: 98.5,
     };
 
     res.json({
@@ -398,7 +412,8 @@ export const handleGetRebouclageStats: RequestHandler = async (req, res) => {
     console.error("Error getting rebouclage stats:", error);
     res.status(error.response?.status || 500).json({
       success: false,
-      message: error.response?.data?.message || "Error getting rebouclage stats",
+      message:
+        error.response?.data?.message || "Error getting rebouclage stats",
     });
   }
 };

@@ -17,13 +17,12 @@ import {
 import { IdentificationService } from './identification.service';
 import { Roles } from '../auth/roles.decorator';
 import { RolesGuard } from '../auth/roles.guard';
-import { Response } from 'express';
+import {Express, Response } from 'express';
 import { UserRole } from 'src/users/schemas/users/user.role';
 import { CreateIdentificationDto } from './dto/create-identification.dto';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { CurrentUser } from 'src/auth/decorators/active-user.decorator';
-import { Express } from 'express';
-import { FilesInterceptor } from '@nestjs/platform-express';
+import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import { PhotosRequiredValidator } from 'src/common/validators/photo-required-validator';
 
 @Controller('api/v1/identifications')
@@ -115,9 +114,48 @@ export class IdentificationController {
     return this.identificationService.delete(id);
   }
 
-  @Get(':id')
-  @Roles(UserRole.IDENTIFICATEUR, UserRole.ADMIN)
-  async getIdentification(@Param('id') id: string) {
-    return this.identificationService.findById(id);
+  @Post('predict')
+  @Roles(UserRole.IDENTIFICATEUR)
+  @UseInterceptors(FileInterceptor('image'))
+  async predict(
+    @UploadedFiles(
+      new ParseFilePipe({
+        validators: [
+          new PhotosRequiredValidator({}),
+          new MaxFileSizeValidator({
+            maxSize: 5 * 1024 * 1024,
+          }),
+          new FileTypeValidator({
+            fileType: /(jpg|jpeg|png)$/i,
+          }),
+        ],
+      }),
+    )
+    image: Express.Multer.File,
+  ) {
+    return await this.identificationService.predict(image);
+  }
+
+  @Get('predict')
+  @Roles(UserRole.IDENTIFICATEUR)
+  @UseInterceptors(FileInterceptor('image'))
+  async getMorphology(
+    @UploadedFiles(
+      new ParseFilePipe({
+        validators: [
+          new PhotosRequiredValidator({}),
+          new MaxFileSizeValidator({
+            maxSize: 5 * 1024 * 1024,
+          }),
+          new FileTypeValidator({
+            fileType: /(jpg|jpeg|png)$/i,
+          }),
+        ],
+      }),
+    )
+    image: Express.Multer.File,
+    cowNNI:string
+  ) {
+    return await this.identificationService.getMorphology(cowNNI,image);
   }
 }
