@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { HydratedDocument } from 'mongoose';
+import { HydratedDocument, Query, Types } from 'mongoose';
 
 @Schema({ _id: false }) 
 class Mesure {
@@ -37,10 +37,24 @@ export class DetectionMorphologique {
     required: true,
   })
   longueur_du_corps: Mesure;
+
+  @Prop({ type: Types.ObjectId, ref: 'Identification' })
+  cow_id: Types.ObjectId;
 }
 
 export type MorphologyDocument = HydratedDocument<DetectionMorphologique>
 export const MesureSchema = SchemaFactory.createForClass(Mesure);
 export const DetectionMorphologiqueSchema = SchemaFactory.createForClass(
   DetectionMorphologique,
+);
+
+DetectionMorphologiqueSchema.pre(
+  /^find/,
+  function (this: Query<any, DetectionMorphologique>, next) {
+    this.populate({
+      path: 'Identification',
+      select: 'infos_sujet',
+    });
+    next();
+  },
 );
