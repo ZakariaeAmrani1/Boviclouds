@@ -15,18 +15,19 @@ class MorphologyService {
 
   async getMorphologies(
     filters: MorphologyFilters = {},
-    pagination: PaginationParams = { page: 1, limit: 10 }
+    pagination: PaginationParams = { page: 1, limit: 10 },
   ): Promise<MorphologyListResponse> {
     const params = new URLSearchParams();
-    
+
     // Add filters
     Object.entries(filters).forEach(([key, value]) => {
       if (value) params.append(key, value.toString());
     });
-    
+    const token = localStorage.getItem("access_token");
     // Add pagination
     params.append("page", pagination.page.toString());
     params.append("limit", pagination.limit.toString());
+    params.append("token", token);
 
     const response = await fetch(`${this.baseUrl}?${params}`);
     if (!response.ok) {
@@ -43,7 +44,9 @@ class MorphologyService {
     return response.json();
   }
 
-  async processIdentificationImage(image: File): Promise<IdentificationImageResponse> {
+  async processIdentificationImage(
+    image: File,
+  ): Promise<IdentificationImageResponse> {
     const formData = new FormData();
     formData.append("image", image);
 
@@ -58,7 +61,9 @@ class MorphologyService {
     return response.json();
   }
 
-  async captureFromCamera(cameraId: string): Promise<IdentificationImageResponse> {
+  async captureFromCamera(
+    cameraId: string,
+  ): Promise<IdentificationImageResponse> {
     const response = await fetch(`${this.baseUrl}/capture-from-camera`, {
       method: "POST",
       headers: {
@@ -75,7 +80,7 @@ class MorphologyService {
 
   async processMorphologyImage(
     cow_id: string,
-    image: File
+    image: File,
   ): Promise<MorphologyImageResponse> {
     const formData = new FormData();
     formData.append("image", image);
@@ -94,15 +99,18 @@ class MorphologyService {
 
   async captureMorphologyFromCamera(
     cameraId: string,
-    cow_id: string
+    cow_id: string,
   ): Promise<MorphologyImageResponse> {
-    const response = await fetch(`${this.baseUrl}/capture-morphology-from-camera`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
+    const response = await fetch(
+      `${this.baseUrl}/capture-morphology-from-camera`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ cameraId, cow_id }),
       },
-      body: JSON.stringify({ cameraId, cow_id }),
-    });
+    );
 
     if (!response.ok) {
       throw new Error("Failed to capture morphology from camera");
@@ -150,11 +158,11 @@ class MorphologyService {
 
   async exportData(
     format: "csv" | "json" | "pdf" = "csv",
-    filters: MorphologyFilters = {}
+    filters: MorphologyFilters = {},
   ): Promise<void> {
     const params = new URLSearchParams();
     params.append("format", format);
-    
+
     Object.entries(filters).forEach(([key, value]) => {
       if (value) params.append(key, value.toString());
     });
