@@ -130,8 +130,8 @@ const Morphology: React.FC = () => {
 
       // Use mock data for now - in real implementation use:
       // const response = await morphologyService.getMorphologies(apiFilters, { page: currentPage, limit: 10 });
-      const mockData = morphologyService.getMockMorphologies();
-      setMorphologies(mockData);
+      const mockData = morphologyService.getMorphologies();
+      setMorphologies((await mockData).data.data);
       setTotalPages(1);
     } catch (error) {
       toast({

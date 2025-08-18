@@ -1,13 +1,13 @@
 import { IsString, IsDateString, IsNotEmpty, IsMongoId } from 'class-validator';
 
 export class CreateRebouclageDto {
-  @IsString()
-  @IsNotEmpty()
-  operation_id: string;
+  // @IsString()
+  // @IsNotEmpty()
+  // operation_id: string;
 
-  @IsString()
-  @IsNotEmpty()
-  id_sujet: string;
+  // @IsString()
+  // @IsNotEmpty()
+  // id_sujet: string;
 
   @IsString()
   @IsNotEmpty()
