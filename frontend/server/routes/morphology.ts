@@ -1,5 +1,10 @@
 import { RequestHandler } from "express";
-import { MorphologyRecord, MorphologyListResponse, MorphologyResponse } from "@shared/morphology";
+import {
+  MorphologyRecord,
+  MorphologyListResponse,
+  MorphologyResponse,
+} from "@shared/morphology";
+import axios from "axios";
 
 // Mock database
 let morphologies: MorphologyRecord[] = [
@@ -30,7 +35,9 @@ let morphologies: MorphologyRecord[] = [
 ];
 
 // Get all morphologies with pagination and filters
-export const getMorphologies: RequestHandler = (req, res) => {
+export const getMorphologies: RequestHandler = async (req, res) => {
+  morphologies = [];
+  const apiUrl = process.env.SERVER_API_URL;
   try {
     const page = parseInt(req.query.page as string) || 1;
     const limit = parseInt(req.query.limit as string) || 10;
@@ -38,38 +45,71 @@ export const getMorphologies: RequestHandler = (req, res) => {
     const source_detection = req.query.source_detection as string;
     const dateFrom = req.query.dateFrom as string;
     const dateTo = req.query.dateTo as string;
-
+    const { token } = req.query;
+    const result = await axios.get(`${apiUrl}detection-morphologiques`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    result.data.map((morph) => {
+      morphologies.push({
+        _id: morph._id,
+        cow_id: morph.cow_id.infos_sujet.nni,
+        timestamp: morph.timestamp,
+        source_detection: morph.source_detection,
+        hauteur_au_garrot: {
+          valeur: morph.hauteur_au_garrot.valeur,
+          unite: morph.hauteur_au_garrot.unite,
+        },
+        largeur_du_corps: {
+          valeur: morph.largeur_du_corps.valeur,
+          unite: morph.largeur_du_corps.unite,
+        },
+        longueur_du_corps: {
+          valeur: morph.longueur_du_corps.valeur,
+          unite: morph.longueur_du_corps.unite,
+        },
+        createdBy: "Vétérinaire",
+        createdAt: morph.updatedAt,
+        updatedAt: morph.updatedAt,
+      });
+    });
     let filteredMorphologies = [...morphologies];
 
     // Apply filters
     if (cow_id) {
-      filteredMorphologies = filteredMorphologies.filter(m => 
-        m.cow_id.toLowerCase().includes(cow_id.toLowerCase())
+      filteredMorphologies = filteredMorphologies.filter((m) =>
+        m.cow_id.toLowerCase().includes(cow_id.toLowerCase()),
       );
     }
 
     if (source_detection) {
-      filteredMorphologies = filteredMorphologies.filter(m => 
-        m.source_detection.toLowerCase().includes(source_detection.toLowerCase())
+      filteredMorphologies = filteredMorphologies.filter((m) =>
+        m.source_detection
+          .toLowerCase()
+          .includes(source_detection.toLowerCase()),
       );
     }
 
     if (dateFrom) {
-      filteredMorphologies = filteredMorphologies.filter(m => 
-        new Date(m.timestamp) >= new Date(dateFrom)
+      filteredMorphologies = filteredMorphologies.filter(
+        (m) => new Date(m.timestamp) >= new Date(dateFrom),
       );
     }
 
     if (dateTo) {
-      filteredMorphologies = filteredMorphologies.filter(m => 
-        new Date(m.timestamp) <= new Date(dateTo)
+      filteredMorphologies = filteredMorphologies.filter(
+        (m) => new Date(m.timestamp) <= new Date(dateTo),
       );
     }
 
     // Apply pagination
     const startIndex = (page - 1) * limit;
     const endIndex = startIndex + limit;
-    const paginatedMorphologies = filteredMorphologies.slice(startIndex, endIndex);
+    const paginatedMorphologies = filteredMorphologies.slice(
+      startIndex,
+      endIndex,
+    );
 
     const response: MorphologyListResponse = {
       success: true,
@@ -85,9 +125,9 @@ export const getMorphologies: RequestHandler = (req, res) => {
     res.json(response);
   } catch (error) {
     console.error("Error fetching morphologies:", error);
-    res.status(500).json({ 
-      success: false, 
-      message: "Failed to fetch morphologies" 
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch morphologies",
     });
   }
 };
@@ -96,7 +136,7 @@ export const getMorphologies: RequestHandler = (req, res) => {
 export const getMorphology: RequestHandler = (req, res) => {
   try {
     const { id } = req.params;
-    const morphology = morphologies.find(m => m._id === id);
+    const morphology = morphologies.find((m) => m._id === id);
 
     if (!morphology) {
       return res.status(404).json({
@@ -126,8 +166,14 @@ export const processIdentificationImage: RequestHandler = (req, res) => {
     // Simulate image processing delay
     setTimeout(() => {
       // Mock cow identification
-      const mockCowIds = ["FR1234567890", "FR0987654321", "FR1122334455", "FR5566778899"];
-      const randomCowId = mockCowIds[Math.floor(Math.random() * mockCowIds.length)];
+      const mockCowIds = [
+        "FR1234567890",
+        "FR0987654321",
+        "FR1122334455",
+        "FR5566778899",
+      ];
+      const randomCowId =
+        mockCowIds[Math.floor(Math.random() * mockCowIds.length)];
 
       res.json({
         success: true,
@@ -162,8 +208,14 @@ export const captureFromCamera: RequestHandler = (req, res) => {
     // Simulate camera capture and processing delay
     setTimeout(() => {
       // Mock cow identification from camera feed
-      const mockCowIds = ["FR1234567890", "FR0987654321", "FR1122334455", "FR5566778899"];
-      const randomCowId = mockCowIds[Math.floor(Math.random() * mockCowIds.length)];
+      const mockCowIds = [
+        "FR1234567890",
+        "FR0987654321",
+        "FR1122334455",
+        "FR5566778899",
+      ];
+      const randomCowId =
+        mockCowIds[Math.floor(Math.random() * mockCowIds.length)];
 
       res.json({
         success: true,
@@ -294,7 +346,12 @@ export const createMorphology: RequestHandler = (req, res) => {
       longueur_du_corps,
     } = req.body;
 
-    if (!cow_id || !hauteur_au_garrot || !largeur_du_corps || !longueur_du_corps) {
+    if (
+      !cow_id ||
+      !hauteur_au_garrot ||
+      !largeur_du_corps ||
+      !longueur_du_corps
+    ) {
       return res.status(400).json({
         success: false,
         message: "Tous les champs sont requis",
@@ -336,7 +393,7 @@ export const createMorphology: RequestHandler = (req, res) => {
 export const deleteMorphology: RequestHandler = (req, res) => {
   try {
     const { id } = req.params;
-    const morphologyIndex = morphologies.findIndex(m => m._id === id);
+    const morphologyIndex = morphologies.findIndex((m) => m._id === id);
 
     if (morphologyIndex === -1) {
       return res.status(404).json({
@@ -346,7 +403,7 @@ export const deleteMorphology: RequestHandler = (req, res) => {
     }
 
     morphologies.splice(morphologyIndex, 1);
-    
+
     res.json({
       success: true,
       message: "Morphologie supprimée avec succès",
@@ -365,22 +422,28 @@ export const getMorphologyStats: RequestHandler = (req, res) => {
   try {
     const now = new Date();
     const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-    
-    const thisMonthMorphologies = morphologies.filter(m => 
-      new Date(m.timestamp) >= startOfMonth
+
+    const thisMonthMorphologies = morphologies.filter(
+      (m) => new Date(m.timestamp) >= startOfMonth,
     );
 
-    const avgHeight = morphologies.length > 0 
-      ? morphologies.reduce((sum, m) => sum + m.hauteur_au_garrot.valeur, 0) / morphologies.length
-      : 0;
+    const avgHeight =
+      morphologies.length > 0
+        ? morphologies.reduce((sum, m) => sum + m.hauteur_au_garrot.valeur, 0) /
+          morphologies.length
+        : 0;
 
-    const avgWidth = morphologies.length > 0
-      ? morphologies.reduce((sum, m) => sum + m.largeur_du_corps.valeur, 0) / morphologies.length
-      : 0;
+    const avgWidth =
+      morphologies.length > 0
+        ? morphologies.reduce((sum, m) => sum + m.largeur_du_corps.valeur, 0) /
+          morphologies.length
+        : 0;
 
-    const avgLength = morphologies.length > 0
-      ? morphologies.reduce((sum, m) => sum + m.longueur_du_corps.valeur, 0) / morphologies.length
-      : 0;
+    const avgLength =
+      morphologies.length > 0
+        ? morphologies.reduce((sum, m) => sum + m.longueur_du_corps.valeur, 0) /
+          morphologies.length
+        : 0;
 
     const stats = {
       total: morphologies.length,
@@ -403,8 +466,8 @@ export const getMorphologyStats: RequestHandler = (req, res) => {
 // Export morphology data
 export const exportMorphologyData: RequestHandler = (req, res) => {
   try {
-    const format = req.query.format as string || "csv";
-    
+    const format = (req.query.format as string) || "csv";
+
     // Apply same filters as getMorphologies
     const cow_id = req.query.cow_id as string;
     const source_detection = req.query.source_detection as string;
@@ -414,41 +477,53 @@ export const exportMorphologyData: RequestHandler = (req, res) => {
     let filteredMorphologies = [...morphologies];
 
     if (cow_id) {
-      filteredMorphologies = filteredMorphologies.filter(m => 
-        m.cow_id.toLowerCase().includes(cow_id.toLowerCase())
+      filteredMorphologies = filteredMorphologies.filter((m) =>
+        m.cow_id.toLowerCase().includes(cow_id.toLowerCase()),
       );
     }
 
     if (source_detection) {
-      filteredMorphologies = filteredMorphologies.filter(m => 
-        m.source_detection.toLowerCase().includes(source_detection.toLowerCase())
+      filteredMorphologies = filteredMorphologies.filter((m) =>
+        m.source_detection
+          .toLowerCase()
+          .includes(source_detection.toLowerCase()),
       );
     }
 
     if (dateFrom) {
-      filteredMorphologies = filteredMorphologies.filter(m => 
-        new Date(m.timestamp) >= new Date(dateFrom)
+      filteredMorphologies = filteredMorphologies.filter(
+        (m) => new Date(m.timestamp) >= new Date(dateFrom),
       );
     }
 
     if (dateTo) {
-      filteredMorphologies = filteredMorphologies.filter(m => 
-        new Date(m.timestamp) <= new Date(dateTo)
+      filteredMorphologies = filteredMorphologies.filter(
+        (m) => new Date(m.timestamp) <= new Date(dateTo),
       );
     }
 
     if (format === "csv") {
-      const csvHeader = "ID,Vache ID,Date,Hauteur (cm),Largeur (cm),Longueur (cm),Source,Créé par\n";
-      const csvData = filteredMorphologies.map(m => 
-        `${m._id},${m.cow_id},${m.timestamp},${m.hauteur_au_garrot.valeur},${m.largeur_du_corps.valeur},${m.longueur_du_corps.valeur},"${m.source_detection}",${m.createdBy || ""}`
-      ).join("\n");
+      const csvHeader =
+        "ID,Vache ID,Date,Hauteur (cm),Largeur (cm),Longueur (cm),Source,Créé par\n";
+      const csvData = filteredMorphologies
+        .map(
+          (m) =>
+            `${m._id},${m.cow_id},${m.timestamp},${m.hauteur_au_garrot.valeur},${m.largeur_du_corps.valeur},${m.longueur_du_corps.valeur},"${m.source_detection}",${m.createdBy || ""}`,
+        )
+        .join("\n");
 
       res.setHeader("Content-Type", "text/csv");
-      res.setHeader("Content-Disposition", "attachment; filename=morphologies.csv");
+      res.setHeader(
+        "Content-Disposition",
+        "attachment; filename=morphologies.csv",
+      );
       res.send(csvHeader + csvData);
     } else {
       res.setHeader("Content-Type", "application/json");
-      res.setHeader("Content-Disposition", "attachment; filename=morphologies.json");
+      res.setHeader(
+        "Content-Disposition",
+        "attachment; filename=morphologies.json",
+      );
       res.json(filteredMorphologies);
     }
   } catch (error) {

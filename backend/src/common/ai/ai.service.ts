@@ -6,19 +6,22 @@ import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class AIService {
-  private readonly modelDomain: string;
+  private modelDomain: string;
 
   constructor(
     private readonly httpService: HttpService,
     private readonly configService: ConfigService,
   ) {
-    this.modelDomain = this.configService.get<string>('MUZZLE_MODEL_HOST') as string;
+    this.modelDomain = this.configService.get<string>(
+      'MUZZLE_MODEL_DOMAIN',
+    ) as string;
   }
 
   private async sendToModel(
     endpoint: string,
     formFields: Record<string, any>,
   ): Promise<any> {
+    console.log(this.modelDomain);
     if (!this.modelDomain) {
       throw new BadRequestException(
         "Couldn't send data to AI model — missing model domain",
