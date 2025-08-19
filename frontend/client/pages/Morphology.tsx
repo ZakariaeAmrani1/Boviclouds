@@ -95,7 +95,9 @@ const Morphology: React.FC = () => {
   const [capturedMorphologyImage, setCapturedMorphologyImage] = useState<
     string | null
   >(null);
-  const [identificationFile, setIdentificationFile] = useState<File | null>(null);
+  const [identificationFile, setIdentificationFile] = useState<File | null>(
+    null,
+  );
   const [morphologyFile, setMorphologyFile] = useState<File | null>(null);
 
   // Camera states
@@ -264,7 +266,8 @@ const Morphology: React.FC = () => {
       if (!capturedIdentificationImage) {
         toast({
           title: "Erreur",
-          description: "Veuillez capturer ou importer une image d'identification",
+          description:
+            "Veuillez capturer ou importer une image d'identification",
           variant: "destructive",
         });
         return;
@@ -277,7 +280,10 @@ const Morphology: React.FC = () => {
         // Check if we have a file upload or camera capture
         if (identificationFile) {
           // Use file upload method
-          response = await morphologyService.processIdentificationImage(identificationFile);
+          response =
+            await morphologyService.processIdentificationImage(
+              identificationFile,
+            );
         } else {
           // Use camera capture method
           const identificationCamera = identificationCameras[0];
@@ -289,7 +295,9 @@ const Morphology: React.FC = () => {
             });
             return;
           }
-          response = await morphologyService.captureFromCamera(identificationCamera.id);
+          response = await morphologyService.captureFromCamera(
+            identificationCamera.id,
+          );
         }
 
         if (response.success && response.data) {
@@ -328,7 +336,10 @@ const Morphology: React.FC = () => {
         // Check if we have a file upload or camera capture
         if (morphologyFile) {
           // Use file upload method
-          response = await morphologyService.processMorphologyImage(formData.cow_id, morphologyFile);
+          response = await morphologyService.processMorphologyImage(
+            formData.cow_id,
+            morphologyFile,
+          );
         } else {
           // Use camera capture method
           const morphologyCamera = morphologyCameras[0];
@@ -340,7 +351,10 @@ const Morphology: React.FC = () => {
             });
             return;
           }
-          response = await morphologyService.captureMorphologyFromCamera(morphologyCamera.id, formData.cow_id);
+          response = await morphologyService.captureMorphologyFromCamera(
+            morphologyCamera.id,
+            formData.cow_id,
+          );
         }
 
         if (response.success && response.data) {
@@ -455,19 +469,28 @@ const Morphology: React.FC = () => {
             </div>
 
             <ImageCaptureOptions
-              camera={identificationCameras.length > 0 ? identificationCameras[0] : undefined}
+              camera={
+                identificationCameras.length > 0
+                  ? identificationCameras[0]
+                  : undefined
+              }
               onCapture={(imageData) => {
                 setCapturedIdentificationImage(imageData);
               }}
               onFileUpload={(file) => {
                 setIdentificationFile(file);
-                setFormData((prev) => ({ ...prev, identification_image: file }));
+                setFormData((prev) => ({
+                  ...prev,
+                  identification_image: file,
+                }));
               }}
               capturing={stepLoading}
               captured={!!capturedIdentificationImage}
               title="Caméra d'Identification"
               description="Capturez une image claire du museau de la vache ou importez une image"
-              defaultMode={identificationCameras.length > 0 ? "camera" : "upload"}
+              defaultMode={
+                identificationCameras.length > 0 ? "camera" : "upload"
+              }
             />
           </div>
         );
@@ -496,7 +519,9 @@ const Morphology: React.FC = () => {
             </div>
 
             <ImageCaptureOptions
-              camera={morphologyCameras.length > 0 ? morphologyCameras[0] : undefined}
+              camera={
+                morphologyCameras.length > 0 ? morphologyCameras[0] : undefined
+              }
               onCapture={(imageData) => {
                 setCapturedMorphologyImage(imageData);
               }}
