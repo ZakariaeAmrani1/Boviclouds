@@ -155,8 +155,7 @@ export class IdentificationController {
       }),
     )
     image: Express.Multer.File,
-    @Param('cownni') cowNNI: string,
   ) {
-    return await this.identificationService.getMorphology(cowNNI, image);
+    return await this.identificationService.getMorphology(image);
   }
 }
