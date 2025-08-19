@@ -21,12 +21,6 @@ export class AIService {
     endpoint: string,
     formFields: Record<string, any>,
   ): Promise<any> {
-    if (!this.modelDomain) {
-      throw new BadRequestException(
-        "Couldn't send data to AI model — missing model domain",
-      );
-    }
-
     try {
       const formData = new FormData();
 
@@ -49,7 +43,7 @@ export class AIService {
       );
 
       if (response.status !== 200) {
-        throw new BadRequestException(
+        return new BadRequestException(
           `Couldn't send data to AI model — model returned status ${response.status}`,
         );
       }
@@ -60,7 +54,7 @@ export class AIService {
         `Error sending data to AI model (${endpoint}):`,
         error?.response?.data || error,
       );
-      throw new BadRequestException(
+      return new BadRequestException(
         `Couldn't send data to AI model — request to ${endpoint} failed`,
       );
     }
