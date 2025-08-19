@@ -265,33 +265,85 @@ class MorphologyService {
     };
   }
 
-  // Override methods to use mock data in development
+  // Enhanced methods that can use mock data in development
   async processIdentificationImage(image: File): Promise<IdentificationImageResponse> {
     if (process.env.NODE_ENV === 'development') {
       return this.getMockIdentificationResponse();
     }
-    return super.processIdentificationImage(image);
+
+    const formData = new FormData();
+    formData.append("image", image);
+
+    const response = await fetch(`${this.baseUrl}/process-identification`, {
+      method: "POST",
+      body: formData,
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to process identification image");
+    }
+    return response.json();
   }
 
   async captureFromCamera(cameraId: string): Promise<IdentificationImageResponse> {
     if (process.env.NODE_ENV === 'development') {
       return this.getMockIdentificationResponse();
     }
-    return super.captureFromCamera(cameraId);
+
+    const response = await fetch(`${this.baseUrl}/capture-from-camera`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ cameraId }),
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to capture from camera");
+    }
+    return response.json();
   }
 
   async processMorphologyImage(cow_id: string, image: File): Promise<MorphologyImageResponse> {
     if (process.env.NODE_ENV === 'development') {
       return this.getMockMorphologyResponse();
     }
-    return super.processMorphologyImage(cow_id, image);
+
+    const formData = new FormData();
+    formData.append("image", image);
+    formData.append("cow_id", cow_id);
+
+    const response = await fetch(`${this.baseUrl}/process-morphology`, {
+      method: "POST",
+      body: formData,
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to process morphology image");
+    }
+    return response.json();
   }
 
   async captureMorphologyFromCamera(cameraId: string, cow_id: string): Promise<MorphologyImageResponse> {
     if (process.env.NODE_ENV === 'development') {
       return this.getMockMorphologyResponse();
     }
-    return super.captureMorphologyFromCamera(cameraId, cow_id);
+
+    const response = await fetch(
+      `${this.baseUrl}/capture-morphology-from-camera`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ cameraId, cow_id }),
+      },
+    );
+
+    if (!response.ok) {
+      throw new Error("Failed to capture morphology from camera");
+    }
+    return response.json();
   }
 }
 
