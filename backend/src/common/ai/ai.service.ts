@@ -43,18 +43,18 @@ export class AIService {
       );
 
       if (response.status !== 200) {
-        return new BadRequestException(
+        throw new BadRequestException(
           `Couldn't send data to AI model — model returned status ${response.status}`,
         );
       }
 
       return response.data;
     } catch (error) {
-      console.error(
-        `Error sending data to AI model (${endpoint}):`,
-        error?.response?.data || error,
-      );
-      return new BadRequestException(
+      // console.error(
+      //   `Error sending data to AI model (${endpoint}):`,
+      //   error?.response?.data || error,
+      // );
+      throw new BadRequestException(
         `Couldn't send data to AI model — request to ${endpoint} failed`,
       );
     }
