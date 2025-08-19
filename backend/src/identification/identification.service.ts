@@ -181,8 +181,9 @@ export class IdentificationService {
     return prediction;
   }
 
-  async getMorphology(cowNNI:string,image:Express.Multer.File){
+  async getMorphology(image:Express.Multer.File){
     const prediction = await this.aiService.getCowMorphology(image);
     if(!prediction) throw new BadRequestException("Couldn't get cow morphology with coresponding image!");
+    return prediction;
   }
 }
