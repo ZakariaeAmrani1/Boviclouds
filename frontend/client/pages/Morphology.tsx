@@ -262,7 +262,7 @@ const Morphology: React.FC = () => {
       if (!capturedIdentificationImage) {
         toast({
           title: "Erreur",
-          description: "Veuillez capturer une image d'identification",
+          description: "Veuillez capturer ou importer une image d'identification",
           variant: "destructive",
         });
         return;
@@ -270,11 +270,25 @@ const Morphology: React.FC = () => {
 
       try {
         setStepLoading(true);
-        // Use the camera capture method instead of file upload
-        const identificationCamera = identificationCameras[0];
-        const response = await morphologyService.captureFromCamera(
-          identificationCamera.id,
-        );
+        let response;
+
+        // Check if we have a file upload or camera capture
+        if (identificationFile) {
+          // Use file upload method
+          response = await morphologyService.processIdentificationImage(identificationFile);
+        } else {
+          // Use camera capture method
+          const identificationCamera = identificationCameras[0];
+          if (!identificationCamera) {
+            toast({
+              title: "Erreur",
+              description: "Aucune caméra d'identification disponible",
+              variant: "destructive",
+            });
+            return;
+          }
+          response = await morphologyService.captureFromCamera(identificationCamera.id);
+        }
 
         if (response.success && response.data) {
           setFormData((prev) => ({ ...prev, cow_id: response.data!.cow_id }));
@@ -299,7 +313,7 @@ const Morphology: React.FC = () => {
       if (!capturedMorphologyImage) {
         toast({
           title: "Erreur",
-          description: "Veuillez capturer une image de morphologie",
+          description: "Veuillez capturer ou importer une image de morphologie",
           variant: "destructive",
         });
         return;
@@ -307,12 +321,25 @@ const Morphology: React.FC = () => {
 
       try {
         setStepLoading(true);
-        // Use the camera capture method for morphology
-        const morphologyCamera = morphologyCameras[0];
-        const response = await morphologyService.captureMorphologyFromCamera(
-          morphologyCamera.id,
-          formData.cow_id,
-        );
+        let response;
+
+        // Check if we have a file upload or camera capture
+        if (morphologyFile) {
+          // Use file upload method
+          response = await morphologyService.processMorphologyImage(formData.cow_id, morphologyFile);
+        } else {
+          // Use camera capture method
+          const morphologyCamera = morphologyCameras[0];
+          if (!morphologyCamera) {
+            toast({
+              title: "Erreur",
+              description: "Aucune caméra de morphologie disponible",
+              variant: "destructive",
+            });
+            return;
+          }
+          response = await morphologyService.captureMorphologyFromCamera(morphologyCamera.id, formData.cow_id);
+        }
 
         if (response.success && response.data) {
           setFormData((prev) => ({ ...prev, measurements: response.data }));
