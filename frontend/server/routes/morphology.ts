@@ -161,7 +161,7 @@ export const getMorphology: RequestHandler = (req, res) => {
 };
 
 // Process identification image (Step 1)
-export const processIdentificationImage: RequestHandler = (req, res) => {
+export const processIdentificationImage: RequestHandler = async (req, res) => {
   try {
     // Simulate image processing delay
     setTimeout(() => {

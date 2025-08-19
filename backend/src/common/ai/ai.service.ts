@@ -7,13 +7,16 @@ import { ConfigService } from '@nestjs/config';
 @Injectable()
 export class AIService {
   private readonly modelDomain: string;
-
+  private readonly modelDomain1: string;
   constructor(
     private readonly httpService: HttpService,
     private readonly configService: ConfigService,
   ) {
     this.modelDomain = this.configService.get<string>(
       'MUZZLE_MODEL_DOMAIN',
+    ) as string;
+    this.modelDomain1 = this.configService.get<string>(
+      'MUZZLE_MODEL_DOMAIN1',
     ) as string;
   }
 
@@ -23,7 +26,6 @@ export class AIService {
   ): Promise<any> {
     try {
       const formData = new FormData();
-
       for (const [key, value] of Object.entries(formFields)) {
         if (value && (value as Express.Multer.File).buffer) {
           const file = value as Express.Multer.File;
@@ -35,20 +37,31 @@ export class AIService {
           formData.append(key, value);
         }
       }
-
-      const response = await firstValueFrom(
-        this.httpService.post(`${this.modelDomain}${endpoint}`, formData, {
-          headers: formData.getHeaders(),
-        }),
-      );
-
-      if (response.status !== 200) {
-        throw new BadRequestException(
-          `Couldn't send data to AI model — model returned status ${response.status}`,
+      if (endpoint === '/get-morph') {
+        const response = await firstValueFrom(
+          this.httpService.post(`${this.modelDomain1}${endpoint}`, formData, {
+            headers: formData.getHeaders(),
+          }),
         );
+        if (response.status !== 200) {
+          throw new BadRequestException(
+            `Couldn't send data to AI model — model returned status ${response.status}`,
+          );
+        }
+        return response.data;
+      } else {
+        const response = await firstValueFrom(
+          this.httpService.post(`${this.modelDomain}${endpoint}`, formData, {
+            headers: formData.getHeaders(),
+          }),
+        );
+        if (response.status !== 200) {
+          throw new BadRequestException(
+            `Couldn't send data to AI model — model returned status ${response.status}`,
+          );
+        }
+        return response.data;
       }
-
-      return response.data;
     } catch (error) {
       // console.error(
       //   `Error sending data to AI model (${endpoint}):`,
