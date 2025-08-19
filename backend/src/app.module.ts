@@ -17,10 +17,11 @@ import { LactationModule } from './lactation/lactation.module';
 import { RacesModule } from './races/races.module';
 import { StatsModule } from './stats/stats.module';
 import { MorphologieModule } from './morphologie/morphologie.module';
+import { validationSchema } from './common/validators/config/validation';
 
 @Module({
   imports: [
-    ConfigModule.forRoot({ isGlobal: true }),
+    ConfigModule.forRoot({ isGlobal: true, validationSchema }),
     MongooseModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({
