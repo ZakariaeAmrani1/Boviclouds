@@ -226,6 +226,73 @@ class MorphologyService {
       },
     ];
   }
+
+  // Mock implementations for development
+  async getMockIdentificationResponse(): Promise<IdentificationImageResponse> {
+    // Simulate processing delay
+    await new Promise(resolve => setTimeout(resolve, 1500));
+
+    return {
+      success: true,
+      data: {
+        cow_id: `FR${Math.floor(Math.random() * 1000000000).toString().padStart(9, '0')}`,
+        confidence: 0.85 + Math.random() * 0.15, // 85-100% confidence
+      }
+    };
+  }
+
+  async getMockMorphologyResponse(): Promise<MorphologyImageResponse> {
+    // Simulate processing delay
+    await new Promise(resolve => setTimeout(resolve, 2000));
+
+    return {
+      success: true,
+      data: {
+        hauteur_au_garrot: {
+          valeur: Math.floor(110 + Math.random() * 30), // 110-140 cm
+          unite: "cm"
+        },
+        largeur_du_corps: {
+          valeur: Math.floor(50 + Math.random() * 15), // 50-65 cm
+          unite: "cm"
+        },
+        longueur_du_corps: {
+          valeur: Math.floor(130 + Math.random() * 25), // 130-155 cm
+          unite: "cm"
+        },
+        confidence: 0.80 + Math.random() * 0.20, // 80-100% confidence
+      }
+    };
+  }
+
+  // Override methods to use mock data in development
+  async processIdentificationImage(image: File): Promise<IdentificationImageResponse> {
+    if (process.env.NODE_ENV === 'development') {
+      return this.getMockIdentificationResponse();
+    }
+    return super.processIdentificationImage(image);
+  }
+
+  async captureFromCamera(cameraId: string): Promise<IdentificationImageResponse> {
+    if (process.env.NODE_ENV === 'development') {
+      return this.getMockIdentificationResponse();
+    }
+    return super.captureFromCamera(cameraId);
+  }
+
+  async processMorphologyImage(cow_id: string, image: File): Promise<MorphologyImageResponse> {
+    if (process.env.NODE_ENV === 'development') {
+      return this.getMockMorphologyResponse();
+    }
+    return super.processMorphologyImage(cow_id, image);
+  }
+
+  async captureMorphologyFromCamera(cameraId: string, cow_id: string): Promise<MorphologyImageResponse> {
+    if (process.env.NODE_ENV === 'development') {
+      return this.getMockMorphologyResponse();
+    }
+    return super.captureMorphologyFromCamera(cameraId, cow_id);
+  }
 }
 
 export const morphologyService = new MorphologyService();
