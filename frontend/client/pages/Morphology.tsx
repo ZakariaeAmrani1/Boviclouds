@@ -53,7 +53,7 @@ import {
 import { useToast } from "../hooks/use-toast";
 import { morphologyService } from "../services/morphologyService";
 import { cctvService } from "../services/cctvService";
-import CameraCapture from "../components/CameraCapture";
+import PhotoCapture from "../components/PhotoCapture";
 import {
   MorphologyRecord,
   MorphologyFormStep,
@@ -421,26 +421,17 @@ const Morphology: React.FC = () => {
               </p>
             </div>
 
-            {identificationCameras.length > 0 ? (
-              <CameraCapture
-                camera={identificationCameras[0]}
-                onCapture={(imageData) => {
-                  setCapturedIdentificationImage(imageData);
-                }}
-                capturing={stepLoading}
-                captured={!!capturedIdentificationImage}
-                title="Caméra d'Identification"
-                description="Capturez une image claire du museau de la vache"
-              />
-            ) : (
-              <div className="text-center p-6 bg-red-50 rounded-lg border border-red-200">
-                <AlertTriangle className="w-8 h-8 mx-auto mb-2 text-red-500" />
-                <p className="text-red-600">
-                  Aucune caméra d'identification en ligne. Veuillez vérifier la
-                  configuration des caméras.
-                </p>
-              </div>
-            )}
+            <PhotoCapture
+              onCapture={(imageData) => {
+                setCapturedIdentificationImage(imageData);
+              }}
+              capturing={stepLoading}
+              captured={!!capturedIdentificationImage}
+              title="Capture d'identification"
+              description="Capturez ou importez une image claire du museau de la vache"
+              maxFileSize={10}
+              acceptedFormats={["image/jpeg", "image/jpg", "image/png", "image/webp"]}
+            />
           </div>
         );
 
@@ -467,26 +458,17 @@ const Morphology: React.FC = () => {
               </div>
             </div>
 
-            {morphologyCameras.length > 0 ? (
-              <CameraCapture
-                camera={morphologyCameras[0]}
-                onCapture={(imageData) => {
-                  setCapturedMorphologyImage(imageData);
-                }}
-                capturing={stepLoading}
-                captured={!!capturedMorphologyImage}
-                title="Caméra de Morphologie"
-                description="Capturez une image complète de la vache en position debout"
-              />
-            ) : (
-              <div className="text-center p-6 bg-red-50 rounded-lg border border-red-200">
-                <AlertTriangle className="w-8 h-8 mx-auto mb-2 text-red-500" />
-                <p className="text-red-600">
-                  Aucune caméra de morphologie en ligne. Veuillez vérifier la
-                  configuration des caméras.
-                </p>
-              </div>
-            )}
+            <PhotoCapture
+              onCapture={(imageData) => {
+                setCapturedMorphologyImage(imageData);
+              }}
+              capturing={stepLoading}
+              captured={!!capturedMorphologyImage}
+              title="Capture de morphologie"
+              description="Capturez ou importez une image complète de la vache en position debout"
+              maxFileSize={10}
+              acceptedFormats={["image/jpeg", "image/jpg", "image/png", "image/webp"]}
+            />
           </div>
         );
 
