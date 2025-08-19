@@ -183,8 +183,22 @@ class MorphologyService {
     document.body.removeChild(a);
   }
 
-  // Mock data for demonstration
-  getMockMorphologies(): MorphologyRecord[] {
+  // Mock data for development and demonstration
+  getMockMorphologies(): Promise<MorphologyListResponse> {
+    const mockData = this.getMockMorphologyRecords();
+    return Promise.resolve({
+      success: true,
+      data: {
+        data: mockData,
+        total: mockData.length,
+        page: 1,
+        limit: 10,
+        totalPages: 1,
+      }
+    });
+  }
+
+  getMockMorphologyRecords(): MorphologyRecord[] {
     return [
       {
         _id: "morph-1",
