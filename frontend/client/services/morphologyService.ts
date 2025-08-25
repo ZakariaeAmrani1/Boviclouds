@@ -44,80 +44,6 @@ class MorphologyService {
     return response.json();
   }
 
-  async processIdentificationImage(
-    image: File,
-  ): Promise<IdentificationImageResponse> {
-    const formData = new FormData();
-    formData.append("image", image);
-
-    const response = await fetch(`${this.baseUrl}/process-identification`, {
-      method: "POST",
-      body: formData,
-    });
-
-    if (!response.ok) {
-      throw new Error("Failed to process identification image");
-    }
-    return response.json();
-  }
-
-  async captureFromCamera(
-    cameraId: string,
-  ): Promise<IdentificationImageResponse> {
-    const response = await fetch(`${this.baseUrl}/capture-from-camera`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ cameraId }),
-    });
-
-    if (!response.ok) {
-      throw new Error("Failed to capture from camera");
-    }
-    return response.json();
-  }
-
-  async processMorphologyImage(
-    cow_id: string,
-    image: File,
-  ): Promise<MorphologyImageResponse> {
-    const formData = new FormData();
-    formData.append("image", image);
-    formData.append("cow_id", cow_id);
-
-    const response = await fetch(`${this.baseUrl}/process-morphology`, {
-      method: "POST",
-      body: formData,
-    });
-
-    if (!response.ok) {
-      throw new Error("Failed to process morphology image");
-    }
-    return response.json();
-  }
-
-  async captureMorphologyFromCamera(
-    cameraId: string,
-    cow_id: string,
-  ): Promise<MorphologyImageResponse> {
-    const response = await fetch(
-      `${this.baseUrl}/capture-morphology-from-camera`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ cameraId, cow_id }),
-      },
-    );
-
-    if (!response.ok) {
-      throw new Error("Failed to capture morphology from camera");
-    }
-    return response.json();
-  }
-
   async createMorphology(data: {
     cow_id: string;
     source_detection: string;
@@ -183,8 +109,22 @@ class MorphologyService {
     document.body.removeChild(a);
   }
 
-  // Mock data for demonstration
-  getMockMorphologies(): MorphologyRecord[] {
+  // Mock data for development and demonstration
+  getMockMorphologies(): Promise<MorphologyListResponse> {
+    const mockData = this.getMockMorphologyRecords();
+    return Promise.resolve({
+      success: true,
+      data: {
+        data: mockData,
+        total: mockData.length,
+        page: 1,
+        limit: 10,
+        totalPages: 1,
+      },
+    });
+  }
+
+  getMockMorphologyRecords(): MorphologyRecord[] {
     return [
       {
         _id: "morph-1",
@@ -211,6 +151,151 @@ class MorphologyService {
         updatedAt: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
       },
     ];
+  }
+
+  // Mock implementations for development
+  async getMockIdentificationResponse(): Promise<IdentificationImageResponse> {
+    // Simulate processing delay
+    await new Promise((resolve) => setTimeout(resolve, 1500));
+
+    return {
+      success: true,
+      data: {
+        cow_id: `FR${Math.floor(Math.random() * 1000000000)
+          .toString()
+          .padStart(9, "0")}`,
+        confidence: 0.85 + Math.random() * 0.15, // 85-100% confidence
+      },
+    };
+  }
+
+  async getMockMorphologyResponse(): Promise<MorphologyImageResponse> {
+    // Simulate processing delay
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+
+    return {
+      success: true,
+      data: {
+        hauteur_au_garrot: {
+          valeur: Math.floor(110 + Math.random() * 30), // 110-140 cm
+          unite: "cm",
+        },
+        largeur_du_corps: {
+          valeur: Math.floor(50 + Math.random() * 15), // 50-65 cm
+          unite: "cm",
+        },
+        longueur_du_corps: {
+          valeur: Math.floor(130 + Math.random() * 25), // 130-155 cm
+          unite: "cm",
+        },
+        confidence: 0.8 + Math.random() * 0.2, // 80-100% confidence
+      },
+    };
+  }
+
+  // Enhanced methods that can use mock data in development
+  async processIdentificationImage(
+    image: File,
+  ): Promise<IdentificationImageResponse> {
+    const apiUrl = import.meta.env.VITE_API_URL;
+    const token = localStorage.getItem("access_token");
+    const formData = new FormData();
+    formData.append("image", image);
+
+    // const response = await fetch(`${this.baseUrl}/process-identification`, {
+    //   method: "POST",
+    //   body: formData,
+    // });
+
+    const res = await fetch(`${apiUrl}identifications/predict`, {
+      method: "POST",
+      body: formData,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    const data = await res.json();
+
+    if (!data.prediction) {
+      throw new Error("Failed to process identification image");
+    }
+    return {
+      success: true,
+      data: {
+        cow_id: data.prediction,
+        confidence: 0.95,
+      },
+      message: "Vache identifiée avec succès",
+    };
+  }
+
+  async captureFromCamera(
+    cameraId: string,
+  ): Promise<IdentificationImageResponse> {
+    if (process.env.NODE_ENV === "development") {
+      return this.getMockIdentificationResponse();
+    }
+
+    const response = await fetch(`${this.baseUrl}/capture-from-camera`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ cameraId }),
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to capture from camera");
+    }
+    return response.json();
+  }
+
+  async processMorphologyImage(
+    cow_id: string,
+    image: File,
+  ): Promise<MorphologyImageResponse> {
+    if (process.env.NODE_ENV === "development") {
+      return this.getMockMorphologyResponse();
+    }
+
+    const formData = new FormData();
+    formData.append("image", image);
+    formData.append("cow_id", cow_id);
+
+    const response = await fetch(`${this.baseUrl}/process-morphology`, {
+      method: "POST",
+      body: formData,
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to process morphology image");
+    }
+    return response.json();
+  }
+
+  async captureMorphologyFromCamera(
+    cameraId: string,
+    cow_id: string,
+  ): Promise<MorphologyImageResponse> {
+    if (process.env.NODE_ENV === "development") {
+      return this.getMockMorphologyResponse();
+    }
+
+    const response = await fetch(
+      `${this.baseUrl}/capture-morphology-from-camera`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ cameraId, cow_id }),
+      },
+    );
+
+    if (!response.ok) {
+      throw new Error("Failed to capture morphology from camera");
+    }
+    return response.json();
   }
 }
 
