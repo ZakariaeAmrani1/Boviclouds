@@ -263,6 +263,7 @@ class MorphologyService {
     const apiUrl = import.meta.env.VITE_API_URL;
     const token = localStorage.getItem("access_token");
 
+
     const formData = new FormData();
     formData.append("image", image);
     formData.append("cow_id", cow_id);
