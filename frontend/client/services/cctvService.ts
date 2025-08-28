@@ -233,6 +233,7 @@ class CCTVService {
     const cameras = [];
     try {
       const apiUrl = import.meta.env.VITE_API_URL1;
+      const apiUrl1 = import.meta.env.VITE_API_URL2;
       const response = await axios.get(`${apiUrl}cameras`);
       const data = response.data;
       data.map((camera) => {
@@ -250,7 +251,10 @@ class CCTVService {
                 ? CameraType.IDENTIFICATION
                 : CameraType.MORPHOLOGY,
           isOnline: true,
-          streamUrl: `${apiUrl}video/${camera.index}`,
+          streamUrl:
+            camera.type !== "default"
+              ? `${apiUrl}video/${camera.index}`
+              : `${apiUrl1}process-stream/?stream_url=${apiUrl}video/${camera.index}`,
           webRTCUrl: `${apiUrl}webrtc/${camera.index}`,
           isRecording: true,
           lastActivity: new Date(),
@@ -258,6 +262,7 @@ class CCTVService {
           updatedAt: new Date(),
         });
       });
+      console.log(cameras);
       return cameras;
     } catch (error) {
       console.log(error);
