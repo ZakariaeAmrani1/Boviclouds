@@ -137,7 +137,7 @@ export class IdentificationController {
     return await this.identificationService.predict(image);
   }
 
-  @Get('get-morphology')
+  @Post('get-morphology')
   @Roles(UserRole.IDENTIFICATEUR, UserRole.ADMIN)
   @UseInterceptors(FileInterceptor('image'))
   async getMorphology(
