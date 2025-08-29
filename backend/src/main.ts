@@ -22,13 +22,13 @@ async function bootstrap() {
  
   // app.useGlobalGuards(new RolesGuard(app.get(Reflector)));
   app.useGlobalFilters(new AllExceptionsFilter());
-  app.useStaticAssets(join(__dirname, '..', 'uploads'), {
-    prefix: '/uploads/',
-  });
+  // app.useStaticAssets(join(__dirname, '..', 'uploads'), {
+  //   prefix: '/uploads/',
+  // });
 
   await app.listen(process.env.PORT ?? 3000);
   console.log(process.env.NODE_ENV);
-  if (process.env.NODE_ENV === 'developement') {
+  if (process.env.NODE_ENV === 'development') {
     app.use(morgan('dev'));
   }
 }

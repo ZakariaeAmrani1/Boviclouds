@@ -5,7 +5,7 @@ import { Transporter } from 'nodemailer';
 import { convert } from 'html-to-text';
 import { ConfigService } from '@nestjs/config';
 import * as path from 'path';
-import * as fs from 'fs/promises'; 
+import * as fs from 'fs/promises';
 import { User } from 'src/users/schemas/users/user.schema';
 
 // EmailUser is just an alias/extension of User
@@ -37,7 +37,7 @@ export class EmailService {
   ) {
     try {
       // 1. Read the HTML template file
-      const baseDir = process.env.NODE_ENV === 'production' ? 'dist' : 'src';
+      const baseDir = process.env.NODE_ENV === 'production' ? 'dist/src' : 'src';
 
       const templatePath = path.join(
         process.cwd(),
@@ -150,7 +150,11 @@ export class EmailService {
       },
     );
   }
-  async sendAccountCreationEmail(user: EmailUser, password: string, link: string) {
+  async sendAccountCreationEmail(
+    user: EmailUser,
+    password: string,
+    link: string,
+  ) {
     const displayFirstName =
       `${user.prenom_lat || ''} ${user.prenom_ar ? `(${user.prenom_ar})` : ''}`.trim();
 
