@@ -4,7 +4,8 @@ import * as morgan from 'morgan';
 import { ValidationPipe } from '@nestjs/common';
 import { AllExceptionsFilter } from './filters/all-exceptions.filter';
 import { NestExpressApplication } from '@nestjs/platform-express';
-import { join } from 'path';
+import helmet from 'helmet';
+
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
   app.useGlobalPipes(
@@ -19,12 +20,10 @@ async function bootstrap() {
     origin: '*',
     credentials: true,
   });
+  app.use(helmet());
  
   // app.useGlobalGuards(new RolesGuard(app.get(Reflector)));
   app.useGlobalFilters(new AllExceptionsFilter());
-  // app.useStaticAssets(join(__dirname, '..', 'uploads'), {
-  //   prefix: '/uploads/',
-  // });
 
   await app.listen(process.env.PORT ?? 3000);
   console.log(process.env.NODE_ENV);

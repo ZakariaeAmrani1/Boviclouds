@@ -18,6 +18,8 @@ import { RacesModule } from './races/races.module';
 import { StatsModule } from './stats/stats.module';
 import { MorphologieModule } from './morphologie/morphologie.module';
 import { validationSchema } from './common/validators/config/validation';
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
+import { APP_GUARD } from '@nestjs/core';
 
 @Module({
   imports: [
@@ -30,6 +32,14 @@ import { validationSchema } from './common/validators/config/validation';
         retryDelay: 2000,
       }),
       inject: [ConfigService],
+    }),
+    ThrottlerModule.forRoot({
+      throttlers: [
+        {
+          ttl: 60000,
+          limit:10
+        },
+      ],
     }),
     IdentificationModule,
     AuthModule,
@@ -47,7 +57,13 @@ import { validationSchema } from './common/validators/config/validation';
     MorphologieModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard,
+    },
+  ],
 })
 export class AppModule implements OnModuleInit {
   async onModuleInit() {
