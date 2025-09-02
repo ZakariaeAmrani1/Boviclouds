@@ -341,7 +341,7 @@ const CCTV: React.FC = () => {
                   behaviors={behaviors.filter(
                     (b) => b.cameraId === selectedCameraForStream.id,
                   )}
-                  className="h-[600px] w-[1000px]"
+                  className="h-[600px] w-[1200px]"
                   isSelected={true}
                 />
               </>

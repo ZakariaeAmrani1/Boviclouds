@@ -13,7 +13,7 @@ import {
 import axios from "axios";
 
 class CCTVService {
-  private baseUrl = "/api/cctv";
+  private baseUrl = `${import.meta.env.VITE_API_URL3}/api/cctv`;
 
   async getCameras(page = 1, limit = 10): Promise<CameraListResponse> {
     const response = await fetch(

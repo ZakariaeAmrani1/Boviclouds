@@ -12,7 +12,7 @@ import {
 import axios from "axios";
 
 class MorphologyService {
-  private baseUrl = "/api/morphology";
+  private baseUrl = `${import.meta.env.VITE_API_URL3}/api/morphology`;
 
   async getMorphologies(
     filters: MorphologyFilters = {},

@@ -14,7 +14,7 @@ import {
   IdentificationsListResponse,
 } from "@shared/lactation";
 
-const API_BASE_URL = "/api/lactation";
+const API_BASE_URL = `${import.meta.env.VITE_API_URL3}/api/lactation`;
 
 export class LactationService {
   /**
@@ -247,7 +247,9 @@ export class LactationService {
 
       if (!response.ok) {
         const errorText = await response.text();
-        console.error(`HTTP error! status: ${response.status}, response: ${errorText}`);
+        console.error(
+          `HTTP error! status: ${response.status}, response: ${errorText}`,
+        );
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
@@ -278,7 +280,9 @@ export class LactationService {
       const token = localStorage.getItem("access_token");
 
       if (!token) {
-        console.warn("No access token found, returning empty identifications array");
+        console.warn(
+          "No access token found, returning empty identifications array",
+        );
         return [];
       }
 
@@ -289,7 +293,9 @@ export class LactationService {
 
       if (!response.ok) {
         const errorText = await response.text();
-        console.error(`HTTP error! status: ${response.status}, response: ${errorText}`);
+        console.error(
+          `HTTP error! status: ${response.status}, response: ${errorText}`,
+        );
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
@@ -297,7 +303,8 @@ export class LactationService {
 
       if (!result.success || !result.data) {
         throw new Error(
-          result.message || "Erreur lors de la récupération des identifications",
+          result.message ||
+            "Erreur lors de la récupération des identifications",
         );
       }
 
