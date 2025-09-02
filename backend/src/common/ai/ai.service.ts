@@ -38,7 +38,6 @@ export class AIService {
         }
       }
       if (endpoint === '/get-morph') {
-        console.log('aaaa');
         const response = await firstValueFrom(
           this.httpService.post(`${this.modelDomain1}${endpoint}`, formData, {
             headers: formData.getHeaders(),
