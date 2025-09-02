@@ -7,7 +7,7 @@ import {
 } from "@shared/profile";
 
 export class ProfileService {
-  private static baseURL = "/api/profile";
+  private static baseURL = `${import.meta.env.VITE_API_URL3}/api/profile`;
 
   // Get current user profile
   static async getCurrentProfile(): Promise<UserProfile> {

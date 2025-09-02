@@ -305,11 +305,11 @@ const CCTV: React.FC = () => {
                   Précédent
                 </Button>
 
-                <span className="px-3 py-1 bg-gray-100 rounded text-sm">
+                <p className="px-3 py-1 bg-gray-100 rounded text-sm">
                   {selectedCameraForStream
                     ? `${cameras.filter((cam) => cam.isOnline).findIndex((cam) => cam.id === selectedCameraForStream.id) + 1} / ${cameras.filter((cam) => cam.isOnline).length}`
                     : "0 / 0"}
-                </span>
+                </p>
 
                 <Button
                   variant="outline"
@@ -335,14 +335,16 @@ const CCTV: React.FC = () => {
 
             {/* Single Camera Feed */}
             {selectedCameraForStream ? (
-              <CameraFeed
-                camera={selectedCameraForStream}
-                behaviors={behaviors.filter(
-                  (b) => b.cameraId === selectedCameraForStream.id,
-                )}
-                className="h-[600px] w-full"
-                isSelected={true}
-              />
+              <>
+                <CameraFeed
+                  camera={selectedCameraForStream}
+                  behaviors={behaviors.filter(
+                    (b) => b.cameraId === selectedCameraForStream.id,
+                  )}
+                  className="h-[600px] w-[1200px]"
+                  isSelected={true}
+                />
+              </>
             ) : (
               <Card className="h-[500px] flex items-center justify-center">
                 <div className="text-center">

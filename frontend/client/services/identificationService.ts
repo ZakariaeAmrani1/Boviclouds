@@ -11,7 +11,7 @@ import {
 } from "@shared/identification";
 import { ImageData } from "../components/ui/multi-image-upload";
 
-const API_BASE_URL = "/api/identification";
+const API_BASE_URL = `${import.meta.env.VITE_API_URL3}/api/identification`;
 
 export class IdentificationService {
   /**
