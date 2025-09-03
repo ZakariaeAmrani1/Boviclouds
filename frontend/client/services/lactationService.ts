@@ -14,7 +14,11 @@ import {
   IdentificationsListResponse,
 } from "@shared/lactation";
 
+<<<<<<< HEAD
 const API_BASE_URL = "/api/lactation";
+=======
+const API_BASE_URL = `${import.meta.env.VITE_API_URL3}/api/lactation`;
+>>>>>>> 11504cd228d3bf3db32e434f798117d567599449
 
 export class LactationService {
   /**
@@ -247,7 +251,13 @@ export class LactationService {
 
       if (!response.ok) {
         const errorText = await response.text();
+<<<<<<< HEAD
         console.error(`HTTP error! status: ${response.status}, response: ${errorText}`);
+=======
+        console.error(
+          `HTTP error! status: ${response.status}, response: ${errorText}`,
+        );
+>>>>>>> 11504cd228d3bf3db32e434f798117d567599449
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
@@ -278,7 +288,13 @@ export class LactationService {
       const token = localStorage.getItem("access_token");
 
       if (!token) {
+<<<<<<< HEAD
         console.warn("No access token found, returning empty identifications array");
+=======
+        console.warn(
+          "No access token found, returning empty identifications array",
+        );
+>>>>>>> 11504cd228d3bf3db32e434f798117d567599449
         return [];
       }
 
@@ -289,7 +305,13 @@ export class LactationService {
 
       if (!response.ok) {
         const errorText = await response.text();
+<<<<<<< HEAD
         console.error(`HTTP error! status: ${response.status}, response: ${errorText}`);
+=======
+        console.error(
+          `HTTP error! status: ${response.status}, response: ${errorText}`,
+        );
+>>>>>>> 11504cd228d3bf3db32e434f798117d567599449
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
@@ -297,7 +319,12 @@ export class LactationService {
 
       if (!result.success || !result.data) {
         throw new Error(
+<<<<<<< HEAD
           result.message || "Erreur lors de la récupération des identifications",
+=======
+          result.message ||
+            "Erreur lors de la récupération des identifications",
+>>>>>>> 11504cd228d3bf3db32e434f798117d567599449
         );
       }
 

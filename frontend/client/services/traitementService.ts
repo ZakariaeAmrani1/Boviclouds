@@ -16,7 +16,11 @@ import {
 } from "@shared/traitement";
 
 class TraitementService {
+<<<<<<< HEAD
   private baseUrl = "/api/traitement";
+=======
+  private baseUrl = `${import.meta.env.VITE_API_URL3}/api/traitement`;
+>>>>>>> 11504cd228d3bf3db32e434f798117d567599449
 
   async getRecords(
     page = 1,

@@ -9,9 +9,16 @@ import {
   MorphologyStats,
   PaginationParams,
 } from "@shared/morphology";
+<<<<<<< HEAD
 
 class MorphologyService {
   private baseUrl = "/api/morphology";
+=======
+import axios from "axios";
+
+class MorphologyService {
+  private baseUrl = `${import.meta.env.VITE_API_URL3}/api/morphology`;
+>>>>>>> 11504cd228d3bf3db32e434f798117d567599449
 
   async getMorphologies(
     filters: MorphologyFilters = {},
@@ -206,6 +213,7 @@ class MorphologyService {
     //   method: "POST",
     //   body: formData,
     // });
+<<<<<<< HEAD
 
     const res = await fetch(`${apiUrl}identifications/predict`, {
       method: "POST",
@@ -215,6 +223,22 @@ class MorphologyService {
       },
     });
     const data = await res.json();
+=======
+    // const res = await fetch(`${apiUrl}identifications/predict`, {
+    //   method: "POST",
+    //   body: formData,
+    //   headers: {
+    //     Authorization: `Bearer ${token}`,
+    //   },
+    // });
+    const res = await axios.post(`${apiUrl}identifications/predict`, formData, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "multipart/form-data",
+      },
+    });
+    const data = await res.data;
+>>>>>>> 11504cd228d3bf3db32e434f798117d567599449
 
     if (!data.prediction) {
       throw new Error("Failed to process identification image");
@@ -254,14 +278,21 @@ class MorphologyService {
     cow_id: string,
     image: File,
   ): Promise<MorphologyImageResponse> {
+<<<<<<< HEAD
     if (process.env.NODE_ENV === "development") {
       return this.getMockMorphologyResponse();
     }
+=======
+    const apiUrl = import.meta.env.VITE_API_URL;
+    const token = localStorage.getItem("access_token");
+
+>>>>>>> 11504cd228d3bf3db32e434f798117d567599449
 
     const formData = new FormData();
     formData.append("image", image);
     formData.append("cow_id", cow_id);
 
+<<<<<<< HEAD
     const response = await fetch(`${this.baseUrl}/process-morphology`, {
       method: "POST",
       body: formData,
@@ -271,16 +302,58 @@ class MorphologyService {
       throw new Error("Failed to process morphology image");
     }
     return response.json();
+=======
+    // const response = await fetch(`${this.baseUrl}/process-morphology`, {
+    //   method: "POST",
+    //   body: formData,
+    // });
+
+    const res = await axios.post(
+      `${apiUrl}identifications/get-morphology`,
+      formData,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "multipart/form-data",
+        },
+      },
+    );
+
+    const { data } = res;
+    const response = {
+      success: true,
+      data: {
+        confidence: 0.98,
+        hauteur_au_garrot: {
+          valeur: data.mesures.hauteur_au_sacrum.toFixed(2),
+          unite: "cm",
+        },
+        largeur_du_corps: {
+          valeur: data.mesures.profondeur_du_corps.toFixed(2),
+          unite: "cm",
+        },
+        longueur_du_corps: {
+          valeur: data.mesures.longueur_de_corps.toFixed(2),
+          unite: "cm",
+        },
+      },
+    };
+
+    return response;
+>>>>>>> 11504cd228d3bf3db32e434f798117d567599449
   }
 
   async captureMorphologyFromCamera(
     cameraId: string,
     cow_id: string,
   ): Promise<MorphologyImageResponse> {
+<<<<<<< HEAD
     if (process.env.NODE_ENV === "development") {
       return this.getMockMorphologyResponse();
     }
 
+=======
+>>>>>>> 11504cd228d3bf3db32e434f798117d567599449
     const response = await fetch(
       `${this.baseUrl}/capture-morphology-from-camera`,
       {

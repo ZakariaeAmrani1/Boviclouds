@@ -11,7 +11,11 @@ import {
 } from "@shared/identification";
 import { ImageData } from "../components/ui/multi-image-upload";
 
+<<<<<<< HEAD
 const API_BASE_URL = "/api/identification";
+=======
+const API_BASE_URL = `${import.meta.env.VITE_API_URL3}/api/identification`;
+>>>>>>> 11504cd228d3bf3db32e434f798117d567599449
 
 export class IdentificationService {
   /**

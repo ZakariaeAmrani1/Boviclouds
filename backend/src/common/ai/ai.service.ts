@@ -63,10 +63,10 @@ export class AIService {
         return response.data;
       }
     } catch (error) {
-      // console.error(
-      //   `Error sending data to AI model (${endpoint}):`,
-      //   error?.response?.data || error,
-      // );
+      console.error(
+        `Error sending data to AI model (${endpoint}):`,
+        error?.response?.data || error,
+      );
       throw new BadRequestException(
         `Couldn't send data to AI model — request to ${endpoint} failed`,
       );

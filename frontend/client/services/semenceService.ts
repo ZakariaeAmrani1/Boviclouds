@@ -12,7 +12,11 @@ import {
   UsersListResponse,
 } from "@shared/semence";
 
+<<<<<<< HEAD
 const API_BASE_URL = "/api/semence";
+=======
+const API_BASE_URL = `${import.meta.env.VITE_API_URL3}/api/semence`;
+>>>>>>> 11504cd228d3bf3db32e434f798117d567599449
 
 export class SemenceService {
   /**

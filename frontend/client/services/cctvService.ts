@@ -13,7 +13,11 @@ import {
 import axios from "axios";
 
 class CCTVService {
+<<<<<<< HEAD
   private baseUrl = "/api/cctv";
+=======
+  private baseUrl = `${import.meta.env.VITE_API_URL3}/api/cctv`;
+>>>>>>> 11504cd228d3bf3db32e434f798117d567599449
 
   async getCameras(page = 1, limit = 10): Promise<CameraListResponse> {
     const response = await fetch(
@@ -233,6 +237,10 @@ class CCTVService {
     const cameras = [];
     try {
       const apiUrl = import.meta.env.VITE_API_URL1;
+<<<<<<< HEAD
+=======
+      const apiUrl1 = import.meta.env.VITE_API_URL2;
+>>>>>>> 11504cd228d3bf3db32e434f798117d567599449
       const response = await axios.get(`${apiUrl}cameras`);
       const data = response.data;
       data.map((camera) => {
@@ -250,7 +258,14 @@ class CCTVService {
                 ? CameraType.IDENTIFICATION
                 : CameraType.MORPHOLOGY,
           isOnline: true,
+<<<<<<< HEAD
           streamUrl: `${apiUrl}video/${camera.index}`,
+=======
+          streamUrl:
+            camera.type !== "default"
+              ? `${apiUrl}video/${camera.index}`
+              : `${apiUrl1}process-stream/?stream_url=${apiUrl}video/${camera.index}`,
+>>>>>>> 11504cd228d3bf3db32e434f798117d567599449
           webRTCUrl: `${apiUrl}webrtc/${camera.index}`,
           isRecording: true,
           lastActivity: new Date(),
@@ -258,6 +273,10 @@ class CCTVService {
           updatedAt: new Date(),
         });
       });
+<<<<<<< HEAD
+=======
+      console.log(cameras);
+>>>>>>> 11504cd228d3bf3db32e434f798117d567599449
       return cameras;
     } catch (error) {
       console.log(error);
